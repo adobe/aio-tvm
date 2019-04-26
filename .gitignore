@@ -1,0 +1,4 @@
+node_modules
+wskdeploy
+.env*
+.nyc_output

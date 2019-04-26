@@ -1,0 +1,31 @@
+{
+  "name": "cna-tvm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "dotenv": "^7.0.0",
+    "eslint": "^5.14.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "js-yaml": "^3.12.2",
+    "mocha": "^6.0.2",
+    "nyc": "^13.3.0",
+    "sinon": "^7.3.1",
+    "standard": "^12.0.1"
+  },
+  "scripts": {
+    "install-deps": "node scripts/install.zip.actions.dep.js",
+    "deploy": "npm run install-deps && node scripts/deploy.js",
+    "undeploy": "node scripts/undeploy.js",
+    "clean": "rm -rf coverage .nyc_output package-lock.json && find . -name 'node_modules' -exec rm -rf '{}' +",
+    "lint": "eslint './actions/**/*.js' './scripts/**/*.js'",
+    "beautify": "npm run lint -- --fix",
+    "test": "mocha",
+    "coverage": "nyc --reporter=html --reporter=text mocha"
+  }
+}
