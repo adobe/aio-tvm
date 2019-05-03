@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "10"
+install:
+  - npm version
+  - npm install
+script:
+  - npm run lint
+  - npm run install-deps
+  - npm test
