@@ -6,4 +6,5 @@ install:
   - npm install
 scripts:
   - npm run lint
+  - npm run install-deps
   - npm test
