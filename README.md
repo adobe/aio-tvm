@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.com/adobe/adobeio-cna-token-vending-machine.svg?branch=master)](https://travis-ci.com/adobe/adobeio-cna-token-vending-machine)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+
 # CNA Token Vending Machine for S3
 
 This is an implementation of a TVM delivering **temporary tokens** to **push public
