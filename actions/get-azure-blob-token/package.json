@@ -1,0 +1,9 @@
+{
+  "main": "index.js",
+  "dependencies": {
+    "@azure/storage-blob": "^10.3.0",
+    "joi": "^14.3.1",
+    "openwhisk": "^3.18.0",
+    "request-promise": "^4.2.4"
+  }
+}
