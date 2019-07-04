@@ -85,9 +85,10 @@ async function main (params) {
     const accountURL = `https://${params.azureStorageAccount}.blob.core.windows.net`
 
     const sharedKeyCredential = new azure.SharedKeyCredential(params.azureStorageAccount, params.azureStorageAccessKey)
+
+    // todo should we create the container in the client??
     const pipeline = azure.StorageURL.newPipeline(sharedKeyCredential)
     const serviceURL = new azure.ServiceURL(accountURL, pipeline)
-
     const containerURL = azure.ContainerURL.fromServiceURL(serviceURL, container)
     try {
       await containerURL.create(azure.Aborter.none)
