@@ -102,8 +102,8 @@ async function main (params) {
     const expiryTime = new Date()
     expiryTime.setSeconds(expiryTime.getSeconds() + params.expiryDuration)
 
-    const permissions = new azure.BlobSASPermissions()
-    permissions.add = permissions.read = permissions.create = permissions.delete = permissions.write = true
+    const permissions = new azure.ContainerSASPermissions()
+    permissions.add = permissions.read = permissions.create = permissions.delete = permissions.write = permissions.list = true
     const sasParams = {
       containerName: container,
       permissions: permissions.toString(),
