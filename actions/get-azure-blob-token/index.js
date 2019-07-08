@@ -80,9 +80,10 @@ async function main (params) {
 
     // 3. Build azure signed url
     const azure = require('@azure/storage-blob')
-
-    const container = params.owNamespace
     const accountURL = `https://${params.azureStorageAccount}.blob.core.windows.net`
+
+    // make container name work with azure restricted char set by making it hex
+    const container = Buffer.from(params.owNamespace, 'utf8').toString('hex')
 
     const sharedKeyCredential = new azure.SharedKeyCredential(params.azureStorageAccount, params.azureStorageAccessKey)
 
@@ -116,8 +117,13 @@ async function main (params) {
 
     return {
       body: {
-        expiration: expiryTime.toISOString(),
-        sasURL: `${accountURL}?${sasQueryParams.toString()}`
+        private: {
+          expiration: expiryTime.toISOString(),
+          sasURL: `${accountURL}?${sasQueryParams.toString()}`
+        },
+        public: {
+
+        }
       }
     }
   } catch (e) {
