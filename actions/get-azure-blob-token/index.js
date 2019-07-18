@@ -81,22 +81,23 @@ async function main (params) {
     // 3. Build azure signed url
     const azure = require('@azure/storage-blob')
     const accountURL = `https://${params.azureStorageAccount}.blob.core.windows.net`
-
-    // make container name work with azure restricted char set by making it hex
-    const container = Buffer.from(params.owNamespace, 'utf8').toString('hex')
-
     const sharedKeyCredential = new azure.SharedKeyCredential(params.azureStorageAccount, params.azureStorageAccessKey)
 
-    // todo should we create the container in the client??
+    // make container name work with azure restricted char set by making it hex
+    const containerName = Buffer.from(params.owNamespace, 'utf8').toString('hex')
+    const privateContainerName = containerName
+    const publicContainerName = containerName + '-public'
+
+    // create containers - we need to do it here as the sas creds do not allow it
     const pipeline = azure.StorageURL.newPipeline(sharedKeyCredential)
     const serviceURL = new azure.ServiceURL(accountURL, pipeline)
-    const containerURL = azure.ContainerURL.fromServiceURL(serviceURL, container)
     try {
-      await containerURL.create(azure.Aborter.none)
-      console.log(`Created container ${container}.`)
+      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, privateContainerName), azure.Aborter.none)
+      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, publicContainerName), azure.Aborter.none, true)
+      console.log(`Created private and public container: ${privateContainerName}, ${publicContainerName}`)
     } catch (e) {
       if (e.body.Code !== 'ContainerAlreadyExists') throw e
-      console.log(`Container ${container} already exists.`)
+      console.log(`Did not created containers: ${privateContainerName}, ${publicContainerName} already exist`)
     }
 
     // generate SAS token
@@ -105,25 +106,22 @@ async function main (params) {
 
     const permissions = new azure.ContainerSASPermissions()
     permissions.add = permissions.read = permissions.create = permissions.delete = permissions.write = permissions.list = true
-    const sasParams = {
-      containerName: container,
+    const commonSasParams = {
       permissions: permissions.toString(),
       expiryTime: expiryTime
     }
-    const sasQueryParams = azure.generateBlobSASQueryParameters(sasParams, sharedKeyCredential)
+
+    const sasQueryParamsPrivate = azure.generateBlobSASQueryParameters({ ...commonSasParams, containerName: privateContainerName }, sharedKeyCredential)
+    const sasQueryParamsPublic = azure.generateBlobSASQueryParameters({ ...commonSasParams, containerName: publicContainerName }, sharedKeyCredential)
 
     console.log(`Azure SAS generated`)
     console.log(`End of request`)
 
     return {
       body: {
-        private: {
-          expiration: expiryTime.toISOString(),
-          sasURL: `${accountURL}?${sasQueryParams.toString()}`
-        },
-        public: {
-
-        }
+        expiration: expiryTime.toISOString(),
+        sasURLPrivate: `${accountURL}/${privateContainerName}?${sasQueryParamsPrivate.toString()}`,
+        sasURLPublic: `${accountURL}/${publicContainerName}?${sasQueryParamsPublic.toString()}`
       }
     }
   } catch (e) {

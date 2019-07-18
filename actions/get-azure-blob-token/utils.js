@@ -50,7 +50,24 @@ function isWhitelisted (namespace, whitelist) {
   return whitelist.includes(namespace)
 }
 
+/**
+ * creates a container if not exists
+ *
+ * @param {azure.ContainerURL} containerURL azure ContainerUrl
+ * @param {azure.Aborter} aborter azure Aborter
+ * @param {boolean} [isPublic=false] set to true to create a public container
+ */
+async function createContainerIfNotExists (containerURL, aborter, isPublic = false) {
+  try {
+    const options = isPublic ? { access: 'blob' } : {}
+    await containerURL.create(aborter, options)
+  } catch (e) {
+    if (e.body.Code !== 'ContainerAlreadyExists') throw e
+  }
+}
+
 module.exports = {
-  isWhitelisted: isWhitelisted,
-  validateOWCreds: validateOWCreds
+  isWhitelisted,
+  validateOWCreds,
+  createContainerIfNotExists
 }
