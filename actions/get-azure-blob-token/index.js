@@ -92,8 +92,8 @@ async function main (params) {
     const pipeline = azure.StorageURL.newPipeline(sharedKeyCredential)
     const serviceURL = new azure.ServiceURL(accountURL, pipeline)
     try {
-      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, privateContainerName), azure.Aborter.none)
-      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, publicContainerName), azure.Aborter.none, true)
+      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, privateContainerName), azure.Aborter.none, { access: 'blob', metadata: { namespace: params.owNamespace } })
+      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, publicContainerName), azure.Aborter.none, { metadata: { namespace: params.owNamespace } })
       console.log(`Created private and public container: ${privateContainerName}, ${publicContainerName}`)
     } catch (e) {
       if (e.body.Code !== 'ContainerAlreadyExists') throw e

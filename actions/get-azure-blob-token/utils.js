@@ -55,11 +55,10 @@ function isWhitelisted (namespace, whitelist) {
  *
  * @param {azure.ContainerURL} containerURL azure ContainerUrl
  * @param {azure.Aborter} aborter azure Aborter
- * @param {boolean} [isPublic=false] set to true to create a public container
+ * @param {object} [options] azure container creation options
  */
-async function createContainerIfNotExists (containerURL, aborter, isPublic = false) {
+async function createContainerIfNotExists (containerURL, aborter, options) {
   try {
-    const options = isPublic ? { access: 'blob' } : {}
     await containerURL.create(aborter, options)
   } catch (e) {
     if (e.body.Code !== 'ContainerAlreadyExists') throw e
