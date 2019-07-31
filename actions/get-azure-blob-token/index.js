@@ -58,8 +58,11 @@ async function main (params) {
       return errorResponse(`${resParams.error.message}`, 400)
     }
 
+    // important !! as joi accepts '123'
+    params.expiryDuration = parseInt(params.expiryDuration)
+
     // we use namespace as container names, so at least 3 chars
-    if (params.owNamespace.length < 3) return errorResponse('namespace must be >= 3 chars')
+    if (params.owNamespace.length < 3) return errorResponse('namespace must be >= 3 chars', 400)
 
     console.log(`Incoming request for [ ${params.owNamespace}, ${params.owAuth.split(':')[0]} ]`)
 
