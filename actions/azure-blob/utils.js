@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 const openwhisk = require('openwhisk')
 
+// TODO MODULARIZE UTILS FROM OTHER ACTIONS
 // generic helpers
 
 /**

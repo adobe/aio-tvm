@@ -1,8 +1,8 @@
 packages:
   __CNA_PACKAGE__:
     actions:
-      get-s3-upload-token:
-        function: actions/get-s3-upload-token
+      aws-s3:
+        function: actions/aws-s3
         web: yes
         runtime: 'nodejs:10'
         inputs:
@@ -15,8 +15,8 @@ packages:
         annotations:
           # this is important security wise
           final: true
-      get-azure-blob-token:
-        function: actions/get-azure-blob-token
+      azure-blob:
+        function: actions/azure-blob
         web: yes
         runtime: 'nodejs:10'
         inputs:
@@ -28,3 +28,16 @@ packages:
         annotations:
           # this is important security wise
           final: true
+    apis:
+      tvm-azure-blob:
+        tvm:
+          azure/blob/{owNamespace}:
+            azure-blob:
+              method: POST
+              response: http
+      tvm-aws-s3:
+        tvm:
+          aws/s3/{owNamespace}:
+            aws-s3:
+              method: POST
+              response: http

@@ -13,6 +13,7 @@ const openwhisk = require('openwhisk')
 const joi = require('joi')
 const aws = require('aws-sdk')
 
+// TODO MODULARIZE UTILS FROM OTHER ACTIONS
 // helpers specific to action
 
 /**
@@ -20,7 +21,7 @@ const aws = require('aws-sdk')
  * @returns {null | object} if validation failed returns error in res.error
  */
 function validateParams (params) {
-  const schema = joi.object().keys({
+  const schema = joi.object().label('params').keys({
     // default params
     // must be final params, especially the whitelist, s3Bucket and expiryDuration for security reasons
     s3Bucket: joi.string().required(),
@@ -32,8 +33,8 @@ function validateParams (params) {
     // those are user openwhisk credentials passed as request params
     owAuth: joi.string().required(),
     owNamespace: joi.string().required()
-  }).pattern(/^__ow_.+$/, joi.any()) // this means: allow all unknown parameters that start with __ow_
-
+  }).pattern(/^$/, joi.any()).pattern(/^__ow_.+$/, joi.any()) // this means: allow all unknown parameters that start with __ow_ and ''
+  // somehow the api-gateway adds a '' field to the params if no path was provided, so we allow it
   return joi.validate(params, schema)
 }
 
@@ -56,7 +57,7 @@ function generatePolicy (resourceName, namespace) {
  * @param  {string} apihost
  * @param  {string} namespace
  * @param  {string} auth
- * @returns {null | object} if validation failed returns error in res.error
+ * @returns {Promise<null | object>} if validation failed returns error in res.error
  */
 async function validateOWCreds (apihost, namespace, auth) {
   const ow = openwhisk({ api_key: auth, apihost: apihost })

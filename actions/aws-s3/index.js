@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const utils = require('./utils.js')
+const utils = require('./utils')
 
 /**
  * @param  {string} err - error message
@@ -36,7 +36,7 @@ function errorResponse (err, status) {
  * @params {string} params.owAuth - user's OpenWhisk Basic Token
  * @params {string} params.owNamespace - user's OpenWhisk Namespace
  *
- * @returns {object} {accessKeyId, secretAccessKey, sessionToken, expiration,
+ * @returns {Promise<object>} {accessKeyId, secretAccessKey, sessionToken, expiration,
  * {params: Bucket} }
  */
 async function main (params) {

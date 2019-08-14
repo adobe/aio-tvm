@@ -1,27 +1,38 @@
+#!/usr/bin/env node
+/*
+Copyright 2019 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 const azure = require('@azure/storage-blob')
 const request = require('request-promise')
 require('dotenv').config()
 
-const blobPath = process.argv[2]
-const content = process.argv[3]
-const container = process.argv[4] || process.env.AIO_RUNTIME_NAMESPACE
+const blobPath = process.argv[2] || 'hellofile'
+const content = process.argv[3] || 'hello'
 
 const annonymousCredential = new azure.AnonymousCredential()
 const pipeline = azure.StorageURL.newPipeline(annonymousCredential)
-
-request(`https://adobeioruntime.net/api/v1/web/mraho/adobeio-cna-token-vending-machine-0.1.0/get-azure-blob-token?owAuth=${process.env.AIO_RUNTIME_AUTH}&owNamespace=${process.env.AIO_RUNTIME_NAMESPACE}`, { json: true })
+request.post(`https://${process.env.AIO_RUNTIME_NAMESPACE}.adobeioruntime.net/apis/tvm/azure/blob?owAuth=${process.env.AIO_RUNTIME_AUTH}&owNamespace=${process.env.AIO_RUNTIME_NAMESPACE}`, { json: true })
   .then(async res => {
-    const serviceURL = new azure.ServiceURL(res.sasURL, pipeline)
-
-    const containerURL = azure.ContainerURL.fromServiceURL(serviceURL, container)
+    console.log(res)
+    const containerURL = new azure.ContainerURL(res.sasURLPrivate, pipeline)
     const blockBlobURL = azure.BlockBlobURL.fromContainerURL(containerURL, blobPath)
 
-    console.log(content)
+    let files = (await containerURL.listBlobFlatSegment(azure.Aborter.none, null)).segment.blobItems.map(f => f.name)
+
+    console.log(files)
     await blockBlobURL.upload(azure.Aborter.none, content, content.length)
 
-    const files = await containerURL.listBlobFlatSegment(azure.Aborter.none, null)
+    files = (await containerURL.listBlobFlatSegment(azure.Aborter.none, null)).segment.blobItems.map(f => f.name)
 
     console.log(files)
 
-    // await containerURL.delete(azure.Aborter.none)
-  })
+    await containerURL.delete(azure.Aborter.none)
+  }).catch(console.error)

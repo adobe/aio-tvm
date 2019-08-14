@@ -34,13 +34,13 @@ function errorResponse (err, status) {
  * @params {string} params.owAuth - user's OpenWhisk Basic Token
  * @params {string} params.owNamespace - user's OpenWhisk Namespace
  *
- * @returns {object} {accessKeyId, secretAccessKey, sessionToken, expiration,
+ * @returns {Promise<object>} {accessKeyId, secretAccessKey, sessionToken, expiration,
  * {params: Bucket} }
  */
 async function main (params) {
   try {
     // 0. validate params
-    const schema = joi.object().keys({
+    const schema = joi.object().label('params').keys({
       // default params
       // must be final params, especially the whitelist, s3Bucket and expiryDuration for security reasons
       expiryDuration: joi.number().required(),
@@ -51,7 +51,8 @@ async function main (params) {
       // those are user openwhisk credentials passed as request params
       owAuth: joi.string().required(),
       owNamespace: joi.string().required()
-    }).pattern(/^__ow_.+$/, joi.any()) // this means: allow all unknown parameters that start with __ow_
+    }).pattern(/^$/, joi.any()).pattern(/^__ow_.+$/, joi.any()) // this means: allow all unknown parameters that start with __ow_ and ''
+    // somehow the api-gateway adds a '' field to the params if no path was provided, so we allow it
     const resParams = joi.validate(params, schema)
     if (resParams.error) {
       console.warn(`Bad request: ${resParams.error.message}`)
@@ -95,11 +96,11 @@ async function main (params) {
     const pipeline = azure.StorageURL.newPipeline(sharedKeyCredential)
     const serviceURL = new azure.ServiceURL(accountURL, pipeline)
     try {
-      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, privateContainerName), azure.Aborter.none, { access: 'blob', metadata: { namespace: params.owNamespace } })
-      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, publicContainerName), azure.Aborter.none, { metadata: { namespace: params.owNamespace } })
+      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, publicContainerName), azure.Aborter.none, { access: 'blob', metadata: { namespace: params.owNamespace } })
+      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, privateContainerName), azure.Aborter.none, { metadata: { namespace: params.owNamespace } })
       console.log(`Created private and public container: ${privateContainerName}, ${publicContainerName}`)
     } catch (e) {
-      if (e.body.Code !== 'ContainerAlreadyExists') throw e
+      if (e.body.Code !== 'ContainerAlreadyExists' && e.body.code !== 'ContainerAlreadyExists') throw e
       console.log(`Did not created containers: ${privateContainerName}, ${publicContainerName} already exist`)
     }
 
