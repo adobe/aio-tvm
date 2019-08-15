@@ -22,8 +22,6 @@ to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and ar
 {"owAuth": "<myauth>", "owNamespace": "<mynamespace>"}
 ```
 
-- The namespace can also be passed in the path i.e: `https://adobeio.adobeioruntime.net/apis/tvm/azure/blob/{namespace}`
-
 ## TVM Usage Example (AWS S3)
 
 - The following code snippet illustrates how users can retrieve and use tokens from the

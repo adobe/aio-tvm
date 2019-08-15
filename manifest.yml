@@ -31,13 +31,13 @@ packages:
     apis:
       tvm-azure-blob:
         tvm:
-          azure/blob/{owNamespace}:
+          azure/blob:
             azure-blob:
               method: POST
               response: http
       tvm-aws-s3:
         tvm:
-          aws/s3/{owNamespace}:
+          aws/s3:
             aws-s3:
               method: POST
               response: http
