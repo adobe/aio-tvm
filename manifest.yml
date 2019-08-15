@@ -1,0 +1,43 @@
+packages:
+  __CNA_PACKAGE__:
+    actions:
+      aws-s3:
+        function: actions/aws-s3
+        web: yes
+        runtime: 'nodejs:10'
+        inputs:
+          s3Bucket: $S3_BUCKET
+          awsSecretAccessKey: $AWS_SECRET_ACCESS_KEY
+          awsAccessKeyId: $AWS_ACCESS_KEY_ID
+          expiryDuration: $EXPIRATION_DURATION
+          owApihost: $AIO_RUNTIME_APIHOST
+          whitelist: $WHITELIST
+        annotations:
+          # this is important security wise
+          final: true
+      azure-blob:
+        function: actions/azure-blob
+        web: yes
+        runtime: 'nodejs:10'
+        inputs:
+          azureStorageAccount: $AZURE_STORAGE_ACCOUNT
+          azureStorageAccessKey: $AZURE_STORAGE_ACCESS_KEY
+          expiryDuration: $EXPIRATION_DURATION
+          owApihost: $AIO_RUNTIME_APIHOST
+          whitelist: $WHITELIST
+        annotations:
+          # this is important security wise
+          final: true
+    apis:
+      tvm-azure-blob:
+        tvm:
+          azure/blob:
+            azure-blob:
+              method: POST
+              response: http
+      tvm-aws-s3:
+        tvm:
+          aws/s3:
+            aws-s3:
+              method: POST
+              response: http

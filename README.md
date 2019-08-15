@@ -1,15 +1,28 @@
 [![Build Status](https://travis-ci.com/adobe/adobeio-cna-token-vending-machine.svg?branch=master)](https://travis-ci.com/adobe/adobeio-cna-token-vending-machine)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+# Adobe I/O CNA Token Vending Machine (TVM)
 
-# CNA Token Vending Machine for S3
+This is an implementation of a TVM delivering **temporary and restricted tokens** to access various cloud services. Users authenticate
+to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and are only authorized to access their resources.
 
-This is an implementation of a TVM delivering **temporary tokens** to **push public
-assets** to a **specific s3 bucket**. Users authenticate to the TVM with their
-**OpenWhisk credentials** and are only authorized to upload files to their assigned
-**s3 subfolder**. A **whitelist** controls who can access the TVM.
+## Supported Cloud Services
 
-## TVM Usage Example
+- **AWS S3**
+  - *Accessible to Adobe I/O Runtime users at `https://adobeio.adobeioruntime.net/apis/tvm/aws/s3` (POST)*
+  - *the old endpoint `https://adobeioruntime.net/api/v1/web/adobeio/tvm/get-s3-upload-token` is still accessible (POST and GET)*
+- **Azure Blob Storage**
+  - *Accessible to Adobe I/O Runtime users at `https://adobeio.adobeioruntime.net/apis/tvm/azure/blob` (POST)`*
+
+## Parameters
+
+- When sending a request to a TVM endpoint the following query or body parameters are required:
+
+```json
+{"owAuth": "<myauth>", "owNamespace": "<mynamespace>"}
+```
+
+## TVM Usage Example (AWS S3)
 
 - The following code snippet illustrates how users can retrieve and use tokens from the
 TVM to upload a public asset to their s3 folder in your app bucket:
@@ -61,33 +74,49 @@ TVM to upload a public asset to their s3 folder in your app bucket:
   }
   ```
 
-## Setup
+## Deploy your own TVM
 
-- Download the latest wskdeploy binary (mac 64) to the root of the repo:
+### Why
 
-    ```bash
-    curl -L https://github.com/apache/incubator-openwhisk-wskdeploy/releases/download/latest/openwhisk_wskdeploy-latest-mac-amd64.zip -o wskdeploy.zip && \
-      mkdir -p tmp && \
-      unzip wskdeploy.zip -d tmp && \
-      cp tmp/wskdeploy . && \
-      rm -rf tmp wskdeploy.zip
-    ```
+You want to share a cloud service that you own (e.g 1 S3 account) with a set of OpenWhisk namespaces and you want to
+make sure that each namespace has access only to the resources they own (e.g can only see their S3 blobs).
+
+This might be useful for you if:
+
+- You have multiple Adobe I/O Runtime namespaces and you need them to access a cloud service but you don't want to use
+  the one exposed by Adobe's TVM
+- You are an OpenWhisk provider and want to provide an easy access to an external cloud service (e.g. storage)
+
+### Setup
+
+- install the `aio` CLI and `aio cna` plugin
+
+  ```bash
+  npm install -g @adobe/aio-cli
+  aio plugins install @adobe/aio-cli-plugin-cna
+  ```
 
 - `npm install`
 
-## Deployment Config
+### Deployment Config
 
 - `.env`:
 
-  ```
-  OW_APIHOST=<openwhisk apihost>
-  OW_NAMESPACE=<your OpenWhisk namespace>
-  OW_AUTH=<your OpenWhisk auth>
+  ```bash
+  AIO_RUNTIME_APIVERSION=v1
+  AIO_RUNTIME_APIHOST=https://adobeioruntime.net
+  AIO_RUNTIME_NAMESPACE=deployment_ns
+  AIO_RUNTIME_AUTH=deployment_auth_ns
+
+  EXPIRATION_DURATION=<token expiration in seconds>
+  WHITELIST=<comma separated list of namespaces>
+
   AWS_ACCESS_KEY_ID=<key id of IAM user created in AWS>
   AWS_SECRET_ACCESS_KEY=<secret of IAM user created in AWS>
   S3_BUCKET=<MY_BUCKET>
-  EXPIRATION_DURATION=<token expiration in seconds, min & recommended is 900>
-  WHITELIST=<comma separated list of namespaces>
+
+  AZURE_STORAGE_ACCOUNT=<storage account name>
+  AZURE_STORAGE_ACCESS_KEY=<storage access key>
   ```
 
 - Use the `WHITELIST` variable to control which namespace can access the TVM and
@@ -95,7 +124,11 @@ TVM to upload a public asset to their s3 folder in your app bucket:
   - **[ ⚠️ NOT RECOMMENDED ⚠️]** Use `WHITELIST=*` to allow access to
     **every** OpenWhisk namespace in the same domain.
 
-## Deploy the TVM
+### Configure account credentials for Azure Blob
+
+- **TODO: doc**
+
+### Configure account credentials for AWS S3
 
 - Create a Bucket in S3 for your app
 - Create an IAM user with the following IAM policy in AWS (replace `MY_BUCKET` with
@@ -131,30 +164,13 @@ TVM to upload a public asset to their s3 folder in your app bucket:
 
 - Configure the `.env` file, see [config](#deployment-config)
 
-- `npm run deploy` will deploy the web action to your namespace. The public
-  url of your TVM will be shown in the console.
+### Deploy the TVM endpoints
 
-## Undeploy
+- `aio cna deploy -av` will deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`
 
-- `npm run undeploy`
+### Undeploy
 
-## Dev Tools
-
-### Run Locally
-
-- **TBD**, in the meantime you can use this [script](https://github.com/apache/incubator-openwhisk-devtools/tree/master/node-local)
-
-### Unit Testing
-
-- `npm run install-deps` to install the actions' dependencies (to do once before
-  running tests)
-- `npm run test` to run unit tests
-
-### More Dev Commands
-
-- `npm run lint` and `npm run beautify`
-- `npm run coverage`
-- `npm run clean`
+- `aio cna undeploy -av`
 
 ## Contributing
 
