@@ -8,3 +8,4 @@ package-lock.json
 .manifest-dist.yml
 openwhisk-standalone.jar
 dist/
+.lib

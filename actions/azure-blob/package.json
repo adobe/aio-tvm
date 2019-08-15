@@ -1,9 +1,12 @@
 {
+  "name": "azure-blob",
   "main": "index.js",
   "dependencies": {
-    "@azure/storage-blob": "^10.3.0",
-    "joi": "^14.3.1",
-    "openwhisk": "^3.18.0",
-    "request-promise": "^4.2.4"
+    "@azure/storage-blob": "^10.4.0",
+    "@hapi/joi": "^15.1.0",
+    "tvm-utils": "file:./.lib/tvm-utils/"
+  },
+  "scripts": {
+    "preinstall": "node ../../scripts/action.install.prehook.js"
   }
 }

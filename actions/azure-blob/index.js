@@ -10,8 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const utils = require('./utils')
-const joi = require('joi')
+const utils = require('tvm-utils')
+const joi = require('@hapi/joi')
+const azure = require('@azure/storage-blob')
 
 /**
  * @param  {string} err - error message
@@ -25,11 +26,27 @@ function errorResponse (err, status) {
   }
 }
 /**
+ * creates a container if not exists
+ *
+ * @param {azure.ContainerURL} containerURL azure ContainerUrl
+ * @param {azure.Aborter} aborter azure Aborter
+ * @param {object} [options] azure container creation options
+ */
+async function createContainerIfNotExists (containerURL, aborter, options) {
+  try {
+    await containerURL.create(aborter, options)
+  } catch (e) {
+    console.log(e)
+    if (e.body === undefined || (e.body.Code !== 'ContainerAlreadyExists' && e.body.code !== 'ContainerAlreadyExists')) throw e
+  }
+}
+
+/**
  * @param {object} params - the input params
  *
- * @params {number} params.expiryDuration - privided by owner, default final
- * @params {string} params.whitelist - privided by owner, default final
- * @params {string} params.owApiHost - privided by owner, default final
+ * @params {number} params.expiryDuration - provided by owner, default final
+ * @params {string} params.whitelist - provided by owner, default final
+ * @params {string} params.owApiHost - provided by owner, default final
  *
  * @params {string} params.owAuth - user's OpenWhisk Basic Token
  * @params {string} params.owNamespace - user's OpenWhisk Namespace
@@ -40,25 +57,11 @@ function errorResponse (err, status) {
 async function main (params) {
   try {
     // 0. validate params
-    const schema = joi.object().label('params').keys({
-      // default params
-      // must be final params, especially the whitelist, s3Bucket and expiryDuration for security reasons
-      expiryDuration: joi.number().required(),
-      whitelist: joi.string().required(),
-      azureStorageAccount: joi.string().required(),
-      azureStorageAccessKey: joi.string().required(),
-      owApihost: joi.string().uri().required(),
-      // those are user openwhisk credentials passed as request params
-      owAuth: joi.string().required(),
-      owNamespace: joi.string().required()
-    }).pattern(/^$/, joi.any()).pattern(/^__ow_.+$/, joi.any()) // this means: allow all unknown parameters that start with __ow_ and ''
-    // somehow the api-gateway adds a '' field to the params if no path was provided, so we allow it
-    const resParams = joi.validate(params, schema)
+    const resParams = utils.validateParams(params, { azureStorageAccount: joi.string().required(), azureStorageAccessKey: joi.string().required() })
     if (resParams.error) {
       console.warn(`Bad request: ${resParams.error.message}`)
       return errorResponse(`${resParams.error.message}`, 400)
     }
-
     // important !! as joi accepts '123'
     params.expiryDuration = parseInt(params.expiryDuration)
 
@@ -83,7 +86,6 @@ async function main (params) {
     console.log('Request is authorized')
 
     // 3. Build azure signed url
-    const azure = require('@azure/storage-blob')
     const accountURL = `https://${params.azureStorageAccount}.blob.core.windows.net`
     const sharedKeyCredential = new azure.SharedKeyCredential(params.azureStorageAccount, params.azureStorageAccessKey)
 
@@ -96,8 +98,8 @@ async function main (params) {
     const pipeline = azure.StorageURL.newPipeline(sharedKeyCredential)
     const serviceURL = new azure.ServiceURL(accountURL, pipeline)
     try {
-      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, publicContainerName), azure.Aborter.none, { access: 'blob', metadata: { namespace: params.owNamespace } })
-      await utils.createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, privateContainerName), azure.Aborter.none, { metadata: { namespace: params.owNamespace } })
+      await createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, publicContainerName), azure.Aborter.none, { access: 'blob', metadata: { namespace: params.owNamespace } })
+      await createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, privateContainerName), azure.Aborter.none, { metadata: { namespace: params.owNamespace } })
       console.log(`Created private and public container: ${privateContainerName}, ${publicContainerName}`)
     } catch (e) {
       if (e.body.Code !== 'ContainerAlreadyExists' && e.body.code !== 'ContainerAlreadyExists') throw e
