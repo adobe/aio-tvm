@@ -39,7 +39,7 @@ TVM to upload a public asset to their s3 folder in your app bucket:
   const OW_NAMESPACE = '<user_ow_namespace>'
 
   // request credentials
-  const creds = await request(TVM_URL, {
+  const creds = await request.post(TVM_URL, {
     json: {
       owAuth: OW_AUTH,
       owNamespace: OW_NAMESPACE
