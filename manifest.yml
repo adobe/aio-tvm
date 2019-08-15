@@ -33,11 +33,11 @@ packages:
         tvm:
           azure/blob:
             azure-blob:
-              method: POST
+              method: GET
               response: http
       tvm-aws-s3:
         tvm:
           aws/s3:
             aws-s3:
-              method: POST
+              method: GET
               response: http
