@@ -9,10 +9,10 @@ to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and ar
 ## Supported Cloud Services
 
 - **AWS S3**
-  - *Accessible to Adobe I/O Runtime users at `https://adobeio.adobeioruntime.net/apis/tvm/aws/s3` (POST)*
+  - *Accessible to Adobe I/O Runtime users at `https://adobeio.adobeioruntime.net/apis/tvm/aws/s3` (GET)*
   - *the old endpoint `https://adobeioruntime.net/api/v1/web/adobeio/tvm/get-s3-upload-token` is still accessible (POST and GET)*
 - **Azure Blob Storage**
-  - *Accessible to Adobe I/O Runtime users at `https://adobeio.adobeioruntime.net/apis/tvm/azure/blob` (POST)`*
+  - *Accessible to Adobe I/O Runtime users at `https://adobeio.adobeioruntime.net/apis/tvm/azure/blob` (GET)*
 
 ## Parameters
 
@@ -39,7 +39,7 @@ TVM to upload a public asset to their s3 folder in your app bucket:
   const OW_NAMESPACE = '<user_ow_namespace>'
 
   // request credentials
-  const creds = await request.post(TVM_URL, {
+  const creds = await request(TVM_URL, {
     json: {
       owAuth: OW_AUTH,
       owNamespace: OW_NAMESPACE
