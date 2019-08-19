@@ -55,6 +55,10 @@ async function createContainerIfNotExists (containerURL, aborter, options) {
  * {params: Bucket} }
  */
 async function main (params) {
+  params.owAuth = (params.__ow_headers && params.__ow_headers.authorization) || params.owAuth
+  if (!params.owAuth) {
+    return errorResponse('unauthorized request', 401)
+  }
   try {
     // 0. validate params
     const resParams = utils.validateParams(params, { azureStorageAccount: joi.string().required(), azureStorageAccessKey: joi.string().required() })

@@ -6,73 +6,29 @@
 This is an implementation of a TVM delivering **temporary and restricted tokens** to access various cloud services. Users authenticate
 to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and are only authorized to access their resources.
 
-## Supported Cloud Services
+## Use
 
-- **AWS S3**
-  - *Accessible to Adobe I/O Runtime users at `https://adobeio.adobeioruntime.net/apis/tvm/aws/s3` (GET)*
-  - *the old endpoint `https://adobeioruntime.net/api/v1/web/adobeio/tvm/get-s3-upload-token` is still accessible (POST and GET)*
-- **Azure Blob Storage**
-  - *Accessible to Adobe I/O Runtime users at `https://adobeio.adobeioruntime.net/apis/tvm/azure/blob` (GET)*
+- [JavaScript](https://github.com/adobe/adobeio-cna-tvm-client)
 
-## Parameters
+- CURL
 
-- When sending a request to a TVM endpoint the following query or body parameters are required:
-
-```json
-{"owAuth": "<myauth>", "owNamespace": "<mynamespace>"}
+```bash
+curl -H "Authorization: ${AUTH}" "https://adobe.adobeioruntime.net/apis/tvm/azure/blob/${NAMESPACE}"
 ```
 
-## TVM Usage Example (AWS S3)
+## API
 
-- The following code snippet illustrates how users can retrieve and use tokens from the
-TVM to upload a public asset to their s3 folder in your app bucket:
+- Endpoints:
+  - Get AWS S3 token: `https://adobeio.adobeioruntime.net/apis/tvm/aws/s3/${owNamespace}`
+  - Get Azure Blob token: `https://adobeio.adobeioruntime.net/apis/tvm/azure/blob/${owNamespace}`
 
-  ```js
-  const request = require('request-promise')
-  const aws = require('aws-sdk')
-  const fs = require('fs-extra')
-  const path = require('path')
+- For each of the above endpoints applies:
+  - HTTP method is GET
+  - OpenWhisk auth key must be passed in `Authorization` header
+  - OpenWhisk namespace must be passed in the url path
 
-  const TVM_URL = '<url_to_deployed_tvm>'
-  const FILE_TO_UPLOAD='index.html'
-  const OW_AUTH = '<user_ow_auth>'
-  const OW_NAMESPACE = '<user_ow_namespace>'
-
-  // request credentials
-  const creds = await request(TVM_URL, {
-    json: {
-      owAuth: OW_AUTH,
-      owNamespace: OW_NAMESPACE
-    }
-  })
-
-  // instantiate s3 client
-  const s3 = new aws.S3(creds)
-
-  // upload file
-  const uploadParams = {
-    // only allowed to access namespace subfolder
-    Key: path.join(OW_NAMESPACE, FILE_TO_UPLOAD),
-    Body: await fs.readFile(FILE_TO_UPLOAD),
-    ACL: 'public-read',
-    ContentType: 'text/html'
-  }
-  await s3.upload(uploadParams).promise()
-  ```
-
-- Response body sample:
-
-  ```json
-  {
-    "accessKeyId": "...",
-    "expiration": "1970-01-01T00:00:00.000Z",
-    "params": {
-      "Bucket": "adobe-cna"
-    },
-    "secretAccessKey": "...",
-    "sessionToken": "..."
-  }
-  ```
+- Deprecated:
+  - Get AWS S3 token `https://adobeioruntime.net/api/v1/web/adobeio/tvm/get-s3-upload-token` is still accessible (POST and GET) with params `{"owAuth": "<myauth>", "owNamespace": "<mynamespace>"}`
 
 ## Deploy your own TVM
 
