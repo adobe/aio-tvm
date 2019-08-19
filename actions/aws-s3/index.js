@@ -106,8 +106,8 @@ function errorResponse (err, status) {
  * {params: Bucket} }
  */
 async function main (params) {
-  params.owAuth = (params.__ow_headers && params.__ow_headers.authorization) || params.owAuth
-  if (!params.owAuth) {
+  params.owAuth = params.__ow_headers && params.__ow_headers.authorization
+  if (!(params.owAuth)) {
     return errorResponse('unauthorized request', 401)
   }
   try {
