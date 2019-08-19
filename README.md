@@ -4,7 +4,7 @@
 # Adobe I/O CNA Token Vending Machine (TVM)
 
 This is an implementation of a TVM delivering **temporary and restricted tokens** to access various cloud services. Users authenticate
-to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and are only authorized to access their resources.
+to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and are only authorized to access their own resources.
 
 ## Use
 
@@ -21,6 +21,7 @@ curl -H "Authorization: ${AUTH}" "https://adobe.adobeioruntime.net/apis/tvm/azur
 - Endpoints:
   - Get AWS S3 token: `https://adobeio.adobeioruntime.net/apis/tvm/aws/s3/${owNamespace}`
   - Get Azure Blob token: `https://adobeio.adobeioruntime.net/apis/tvm/azure/blob/${owNamespace}`
+  - Get Azure Cosmos token: `https://adobeio.adobeioruntime.net/apis/tvm/azure/cosmos/${owNamespace}`
 
 - For each of the above endpoints applies:
   - HTTP method is GET
@@ -73,6 +74,10 @@ This might be useful for you if:
 
   AZURE_STORAGE_ACCOUNT=<storage account name>
   AZURE_STORAGE_ACCESS_KEY=<storage access key>
+
+  AZURE_COSMOS_ACCOUNT=<cosmosdb account name>
+  AZURE_COSMOS_MASTER_KEY=<cosmosdb master key>
+  AZURE_COSMOS_DATABASE_NAME=<cosmosdb database name>
   ```
 
 - Use the `WHITELIST` variable to control which namespace can access the TVM and

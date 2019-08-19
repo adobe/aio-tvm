@@ -28,11 +28,31 @@ packages:
         annotations:
           # this is important security wise
           final: true
+      azure-cosmos:
+        function: actions/azure-cosmos
+        web: yes
+        runtime: 'nodejs:10'
+        inputs:
+          azureCosmosMasterKey: $AZURE_COSMOS_MASTER_KEY
+          azureCosmosAccount: $AZURE_COSMOS_ACCOUNT
+          azureCosmosDatabaseName: $AZURE_COSMOS_DATABASE_NAME
+          expiryDuration: $EXPIRATION_DURATION
+          owApihost: $AIO_RUNTIME_APIHOST
+          whitelist: $WHITELIST
+        annotations:
+          # this is important security wise
+          final: true
     apis:
       tvm-azure-blob:
         tvm:
           azure/blob/{owNamespace}:
             azure-blob:
+              method: GET
+              response: http
+      tvm-azure-cosmos:
+        tvm:
+          azure/cosmos/{owNamespace}:
+            azure-cosmos:
               method: GET
               response: http
       tvm-aws-s3:

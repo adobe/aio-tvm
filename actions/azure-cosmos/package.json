@@ -1,0 +1,12 @@
+{
+  "name": "azure-cosmos",
+  "main": "index.js",
+  "dependencies": {
+    "@azure/cosmos": "^3.1.1",
+    "@hapi/joi": "^15.1.0",
+    "tvm-utils": "file:./.lib/tvm-utils/"
+  },
+  "scripts": {
+    "preinstall": "node ../../scripts/action.install.prehook.js"
+  }
+}
