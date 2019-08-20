@@ -110,7 +110,7 @@ async function main (params) {
     return {
       body: {
         expiration: expiryTime.toISOString(),
-        clientArgs: { resourceTokens, endpoint },
+        cosmosClientArgs: { resourceTokens, endpoint },
         databaseId: params.azureCosmosDatabaseName,
         containerId: containerId
       }
