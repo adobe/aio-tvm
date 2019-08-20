@@ -8,9 +8,9 @@ to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and ar
 
 ## Use
 
-- [JavaScript](https://github.com/adobe/adobeio-cna-tvm-client)
+- [JavaScript NPM: @adobe/adobeio-cna-tvm-client](https://github.com/adobe/adobeio-cna-tvm-client#use)
 
-- CURL
+- cURL
 
 ```bash
 curl -H "Authorization: ${AUTH}" "https://adobe.adobeioruntime.net/apis/tvm/azure/blob/${NAMESPACE}"
