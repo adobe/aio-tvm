@@ -80,39 +80,43 @@ async function main (params) {
     const endpoint = `https://${params.azureCosmosAccount}.documents.azure.com`
     const client = new cosmos.CosmosClient({ endpoint, key: params.azureCosmosMasterKey })
     const { database } = await client.databases.createIfNotExists({ id: params.azureCosmosDatabaseName })
-
-    const containerId = 'container-' + hexName
-    const { container } = await database.containers.createIfNotExists({ id: containerId })
+    await client
+    const containerId = 'container-' + params.azureCosmosDatabaseName
+    const { container } = await database.containers.createIfNotExists({ id: containerId, partitionKey: { paths: [ '/partitionKey' ] } })
 
     // manual create if not exists
-    let user, token
+    let user
     const userId = 'user-' + hexName
     try {
       user = (await database.user(userId).read()).user
+      await user.delete()
+      user = (await database.users.create({ id: userId })).user
     } catch (e) {
       if (e.code !== 404) throw e
       user = (await database.users.create({ id: userId })).user
     }
     const permissionId = 'permission-' + hexName
     try {
-      token = (await user.permission(permissionId).read()).resource._token
+      // delete to refresh permission
+      await user.permission(permissionId).delete()
     } catch (e) {
       if (e.code !== 404) throw e
-      token = (await user.permissions.create({ id: 'permission-' + hexName, permissionMode: cosmos.PermissionMode.All, resource: container.url }, { resourceTokenExpirySeconds: params.expiryDuration })).resource._token
     }
+    const resourceToken = (await user.permissions.create({ id: 'permission-' + hexName, permissionMode: cosmos.PermissionMode.All, resource: container.url, resourcePartitionKey: [hexName] }, { resourceTokenExpirySeconds: params.expiryDuration })).resource._token
     const expiryTime = new Date()
     expiryTime.setSeconds(expiryTime.getSeconds() + params.expiryDuration)
-    const resourceTokens = { [container.url]: token }
 
     console.log(`Azure Cosmos resource token generated`)
     console.log(`End of request`)
 
     return {
       body: {
+        resourceToken,
+        endpoint,
         expiration: expiryTime.toISOString(),
-        cosmosClientArgs: { resourceTokens, endpoint },
         databaseId: params.azureCosmosDatabaseName,
-        containerId: containerId
+        containerId,
+        partitionKey: hexName
       }
     }
   } catch (e) {
