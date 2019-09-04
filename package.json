@@ -1,28 +1,29 @@
 {
-  "name": "cna-tvm",
-  "version": "0.1.0",
+  "name": "adobeio-cna-token-vending-machine",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
+  "author": "Adobe Inc.",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "repository": "adobe/adobeio-cna-token-vending-machine",
   "devDependencies": {
-    "babel-eslint": "^10.0.1",
+    "babel-eslint": "^10.0.2",
     "dotenv": "^7.0.0",
-    "eslint": "^5.14.1",
+    "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "js-yaml": "^3.12.2",
+    "fs-extra": "^8.1.0",
     "mocha": "^6.0.2",
-    "nyc": "^13.3.0",
-    "sinon": "^7.3.1",
-    "standard": "^12.0.1"
+    "nyc": "^14.1.1",
+    "sinon": "^7.3.1"
   },
   "scripts": {
-    "install-deps": "node scripts/install.zip.actions.dep.js",
-    "deploy": "npm run install-deps && node scripts/deploy.js",
-    "undeploy": "node scripts/undeploy.js",
-    "clean": "rm -rf coverage .nyc_output package-lock.json && find . -name 'node_modules' -exec rm -rf '{}' +",
     "lint": "eslint './actions/**/*.js' './scripts/**/*.js'",
     "beautify": "npm run lint -- --fix",
     "test": "mocha",

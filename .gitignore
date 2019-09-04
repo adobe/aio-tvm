@@ -2,3 +2,10 @@ node_modules
 wskdeploy
 .env*
 .nyc_output
+package-lock.json
+.wskdebug.props.tmp
+.openwhisk-standalone.logs
+.manifest-dist.yml
+openwhisk-standalone.jar
+dist/
+.lib
