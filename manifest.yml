@@ -35,7 +35,8 @@ packages:
         inputs:
           azureCosmosMasterKey: $AZURE_COSMOS_MASTER_KEY
           azureCosmosAccount: $AZURE_COSMOS_ACCOUNT
-          azureCosmosDatabaseName: $AZURE_COSMOS_DATABASE_NAME
+          azureCosmosDatabaseId: $AZURE_COSMOS_DATABASE_ID
+          azureCosmosContainerId: $AZURE_COSMOS_CONTAINER_ID
           expiryDuration: $EXPIRATION_DURATION
           owApihost: $AIO_RUNTIME_APIHOST
           whitelist: $WHITELIST

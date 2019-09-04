@@ -46,7 +46,12 @@ async function main (params) {
   }
   try {
     // 0. validate params
-    const resParams = utils.validateParams(params, { azureCosmosAccount: joi.string().required(), azureCosmosMasterKey: joi.string().required(), azureCosmosDatabaseName: joi.string().required() })
+    const resParams = utils.validateParams(params, {
+      azureCosmosAccount: joi.string().required(),
+      azureCosmosMasterKey: joi.string().required(),
+      azureCosmosDatabaseId: joi.string().required(),
+      azureCosmosContainerId: joi.string().required()
+    })
     if (resParams.error) {
       console.warn(`Bad request: ${resParams.error.message}`)
       return errorResponse(`${resParams.error.message}`, 400)
@@ -77,12 +82,13 @@ async function main (params) {
     // 3. Build azure signed url
     // make container name work with azure restricted char set by making it hex
     const hexName = Buffer.from(params.owNamespace, 'utf8').toString('hex')
+    // partitionKey limited to 100 bytes in cosmos
+    if (hexName.length > 99) { return errorResponse('namespace has too many characters', 413) }
     const endpoint = `https://${params.azureCosmosAccount}.documents.azure.com`
     const client = new cosmos.CosmosClient({ endpoint, key: params.azureCosmosMasterKey })
-    const { database } = await client.databases.createIfNotExists({ id: params.azureCosmosDatabaseName })
-    await client
-    const containerId = 'container-' + params.azureCosmosDatabaseName
-    const { container } = await database.containers.createIfNotExists({ id: containerId, partitionKey: { paths: [ '/partitionKey' ] } })
+    // db and container must already exist
+    const database = await client.database(params.azureCosmosDatabaseId)
+    const container = database.container(params.azureCosmosContainerId)
 
     // manual create if not exists
     let user
@@ -102,7 +108,7 @@ async function main (params) {
     } catch (e) {
       if (e.code !== 404) throw e
     }
-    const resourceToken = (await user.permissions.create({ id: 'permission-' + hexName, permissionMode: cosmos.PermissionMode.All, resource: container.url, resourcePartitionKey: [hexName] }, { resourceTokenExpirySeconds: params.expiryDuration })).resource._token
+    const resourceToken = (await user.permissions.create({ id: permissionId, permissionMode: cosmos.PermissionMode.All, resource: container.url, resourcePartitionKey: [hexName] }, { resourceTokenExpirySeconds: params.expiryDuration })).resource._token
     const expiryTime = new Date()
     expiryTime.setSeconds(expiryTime.getSeconds() + params.expiryDuration)
 
@@ -114,8 +120,8 @@ async function main (params) {
         resourceToken,
         endpoint,
         expiration: expiryTime.toISOString(),
-        databaseId: params.azureCosmosDatabaseName,
-        containerId,
+        databaseId: params.azureCosmosDatabaseId,
+        containerId: params.azureCosmosContainerId,
         partitionKey: hexName
       }
     }

@@ -77,7 +77,8 @@ This might be useful for you if:
 
   AZURE_COSMOS_ACCOUNT=<cosmosdb account name>
   AZURE_COSMOS_MASTER_KEY=<cosmosdb master key>
-  AZURE_COSMOS_DATABASE_NAME=<cosmosdb database name>
+  AZURE_COSMOS_DATABASE_ID=<cosmosdb database name>
+  AZURE_COSMOS_CONTAINER_ID=<cosmosdb database name>
   ```
 
 - Use the `WHITELIST` variable to control which namespace can access the TVM and
@@ -85,11 +86,24 @@ This might be useful for you if:
   - **[ ⚠️ NOT RECOMMENDED ⚠️]** Use `WHITELIST=*` to allow access to
     **every** OpenWhisk namespace in the same domain.
 
-### Configure account credentials for Azure Blob
+### Setup Azure Blob
 
-- **TODO: doc**
+- Create a storage account
+- Retrieve the access key
+- Fill `AZURE_STORAGE_*` variables in `.env`
 
-### Configure account credentials for AWS S3
+### Setup Azure CosmosDB
+
+- Create a cosmos account
+- Click on `+ Add Container`:
+  - specify a database name
+  - specify a container name
+  - specify a partitionKey: call it **`/partitionKey`** => the name is important
+  - create the container
+- Configure the newly created container to have **ttl** set to **on**
+- Retrieve the account master key and set `AZURE_COSMOS_MASTER_KEY`
+
+### Setup AWS S3
 
 - Create a Bucket in S3 for your app
 - Create an IAM user with the following IAM policy in AWS (replace `MY_BUCKET` with

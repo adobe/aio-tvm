@@ -2,7 +2,7 @@
   "name": "azure-cosmos",
   "main": "index.js",
   "dependencies": {
-    "@azure/cosmos": "^3.1.1",
+    "@azure/cosmos": "^3.2.0",
     "@hapi/joi": "^15.1.0",
     "tvm-utils": "file:./.lib/tvm-utils/"
   },
