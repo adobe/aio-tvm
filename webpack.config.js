@@ -26,6 +26,9 @@ module.exports = Object.keys(actions).map(a => {
     resolve: {
       extensions: ['.js'],
       mainFields: ['main']
+    },
+    stats: {
+      warningsFilter: "Module not found: Error: Can't resolve 'encoding'"
     }
   }
 })
