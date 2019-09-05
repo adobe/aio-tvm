@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 /* eslint-env mocha */
-
+test('assert true', () => expect(true).toEqual(true))
 // const assert = require('assert')
 // const sinon = require('sinon')
 
