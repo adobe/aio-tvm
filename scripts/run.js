@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
+/* eslint-disable jsdoc/require-jsdoc */
 const path = require('path')
 const fs = require('fs')
 const yaml = require('js-yaml')
@@ -51,6 +51,9 @@ async function run (args) {
 
   const actionName = args[0]
 
+  // user can specify path to action
+  const specifiedPath = args[1] && args[1].indexOf('=') < 0 && args[1]
+
   const action = yaml.safeLoad(fs.readFileSync('manifest.yml', 'utf8')).packages['__CNA_PACKAGE__'].actions[actionName]
   if (!action) throw new Error(`Action ${actionName} does not exist`)
 
@@ -69,8 +72,9 @@ async function run (args) {
     return `${k}=${value}`
   }))
 
-  // convert to action path
-  args[0] = action.function
+  // prepare args for _runRaw
+  if (specifiedPath) args = args.slice(1)
+  else args[0] = action.function
 
   return _runRaw(args)
 }
