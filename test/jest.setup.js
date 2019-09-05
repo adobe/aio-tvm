@@ -15,3 +15,7 @@ governing permissions and limitations under the License.
 process.on('unhandledRejection', error => {
   throw error
 })
+
+console.error = jest.fn()
+console.warn = jest.fn()
+console.log = jest.fn()

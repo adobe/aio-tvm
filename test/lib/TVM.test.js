@@ -33,9 +33,6 @@ describe('processRequest (abstract)', () => {
       list: owNsListMock
     }
   })
-  console.error = jest.fn()
-  console.warn = jest.fn()
-  console.log = jest.fn()
   beforeEach(() => {
     tvm = new TVM()
     console.log.mockReset()
@@ -44,6 +41,12 @@ describe('processRequest (abstract)', () => {
     owNsListMock.mockReset()
     owNsListMock.mockResolvedValue([fakeParams.owNamespace])
   })
+
+  const expectUnauthorized = (response, message) => {
+    expect(response.statusCode).toEqual(403)
+    expect(response.body.error).toEqual(expect.stringContaining('unauthorized'))
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining(message))
+  }
 
   test('without implementation', async () => {
     const response = await tvm.processRequest(fakeParams)
@@ -87,12 +90,74 @@ describe('processRequest (abstract)', () => {
 
       test('when expirationDuration is missing', async () => testParam('expirationDuration', undefined))
       test('when expirationDuration is not parseInt string', async () => testParam('expirationDuration', 'hello'))
-      test('when whitelist is missing', async () => testParam('whitelist', undefined)) // TODO more checks on whitelist format
+      test('when whitelist is missing', async () => testParam('whitelist', undefined))
+      test('when whitelist is empty', async () => testParam('whitelist', ''))
       test('when owApihost is missing', async () => testParam('owApihost', undefined))
       test('when owApihost is not a valid uri', async () => testParam('owApihost', 'hello'))
       test('when owNamespace is missing', async () => testParam('owNamespace', undefined))
+      test('when owNamespace is empty', async () => testParam('owNamespace', ''))
 
       test('when authorization header is missing', async () => testParam('__ow_headers.authorization', undefined, 401))
+      test('when authorization header is empty', async () => testParam('__ow_headers.authorization', '', 401))
+    })
+
+    describe('openwhisk namespace/auth validation', () => {
+      test('when openwhisk.namespaces.list throws an error', async () => {
+        const errorMsg = 'abfjdsjfhbv'
+        owNsListMock.mockRejectedValue(new Error(errorMsg))
+        const response = await tvm.processRequest(fakeParams)
+        expectUnauthorized(response, errorMsg)
+      })
+      test('when openwhisk.namespaces.list returns with an empty list', async () => {
+        owNsListMock.mockResolvedValue([])
+        const response = await tvm.processRequest(fakeParams)
+        expectUnauthorized(response, '[]')
+      })
+      test('when openwhisk.namespaces.list returns with a list not containing the namespace', async () => {
+        owNsListMock.mockResolvedValue(['notinthelist'])
+        const response = await tvm.processRequest(fakeParams)
+        expectUnauthorized(response, '[notinthelist]')
+      })
+      test('when openwhisk.namespaces.list returns with a list containing only the namespace (authorized)', async () => {
+        owNsListMock.mockResolvedValue([fakeParams.owNamespace])
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+      })
+      test('when openwhisk.namespaces.list returns with a list containing the namespace and others (authorized)', async () => {
+        owNsListMock.mockResolvedValue([fakeParams.owNamespace, 'otherNS', 'otherNS2'])
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+      })
+    })
+
+    describe('namespace whitelist validation', () => {
+      const testWhitelist = async (whitelist, expectedAuthorized) => {
+        const testParams = { ...fakeParams }
+        testParams.whitelist = whitelist
+        const response = await tvm.processRequest(testParams)
+        if (expectedAuthorized) return expect(response.statusCode).toEqual(200)
+        return expectUnauthorized(response, 'not whitelisted')
+      }
+
+      test('when whitelist contains only another namespace', async () => testWhitelist('anotherNS', false))
+      test('when whitelist contains a list of different namespaces', async () => testWhitelist(',anotherNS, anotherNS2,anotherNS3 ,anotherNS4 ,', false))
+      test('when whitelist contains a namespace which shares the same prefix', async () => testWhitelist(`${fakeParams.owNamespace}-`, false))
+      test('when whitelist contains a namespace which shares the same suffix', async () => testWhitelist(`-${fakeParams.owNamespace}`, false))
+      test('when whitelist contains a namespace which shares the same prefix and escape chars', async () => testWhitelist(`\\-${fakeParams.owNamespace}`, false))
+      test('when whitelist contains a namespace which shares the same suffix and escape chars', async () => testWhitelist(`${fakeParams.owNamespace}\\-`, false))
+      test('when whitelist contains a list of different namespaces with symbols (including stars!) and same suffix/prefix', async () => testWhitelist(`*,${fakeParams.owNamespace}*(#@),*,****()!_+$#|{">}, ${fakeParams.owNamespace}|, $${fakeParams.owNamespace}\\-`, false))
+
+      test('when whitelist is equal to a star', async () => testWhitelist(`*`, true))
+      test('when whitelist contains the input namespace(allowed)', async () => testWhitelist(`${fakeParams.owNamespace}`, true))
+      test('when whitelist contains the input namespace in a list of namespaces with symbols (allowed)', async () => testWhitelist(`,${fakeParams.owNamespace},*(#@), ()!_+$#|{">}, anotherNS2|, \\dsafksad`, true))
+    })
+
+    describe('response format', () => {
+      test('when there is no error, body equals generated credentials', async () => {
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+        expect(response.body).toEqual(mockResponse)
+      })
     })
   })
 })
