@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 /* eslint-disable jsdoc/require-jsdoc */
-
 process.on('unhandledRejection', error => {
   throw error
 })
@@ -19,3 +18,62 @@ process.on('unhandledRejection', error => {
 console.error = jest.fn()
 console.warn = jest.fn()
 console.log = jest.fn()
+
+global.owNsListMock = jest.fn()
+global.baseNoErrorParams = {
+  expirationDuration: '1500',
+  whitelist: '*',
+  owApihost: 'https://www.fake.com',
+  owNamespace: 'fakeNS',
+  __ow_headers: { authorization: 'fakeAuth' }
+}
+
+const openwhisk = require('openwhisk')
+jest.mock('openwhisk')
+
+openwhisk.mockReturnValue({
+  namespaces: {
+    list: global.owNsListMock
+  }
+})
+
+/* helper for param validation */
+global.testParam = async (tvm, fakeParams, key, value, status) => {
+  const testParams = JSON.parse(JSON.stringify(fakeParams))
+
+  const keys = key.split('.')
+  const lastKey = keys.pop()
+  const traverse = keys.reduce((prev, curr) => prev[curr], testParams)
+
+  if (value === undefined) delete traverse[lastKey]
+  else traverse[lastKey] = value
+  const response = await tvm.processRequest(testParams)
+
+  if (status !== 200) {
+    expect(response.body.error).toBeDefined()
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining(lastKey))
+  }
+  expect(response.statusCode).toEqual(status || 400)
+}
+
+beforeEach(() => {
+  console.log.mockReset()
+  console.warn.mockReset()
+  console.error.mockReset()
+  global.owNsListMock.mockReset()
+
+  // default: valid OW namespace
+  global.owNsListMock.mockResolvedValue([ global.baseNoErrorParams.owNamespace ])
+})
+
+global.expectUnauthorized = (response, log) => {
+  expect(response.statusCode).toEqual(403)
+  expect(response.body.error).toEqual(expect.stringContaining('unauthorized'))
+  expect(console.warn).toHaveBeenCalledWith(expect.stringContaining(log))
+}
+
+global.expectServerError = (response, log) => {
+  expect(response.statusCode).toEqual(500)
+  expect(response.body.error).toEqual(expect.stringContaining('server error'))
+  expect(console.error).toHaveBeenCalledWith(expect.stringContaining(log))
+}
