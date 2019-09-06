@@ -32,7 +32,10 @@ cosmos.CosmosClient.mockImplementation(() => Object({
 
 // date mock
 const fakeDate = '1970-01-01T00:00:00.000Z'
-global.Date = function () { return { toISOString: () => fakeDate, setSeconds: jest.fn(), getSeconds: () => 15 } }
+const fakeCurrSeconds = 1234567890
+global.Date.prototype.getSeconds = () => fakeCurrSeconds
+global.Date.prototype.setSeconds = jest.fn()
+global.Date.prototype.toISOString = () => fakeDate
 
 // fake generated resource token
 const fakeToken = 'fakeToken'
@@ -61,8 +64,9 @@ describe('processRequest (Azure Cosmos)', () => {
   })
 
   describe('param validation', () => {
-    test('when namespace is bigger than 49 chars', async () => global.testParam(tvm, fakeParams, 'owNamespace', 'a'.repeat(50)))
-    test('when namespace is smaller than 3 chars', async () => global.testParam(tvm, fakeParams, 'owNamespace', 'aa'))
+    test('when owNamespace is bigger than 49 chars', async () => global.testParam(tvm, fakeParams, 'owNamespace', 'a'.repeat(50)))
+    test('when owNamespace is smaller than 3 chars', async () => global.testParam(tvm, fakeParams, 'owNamespace', 'aa'))
+    test('when owNamespace is missing', async () => global.testParam(tvm, fakeParams, 'owNamespace', undefined))
     test('when azureCosmosAccount is missing', async () => global.testParam(tvm, fakeParams, 'azureCosmosAccount', undefined))
     test('when azureCosmosMasterKey is missing', async () => global.testParam(tvm, fakeParams, 'azureCosmosMasterKey', undefined))
     test('when azureCosmosDatabaseId is missing', async () => global.testParam(tvm, fakeParams, 'azureCosmosDatabaseId', undefined))
@@ -76,6 +80,7 @@ describe('processRequest (Azure Cosmos)', () => {
       // todo remove duplicated implementation of partitionKey name creation
       const partitionKey = Buffer.from(fakeParams.owNamespace, 'utf8').toString('hex')
 
+      // check response
       expect(response.statusCode).toEqual(200)
       expect(response.body).toEqual({
         databaseId: fakeParams.azureCosmosDatabaseId,
@@ -85,6 +90,10 @@ describe('processRequest (Azure Cosmos)', () => {
         resourceToken: fakeToken,
         endpoint: `https://${fakeParams.azureCosmosAccount}.documents.azure.com`
       })
+
+      // make sure we compute expiration correctly
+      expect(global.Date.prototype.setSeconds).toHaveBeenCalledWith(fakeCurrSeconds + fakeParams.expirationDuration)
+
       // make sure permission is refreshed
       expect(cosmosMocks.permissionDelete).toHaveBeenCalledTimes(1)
       // here we are really looking into implementation details instead of just testing the interface,
