@@ -57,6 +57,8 @@ global.testParam = async (tvm, fakeParams, key, value, status) => {
 }
 
 beforeEach(() => {
+  expect.hasAssertions()
+
   console.log.mockReset()
   console.warn.mockReset()
   console.error.mockReset()
