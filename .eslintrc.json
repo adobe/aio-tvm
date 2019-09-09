@@ -1,4 +1,7 @@
 {
-  "parser": "babel-eslint",
-  "extends": ["standard"]
+  "globals": {
+    "NodeJS": true
+  },
+  "plugins": ["jest"],
+  "extends": ["standard", "plugin:jsdoc/recommended", "plugin:jest/recommended"]
 }

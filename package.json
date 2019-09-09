@@ -1,8 +1,7 @@
 {
   "name": "adobeio-cna-token-vending-machine",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
-  "main": "index.js",
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
   "engines": {
@@ -10,23 +9,38 @@
   },
   "repository": "adobe/adobeio-cna-token-vending-machine",
   "devDependencies": {
+    "@adobe/io-cna-scripts": "^0.1.0",
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@babel/runtime": "^7.5.5",
+    "@types/hapi__joi": "^15.0.4",
+    "@types/jest": "^24.0.18",
     "babel-eslint": "^10.0.2",
     "dotenv": "^7.0.0",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jest": "^22.16.0",
+    "eslint-plugin-jsdoc": "^15.9.1",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "fs-extra": "^8.1.0",
-    "mocha": "^6.0.2",
-    "nyc": "^14.1.1",
-    "sinon": "^7.3.1"
+    "jest": "^24.9.0",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7"
   },
   "scripts": {
-    "lint": "eslint './actions/**/*.js' './scripts/**/*.js'",
+    "lint": "eslint './actions/**/*.js' './lib/**/*.js' './scripts/**/*.js'",
     "beautify": "npm run lint -- --fix",
-    "test": "mocha",
-    "coverage": "nyc --reporter=html --reporter=text mocha"
+    "deploy": "webpack && cna-scripts deploy.actions",
+    "undeploy": "cna-scripts undeploy.actions",
+    "test": "jest -c ./jest.config.js && npm run lint"
+  },
+  "dependencies": {
+    "@azure/cosmos": "^3.2.0",
+    "@azure/storage-blob": "^10.4.1",
+    "@hapi/joi": "^15.1.1",
+    "aws-sdk": "^2.522.0",
+    "openwhisk": "^3.20.0"
   }
 }

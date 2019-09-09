@@ -10,8 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-// TO BE RUN FROM ACTION FOLDER
-const fs = require('fs-extra')
+const awsS3Action = require('../../actions/aws-s3')
 
-fs.removeSync('.lib/')
-fs.copySync('../../lib', '.lib')
+const { AwsS3TVM } = require('../../lib/impl/AwsS3TVM')
+jest.mock('../../lib/impl/AwsS3TVM')
+
+beforeEach(() => {
+  AwsS3TVM.prototype.processRequest.mockReset()
+})
+test('aws-s3 action has a main function and calls AwsS3TVM.processRequest', async () => {
+  const fakeParams = { a: { nested: 'param' }, another: 'param' }
+  await awsS3Action.main(fakeParams)
+  expect(AwsS3TVM.prototype.processRequest).toHaveBeenCalledWith(fakeParams)
+})
