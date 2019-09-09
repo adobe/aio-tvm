@@ -9,16 +9,16 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+const azureBlobAction = require('../../actions/azure-blob')
 
 const { AzureBlobTVM } = require('../../lib/impl/AzureBlobTVM')
-const azureBlobTVM = new AzureBlobTVM()
+jest.mock('../../lib/impl/AzureBlobTVM')
 
-/**
- * @param {object} params the input params
- * @returns {Promise<object>} tvm response
- */
-async function main (params) {
-  return azureBlobTVM.processRequest(params)
-}
-
-exports.main = main
+beforeEach(() => {
+  AzureBlobTVM.prototype.processRequest.mockReset()
+})
+test('azure-blob action has a main function and calls AzureBlobTVM.processRequest', async () => {
+  const fakeParams = { a: { nested: 'param' }, another: 'param' }
+  await azureBlobAction.main(fakeParams)
+  expect(AzureBlobTVM.prototype.processRequest).toHaveBeenCalledWith(fakeParams)
+})

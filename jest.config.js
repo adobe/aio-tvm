@@ -10,15 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { AzureBlobTVM } = require('../../lib/impl/AzureBlobTVM')
-const azureBlobTVM = new AzureBlobTVM()
-
-/**
- * @param {object} params the input params
- * @returns {Promise<object>} tvm response
- */
-async function main (params) {
-  return azureBlobTVM.processRequest(params)
+module.exports = {
+  testEnvironment: 'node',
+  verbose: true,
+  setupFilesAfterEnv: ['./test/jest.setup.js'],
+  collectCoverage: true,
+  collectCoverageFrom: [
+    'lib/**/*.js',
+    'actions/**/*.js'
+  ]
 }
-
-exports.main = main

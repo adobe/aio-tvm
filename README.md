@@ -46,13 +46,6 @@ This might be useful for you if:
 
 ### Setup
 
-- install the `aio` CLI and `aio cna` plugin
-
-  ```bash
-  npm install -g @adobe/aio-cli
-  aio plugins install @adobe/aio-cli-plugin-cna
-  ```
-
 - `npm install`
 
 ### Deployment Config
@@ -141,11 +134,11 @@ This might be useful for you if:
 
 ### Deploy the TVM endpoints
 
-- `aio cna deploy -av` will deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`
+- `npm run deploy` will deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`
 
 ### Undeploy
 
-- `aio cna undeploy -av`
+- `npm run undeploy`
 
 ## Contributing
 

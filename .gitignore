@@ -9,3 +9,5 @@ package-lock.json
 openwhisk-standalone.jar
 dist/
 .lib
+playground/
+coverage/
