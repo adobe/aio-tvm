@@ -106,6 +106,10 @@ function errorResponse (err, status) {
  * {params: Bucket} }
  */
 async function main (params) {
+  params.owAuth = params.__ow_headers && params.__ow_headers.authorization
+  if (!(params.owAuth)) {
+    return errorResponse('unauthorized request', 401)
+  }
   try {
     // 0. validate params
     const resParams = utils.validateParams(params, { s3Bucket: joi.string().required(), awsAccessKeyId: joi.string().required(), awsSecretAccessKey: joi.string().required() })
