@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.com/adobe/adobeio-cna-token-vending-machine.svg?branch=master)](https://travis-ci.com/adobe/adobeio-cna-token-vending-machine)
+[![Build Status](https://travis-ci.com/adobe/aio-tvm.svg?branch=master)](https://travis-ci.com/adobe/aio-tvm)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-# Adobe I/O CNA Token Vending Machine (TVM)
+# Adobe I/O Token Vending Machine (TVM)
 
 This is an implementation of a TVM delivering **temporary and restricted tokens** to access various cloud services. Users authenticate
 to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and are only authorized to access their own resources.
