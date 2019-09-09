@@ -43,21 +43,6 @@ packages:
         annotations:
           # this is important security wise
           final: true
-      azure-cosmos:
-        function: actions/azure-cosmos
-        web: yes
-        runtime: 'nodejs:10'
-        inputs:
-          azureCosmosMasterKey: $AZURE_COSMOS_MASTER_KEY
-          azureCosmosAccount: $AZURE_COSMOS_ACCOUNT
-          azureCosmosDatabaseId: $AZURE_COSMOS_DATABASE_ID
-          azureCosmosContainerId: $AZURE_COSMOS_CONTAINER_ID
-          expiryDuration: $EXPIRATION_DURATION
-          owApihost: $AIO_RUNTIME_APIHOST
-          whitelist: $WHITELIST
-        annotations:
-          # this is important security wise
-          final: true
     apis:
       tvm-azure-blob:
         tvm:
