@@ -1,13 +1,13 @@
 {
-  "name": "adobeio-cna-token-vending-machine",
-  "version": "0.3.0",
-  "description": "",
+  "name": "aio-tvm",
+  "version": "0.4.0",
+  "description": "The Adobe I/O token vending machine for used to integrate external cloud services with Adobe I/O Runtime",
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=10.0.0"
   },
-  "repository": "adobe/adobeio-cna-token-vending-machine",
+  "repository": "adobe/aio-tvm",
   "devDependencies": {
     "@adobe/io-cna-scripts": "^0.1.0",
     "@babel/plugin-transform-runtime": "^7.5.5",
