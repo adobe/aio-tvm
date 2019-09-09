@@ -38,7 +38,7 @@ async function _runRaw (args) {
   // todo proper stdout redirection
   const stdout = console.log
   console.log = console.error
-  const res = JSON.stringify(await actionMain(params))
+  const res = JSON.stringify(await actionMain(params), null, 2)
 
   // output on stdout
   console.log = stdout

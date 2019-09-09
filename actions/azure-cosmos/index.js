@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 const utils = require('tvm-utils')
 const joi = require('@hapi/joi')
-const azure = require('@azure/storage-blob')
+const cosmos = require('@azure/cosmos')
 
 /**
  * @param  {string} err - error message
@@ -23,21 +23,6 @@ function errorResponse (err, status) {
   return {
     body: { error: err },
     statusCode: status
-  }
-}
-/**
- * creates a container if not exists
- *
- * @param {azure.ContainerURL} containerURL azure ContainerUrl
- * @param {azure.Aborter} aborter azure Aborter
- * @param {object} [options] azure container creation options
- */
-async function createContainerIfNotExists (containerURL, aborter, options) {
-  try {
-    await containerURL.create(aborter, options)
-  } catch (e) {
-    console.log(e)
-    if (e.body === undefined || (e.body.Code !== 'ContainerAlreadyExists' && e.body.code !== 'ContainerAlreadyExists')) throw e
   }
 }
 
@@ -61,7 +46,12 @@ async function main (params) {
   }
   try {
     // 0. validate params
-    const resParams = utils.validateParams(params, { azureStorageAccount: joi.string().required(), azureStorageAccessKey: joi.string().required() })
+    const resParams = utils.validateParams(params, {
+      azureCosmosAccount: joi.string().required(),
+      azureCosmosMasterKey: joi.string().required(),
+      azureCosmosDatabaseId: joi.string().required(),
+      azureCosmosContainerId: joi.string().required()
+    })
     if (resParams.error) {
       console.warn(`Bad request: ${resParams.error.message}`)
       return errorResponse(`${resParams.error.message}`, 400)
@@ -90,48 +80,49 @@ async function main (params) {
     console.log('Request is authorized')
 
     // 3. Build azure signed url
-    const accountURL = `https://${params.azureStorageAccount}.blob.core.windows.net`
-    const sharedKeyCredential = new azure.SharedKeyCredential(params.azureStorageAccount, params.azureStorageAccessKey)
-
     // make container name work with azure restricted char set by making it hex
-    const containerName = Buffer.from(params.owNamespace, 'utf8').toString('hex')
-    const privateContainerName = containerName
-    const publicContainerName = containerName + '-public'
+    const hexName = Buffer.from(params.owNamespace, 'utf8').toString('hex')
+    // partitionKey limited to 100 bytes in cosmos
+    if (hexName.length > 99) { return errorResponse('namespace has too many characters', 413) }
+    const endpoint = `https://${params.azureCosmosAccount}.documents.azure.com`
+    const client = new cosmos.CosmosClient({ endpoint, key: params.azureCosmosMasterKey })
+    // db and container must already exist
+    const database = await client.database(params.azureCosmosDatabaseId)
+    const container = database.container(params.azureCosmosContainerId)
 
-    // create containers - we need to do it here as the sas creds do not allow it
-    const pipeline = azure.StorageURL.newPipeline(sharedKeyCredential)
-    const serviceURL = new azure.ServiceURL(accountURL, pipeline)
+    // manual create if not exists
+    let user
+    const userId = 'user-' + hexName
     try {
-      await createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, publicContainerName), azure.Aborter.none, { access: 'blob', metadata: { namespace: params.owNamespace } })
-      await createContainerIfNotExists(azure.ContainerURL.fromServiceURL(serviceURL, privateContainerName), azure.Aborter.none, { metadata: { namespace: params.owNamespace } })
-      console.log(`Created private and public container: ${privateContainerName}, ${publicContainerName}`)
+      user = (await database.user(userId).read()).user
+      await user.delete()
+      user = (await database.users.create({ id: userId })).user
     } catch (e) {
-      if (e.body.Code !== 'ContainerAlreadyExists' && e.body.code !== 'ContainerAlreadyExists') throw e
-      console.log(`Did not created containers: ${privateContainerName}, ${publicContainerName} already exist`)
+      if (e.code !== 404) throw e
+      user = (await database.users.create({ id: userId })).user
     }
-
-    // generate SAS token
+    const permissionId = 'permission-' + hexName
+    try {
+      // delete to refresh permission
+      await user.permission(permissionId).delete()
+    } catch (e) {
+      if (e.code !== 404) throw e
+    }
+    const resourceToken = (await user.permissions.create({ id: permissionId, permissionMode: cosmos.PermissionMode.All, resource: container.url, resourcePartitionKey: [hexName] }, { resourceTokenExpirySeconds: params.expiryDuration })).resource._token
     const expiryTime = new Date()
     expiryTime.setSeconds(expiryTime.getSeconds() + params.expiryDuration)
 
-    const permissions = new azure.ContainerSASPermissions()
-    permissions.add = permissions.read = permissions.create = permissions.delete = permissions.write = permissions.list = true
-    const commonSasParams = {
-      permissions: permissions.toString(),
-      expiryTime: expiryTime
-    }
-
-    const sasQueryParamsPrivate = azure.generateBlobSASQueryParameters({ ...commonSasParams, containerName: privateContainerName }, sharedKeyCredential)
-    const sasQueryParamsPublic = azure.generateBlobSASQueryParameters({ ...commonSasParams, containerName: publicContainerName }, sharedKeyCredential)
-
-    console.log(`Azure SAS generated`)
+    console.log(`Azure Cosmos resource token generated`)
     console.log(`End of request`)
 
     return {
       body: {
+        resourceToken,
+        endpoint,
         expiration: expiryTime.toISOString(),
-        sasURLPrivate: `${accountURL}/${privateContainerName}?${sasQueryParamsPrivate.toString()}`,
-        sasURLPublic: `${accountURL}/${publicContainerName}?${sasQueryParamsPublic.toString()}`
+        databaseId: params.azureCosmosDatabaseId,
+        containerId: params.azureCosmosContainerId,
+        partitionKey: hexName
       }
     }
   } catch (e) {
