@@ -1,0 +1,9 @@
+{
+  "name": "aws-cf",
+  "main": "index.js",
+  "dependencies": {
+    "@hapi/joi": "^15.1.0",
+    "aws-sdk": "^2.510.0",
+    "tvm-utils": "file:./.lib/tvm-utils/"
+  }
+}

@@ -15,6 +15,20 @@ packages:
         annotations:
           # this is important security wise
           final: true
+      aws-cf:
+        function: actions/aws-cf
+        web: yes
+        runtime: 'nodejs:10'
+        inputs:
+          awsSecretAccessKey: $AWS_SECRET_ACCESS_KEY
+          awsAccessKeyId: $AWS_ACCESS_KEY_ID
+          owApihost: $AIO_RUNTIME_APIHOST
+          whitelist: $WHITELIST
+          domain: $CNA_DOMAIN
+          originIdPrefix: $ORIGIN_ID_PREFIX
+        annotations:
+          # this is important security wise
+          final: true
       azure-blob:
         function: actions/azure-blob
         web: yes
