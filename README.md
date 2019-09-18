@@ -13,7 +13,7 @@ to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and ar
 - cURL
 
 ```bash
-curl -H "Authorization: ${AUTH}" "https://adobe.adobeioruntime.net/apis/tvm/azure/blob/${NAMESPACE}"
+curl -H "Authorization: ${AUTH}" "https://adobeio.adobeioruntime.net/apis/tvm/azure/blob/${NAMESPACE}"
 ```
 
 ## API
