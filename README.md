@@ -8,7 +8,7 @@ to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and ar
 
 ## Use
 
-- [JavaScript NPM Client: @adobe/aio-lib-tvm](https://github.com/adobe/aio-lib-tvm#use)
+- [JavaScript NPM Client: @adobe/aio-lib-core-tvm](https://github.com/adobe/aio-lib-core-tvm#use)
 
 - cURL
 
