@@ -11,14 +11,14 @@ governing permissions and limitations under the License.
 */
 const azureBlobAction = require('../../actions/azure-blob')
 
-const { AzureBlobTVM } = require('../../lib/impl/AzureBlobTVM')
-jest.mock('../../lib/impl/AzureBlobTVM')
+const { AzureBlobTvm } = require('../../lib/impl/AzureBlobTvm')
+jest.mock('../../lib/impl/AzureBlobTvm')
 
 beforeEach(() => {
-  AzureBlobTVM.prototype.processRequest.mockReset()
+  AzureBlobTvm.prototype.processRequest.mockReset()
 })
-test('azure-blob action has a main function and calls AzureBlobTVM.processRequest', async () => {
+test('azure-blob action has a main function and calls AzureBlobTvm.processRequest', async () => {
   const fakeParams = { a: { nested: 'param' }, another: 'param' }
   await azureBlobAction.main(fakeParams)
-  expect(AzureBlobTVM.prototype.processRequest).toHaveBeenCalledWith(fakeParams)
+  expect(AzureBlobTvm.prototype.processRequest).toHaveBeenCalledWith(fakeParams)
 })

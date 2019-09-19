@@ -11,14 +11,14 @@ governing permissions and limitations under the License.
 */
 const azureCosmosAction = require('../../actions/azure-cosmos')
 
-const { AzureCosmosTVM } = require('../../lib/impl/AzureCosmosTVM')
-jest.mock('../../lib/impl/AzureCosmosTVM')
+const { AzureCosmosTvm } = require('../../lib/impl/AzureCosmosTvm')
+jest.mock('../../lib/impl/AzureCosmosTvm')
 
 beforeEach(() => {
-  AzureCosmosTVM.prototype.processRequest.mockReset()
+  AzureCosmosTvm.prototype.processRequest.mockReset()
 })
-test('azure-cosmos action has a main function and calls AzureCosmosTVM.processRequest', async () => {
+test('azure-cosmos action has a main function and calls AzureCosmosTvm.processRequest', async () => {
   const fakeParams = { a: { nested: 'param' }, another: 'param' }
   await azureCosmosAction.main(fakeParams)
-  expect(AzureCosmosTVM.prototype.processRequest).toHaveBeenCalledWith(fakeParams)
+  expect(AzureCosmosTvm.prototype.processRequest).toHaveBeenCalledWith(fakeParams)
 })

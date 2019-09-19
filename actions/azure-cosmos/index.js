@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { AzureCosmosTVM } = require('../../lib/impl/AzureCosmosTVM')
-const azureCosmosTVM = new AzureCosmosTVM()
+const { AzureCosmosTvm } = require('../../lib/impl/AzureCosmosTvm')
+const azureCosmosTvm = new AzureCosmosTvm()
 
 /**
  * @param {object} params the input params
  * @returns {Promise<object>} tvm response
  */
 async function main (params) {
-  return azureCosmosTVM.processRequest(params)
+  return azureCosmosTvm.processRequest(params)
 }
 
 exports.main = main

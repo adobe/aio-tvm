@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { AzureCosmosTVM } = require('../../../lib/impl/AzureCosmosTVM')
+const { AzureCosmosTvm } = require('../../../lib/impl/AzureCosmosTvm')
 
 const cosmos = require('@azure/cosmos')
 jest.mock('@azure/cosmos')
@@ -61,11 +61,11 @@ fakeParams.azureCosmosContainerId = 'fakeContainerId'
 
 describe('processRequest (Azure Cosmos)', () => {
   // setup
-  /** @type {AzureCosmosTVM} */
+  /** @type {AzureCosmosTvm} */
   let tvm
   const fakeContainerUrl = 'https://fakecontainerURL.com'
   beforeEach(() => {
-    tvm = new AzureCosmosTVM()
+    tvm = new AzureCosmosTvm()
 
     Object.keys(cosmosMocks).forEach(k => cosmosMocks[k].mockReset())
     // defaults that work

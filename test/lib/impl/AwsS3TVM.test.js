@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { AwsS3TVM } = require('../../../lib/impl/AwsS3TVM')
+const { AwsS3Tvm } = require('../../../lib/impl/AwsS3Tvm')
 
 const aws = require('aws-sdk')
 jest.mock('aws-sdk')
@@ -30,7 +30,7 @@ fakeParams.awsSecretAccessKey = 'fakeSecretAccessKey'
 
 describe('processRequest (Azure Cosmos)', () => {
   // setup
-  /** @type {AwsS3TVM} */
+  /** @type {AwsS3Tvm} */
   let tvm
   const fakeCredentials = {
     AccessKeyId: 'fakeStsAccessKeyId',
@@ -39,7 +39,7 @@ describe('processRequest (Azure Cosmos)', () => {
     Expiration: 'fakeStsExpiration'
   }
   beforeEach(() => {
-    tvm = new AwsS3TVM()
+    tvm = new AwsS3Tvm()
     getFederationTokenPromiseMock.mockReset()
     getFederationTokenMock.mockClear() // clear not reset !
 
