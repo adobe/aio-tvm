@@ -10,15 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { AwsS3TVM } = require('../../lib/impl/AwsS3TVM')
-const awsS3TVM = new AwsS3TVM()
+const { AwsS3Tvm } = require('../../lib/impl/AwsS3Tvm')
+const awsS3Tvm = new AwsS3Tvm()
 
 /**
  * @param {object} params the input params
  * @returns {Promise<object>} tvm response
  */
 async function main (params) {
-  return awsS3TVM.processRequest(params)
+  return awsS3Tvm.processRequest(params)
 }
 
 exports.main = main

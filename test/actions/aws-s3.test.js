@@ -12,14 +12,14 @@ governing permissions and limitations under the License.
 
 const awsS3Action = require('../../actions/aws-s3')
 
-const { AwsS3TVM } = require('../../lib/impl/AwsS3TVM')
-jest.mock('../../lib/impl/AwsS3TVM')
+const { AwsS3Tvm } = require('../../lib/impl/AwsS3Tvm')
+jest.mock('../../lib/impl/AwsS3Tvm')
 
 beforeEach(() => {
-  AwsS3TVM.prototype.processRequest.mockReset()
+  AwsS3Tvm.prototype.processRequest.mockReset()
 })
-test('aws-s3 action has a main function and calls AwsS3TVM.processRequest', async () => {
+test('aws-s3 action has a main function and calls AwsS3Tvm.processRequest', async () => {
   const fakeParams = { a: { nested: 'param' }, another: 'param' }
   await awsS3Action.main(fakeParams)
-  expect(AwsS3TVM.prototype.processRequest).toHaveBeenCalledWith(fakeParams)
+  expect(AwsS3Tvm.prototype.processRequest).toHaveBeenCalledWith(fakeParams)
 })

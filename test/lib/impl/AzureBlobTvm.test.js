@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { AzureBlobTVM } = require('../../../lib/impl/AzureBlobTVM')
+const { AzureBlobTvm } = require('../../../lib/impl/AzureBlobTvm')
 
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')
@@ -49,11 +49,11 @@ fakeParams.azureStorageAccessKey = 'fakeKey'
 
 describe('processRequest (Azure Cosmos)', () => {
   // setup
-  /** @type {AzureBlobTVM} */
+  /** @type {AzureBlobTvm} */
   let tvm
   const fakeSas = 'fakeSas'
   beforeEach(() => {
-    tvm = new AzureBlobTVM()
+    tvm = new AzureBlobTvm()
     azureContainerCreateMock.mockReset()
     azure.generateBlobSASQueryParameters.mockReset()
 
