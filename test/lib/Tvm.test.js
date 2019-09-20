@@ -10,16 +10,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { TVM } = require('../../lib/TVM')
+const { Tvm } = require('../../lib/Tvm')
 
 const fakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
 
 describe('processRequest (abstract)', () => {
   // setup
-  /** @type {TVM} */
+  /** @type {Tvm} */
   let tvm
   beforeEach(() => {
-    tvm = new TVM()
+    tvm = new Tvm()
   })
 
   test('without implementation', async () => {
