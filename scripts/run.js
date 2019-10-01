@@ -54,7 +54,7 @@ async function run (args) {
   // user can specify path to action
   const specifiedPath = args[1] && args[1].indexOf('=') < 0 && args[1]
 
-  const action = yaml.safeLoad(fs.readFileSync('manifest.yml', 'utf8')).packages['__CNA_PACKAGE__'].actions[actionName]
+  const action = yaml.safeLoad(fs.readFileSync('manifest.yml', 'utf8')).packages.__CNA_PACKAGE__.actions[actionName]
   if (!action) throw new Error(`Action ${actionName} does not exist`)
 
   const defaultParams = { ...action.inputs }
