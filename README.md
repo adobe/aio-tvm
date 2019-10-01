@@ -15,22 +15,17 @@ to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and ar
 
 ```bash
 curl -H "Authorization: ${AUTH}" "https://adobeio.adobeioruntime.net/apis/tvm/azure/blob/${NAMESPACE}"
+curl -H "Authorization: ${AUTH}" "https://adobeio.adobeioruntime.net/apis/tvm/azure/cosmos/${NAMESPACE}"
+curl -H "Authorization: ${AUTH}" "https://adobeio.adobeioruntime.net/apis/tvm/aws/s3/${NAMESPACE}"
 ```
 
-## API
+## Explore
 
-- Endpoints:
-  - Get AWS S3 token: `https://adobeio.adobeioruntime.net/apis/tvm/aws/s3/${owNamespace}`
-  - Get Azure Blob token: `https://adobeio.adobeioruntime.net/apis/tvm/azure/blob/${owNamespace}`
-  - Get Azure Cosmos token: `https://adobeio.adobeioruntime.net/apis/tvm/azure/cosmos/${owNamespace}`
+`goto` [API](./docs/api.md)
 
-- For each of the above endpoints applies:
-  - HTTP method is GET
-  - OpenWhisk auth key must be passed in `Authorization` header
-  - OpenWhisk namespace must be passed in the url path
+## Deprecated endpoints (not part of API)
 
-- Deprecated:
-  - Get AWS S3 token `https://adobeioruntime.net/api/v1/web/adobeio/tvm/get-s3-upload-token` is still accessible (POST and GET) with params `{"owAuth": "<myauth>", "owNamespace": "<mynamespace>"}`
+- Get AWS S3 token `https://adobeioruntime.net/api/v1/web/adobeio/tvm/get-s3-upload-token` is still accessible (POST and GET) with params `{"owAuth": "<myauth>", "owNamespace": "<mynamespace>"}`
 
 ## Deploy your own TVM
 

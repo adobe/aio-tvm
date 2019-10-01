@@ -1,13 +1,13 @@
 {
   "basePath": "/tvm",
   "info": {
-    "title": "tvm-azure-blob",
+    "title": "Adobe I/O Token Vending Machine API",
     "version": "1.0.0"
   },
   "paths": {
     "/aws/s3/{owNamespace}": {
       "get": {
-        "operationId": "mraho/aio-tvm-0.4.0/aws-s3.http",
+        "operationId": "adobeio/aio-tvm-0.4.0/aws-s3.http",
         "responses": {
           "default": {
             "description": "Default response"
@@ -15,7 +15,7 @@
         },
         "x-openwhisk": {
           "action": "aws-s3.http",
-          "namespace": "mraho",
+          "namespace": "adobeio",
           "package": "aio-tvm-0.4.0",
           "url": "not-used"
         }
@@ -23,7 +23,7 @@
     },
     "/azure/blob/{owNamespace}": {
       "get": {
-        "operationId": "mraho/aio-tvm-0.4.0/azure-blob.http",
+        "operationId": "adobeio/aio-tvm-0.4.0/azure-blob.http",
         "responses": {
           "default": {
             "description": "Default response"
@@ -31,7 +31,7 @@
         },
         "x-openwhisk": {
           "action": "azure-blob.http",
-          "namespace": "mraho",
+          "namespace": "adobeio",
           "package": "aio-tvm-0.4.0",
           "url": "not-used"
         }
@@ -39,7 +39,7 @@
     },
     "/azure/cosmos/{owNamespace}": {
       "get": {
-        "operationId": "mraho/aio-tvm-0.4.0/azure-cosmos.http",
+        "operationId": "adobeio/aio-tvm-0.4.0/azure-cosmos.http",
         "responses": {
           "default": {
             "description": "Default response"
@@ -47,7 +47,7 @@
         },
         "x-openwhisk": {
           "action": "azure-cosmos.http",
-          "namespace": "mraho",
+          "namespace": "adobeio",
           "package": "aio-tvm-0.4.0",
           "url": "not-used"
         }
