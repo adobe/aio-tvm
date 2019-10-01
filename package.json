@@ -9,7 +9,7 @@
   },
   "repository": "adobe/aio-tvm",
   "devDependencies": {
-    "@adobe/io-cna-scripts": "^0.2.0-dev",
+    "@adobe/io-cna-scripts": "^0.1.0",
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/runtime": "^7.6.2",
     "@types/jest": "^24.0.18",
@@ -29,7 +29,7 @@
     "webpack-cli": "^3.3.9"
   },
   "scripts": {
-    "lint": "eslint './actions/**/*.js' './lib/**/*.js' './scripts/**/*.js'",
+    "lint": "eslint './actions/**/*.js' './lib/**/*.js' './test/**/*.js' './scripts/**/*.js'",
     "beautify": "npm run lint -- --fix",
     "deploy": "webpack && cna-scripts deploy.actions",
     "undeploy": "cna-scripts undeploy.actions",

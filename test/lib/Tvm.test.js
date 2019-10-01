@@ -30,7 +30,7 @@ describe('processRequest (abstract)', () => {
   describe('with a mock implementation', () => {
     const mockResponse = {
       a: 'field',
-      another: { 'important': { 'value': 1 } }
+      another: { important: { value: 1 } }
     }
     beforeEach(() => {
       tvm._generateCredentials = jest.fn()
@@ -101,7 +101,7 @@ describe('processRequest (abstract)', () => {
       test('when whitelist contains a namespace which shares the same suffix and escape chars', async () => testWhitelist(`${fakeParams.owNamespace}\\-`, false))
       test('when whitelist contains a list of different namespaces with symbols (including stars!) and same suffix/prefix', async () => testWhitelist(`*,${fakeParams.owNamespace}*(#@),*,****()!_+$#|{">}, ${fakeParams.owNamespace}|, $${fakeParams.owNamespace}\\-`, false))
 
-      test('when whitelist is equal to a star', async () => testWhitelist(`*`, true))
+      test('when whitelist is equal to a star', async () => testWhitelist('*', true))
       test('when whitelist contains the input namespace(allowed)', async () => testWhitelist(`${fakeParams.owNamespace}`, true))
       test('when whitelist contains the input namespace in a list of namespaces with symbols (allowed)', async () => testWhitelist(`,${fakeParams.owNamespace},*(#@), ()!_+$#|{">}, anotherNS2|, \\dsafksad`, true))
     })
