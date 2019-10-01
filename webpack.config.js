@@ -2,7 +2,7 @@ const path = require('path')
 const fs = require('fs')
 const yaml = require('js-yaml')
 
-const actions = yaml.safeLoad(fs.readFileSync('manifest.yml', 'utf8')).packages['__CNA_PACKAGE__'].actions
+const actions = yaml.safeLoad(fs.readFileSync('manifest.yml', 'utf8')).packages.__CNA_PACKAGE__.actions
 
 module.exports = Object.keys(actions).map(a => {
   const action = actions[a]

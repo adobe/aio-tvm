@@ -68,7 +68,7 @@ beforeEach(() => {
   global.owNsListMock.mockReset()
 
   // default: valid OW namespace
-  global.owNsListMock.mockResolvedValue([ global.baseNoErrorParams.owNamespace ])
+  global.owNsListMock.mockResolvedValue([global.baseNoErrorParams.owNamespace])
 })
 
 global.expectUnauthorized = (response, log) => {
