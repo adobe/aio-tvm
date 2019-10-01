@@ -37,6 +37,7 @@
     "test": "jest -c ./jest.config.js && npm run lint"
   },
   "dependencies": {
+    "@adobe/aio-lib-core-logging": "0.0.3",
     "@azure/cosmos": "^3.2.0",
     "@azure/storage-blob": "^10.4.1",
     "@hapi/joi": "^15.1.1",

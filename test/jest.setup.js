@@ -15,9 +15,12 @@ process.on('unhandledRejection', error => {
   throw error
 })
 
-console.error = jest.fn()
-console.warn = jest.fn()
-console.log = jest.fn()
+global.mockLog = {
+  info: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn()
+}
+jest.doMock('@adobe/aio-lib-core-logging', () => () => global.mockLog)
 
 global.owNsListMock = jest.fn()
 global.baseNoErrorParams = {
@@ -51,17 +54,17 @@ global.testParam = async (tvm, fakeParams, key, value, status) => {
 
   if (status !== 200) {
     expect(response.body.error).toBeDefined()
-    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining(lastKey))
+    expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining(lastKey))
   }
   expect(response.statusCode).toEqual(status || 400)
 }
 
 beforeEach(() => {
   expect.hasAssertions()
+  global.mockLog.info.mockReset()
+  global.mockLog.warn.mockReset()
+  global.mockLog.error.mockReset()
 
-  console.log.mockReset()
-  console.warn.mockReset()
-  console.error.mockReset()
   global.owNsListMock.mockReset()
 
   // default: valid OW namespace
@@ -71,11 +74,11 @@ beforeEach(() => {
 global.expectUnauthorized = (response, log) => {
   expect(response.statusCode).toEqual(403)
   expect(response.body.error).toEqual(expect.stringContaining('unauthorized'))
-  expect(console.warn).toHaveBeenCalledWith(expect.stringContaining(log))
+  expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining(log))
 }
 
 global.expectServerError = (response, log) => {
   expect(response.statusCode).toEqual(500)
   expect(response.body.error).toEqual(expect.stringContaining('server error'))
-  expect(console.error).toHaveBeenCalledWith(expect.stringContaining(log))
+  expect(global.mockLog.error).toHaveBeenCalledWith(expect.stringContaining(log))
 }
