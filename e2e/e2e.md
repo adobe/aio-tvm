@@ -21,7 +21,7 @@ AZURE_COSMOS_ACCOUNT, AZURE_COSMOS_DATABASE_ID, AZURE_COSMOS_CONTAINER_ID, AZURE
 
 ### Dependencies
 
-As this tests is deploying actions using `cna-scripts` you'll need to have `aio runtime` installed in your path:
+As this test is deploying actions using `cna-scripts` you'll need to have `aio runtime` installed in your path:
 
 ```bash
 npm install -g @adobe/aio-cli
@@ -36,9 +36,8 @@ aio plugins install @adobe/aio-cli-plugin-runtime
 
 ## Test overview
 
-Before all tests, the tvm is deployed into ns1 with a whitelist for ns2. Before running the tests, we need to wait some
-time for the OpenWhisk API Gateway to set up the required api endpoints. Requests are sent from ns2 unless specified
-otherwise. At the end the tvm endpoints are undeployed.
+Before all tests, the tvm is deployed into ns1. Each tvm endpoint has only ns2 whitelisted. Requests are sent from ns2
+unless specified otherwise. At the end the tvm endpoints are undeployed.
 
 Here is an overview of what is tested in [e2e.js](./e2e.js):
 
@@ -79,10 +78,10 @@ Here is an overview of what is tested in [e2e.js](./e2e.js):
 - test bad Authorization header format
   - for each endpoint:
     - `expect status=403` (later we should change this to 401)
-- test attempt to override default final action parameters
+- test overwrite default final action parameters
   - for each endpoint:
     - for each final param in endpoint
-      - send request with attempt to override param in query arg
+      - send request with param to overwrite in query arg
       - `expect status=400`
 - test passing non allowed parameter
   - for each endpoint:
