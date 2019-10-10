@@ -2,6 +2,8 @@
 
 ## Requirements
 
+### Env
+
 To run the tests you will need to have: two OpenWhisk namespaces, an aws account with s3 access, an azure storage
 account, an azure cosmos account. Check the [README](../README.md#setup-azure-blob) for more indications on how to
 setup aws and azure accounts to work with the tvm.
@@ -16,6 +18,17 @@ AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET
 AZURE_STORAGE_ACCOUNT, AZURE_STORAGE_ACCESS_KEY
 AZURE_COSMOS_ACCOUNT, AZURE_COSMOS_DATABASE_ID, AZURE_COSMOS_CONTAINER_ID, AZURE_COSMOS_MASTER_KEY
 ```
+
+### Dependencies
+
+As this tests is deploying actions using `cna-scripts` you'll need to have `aio runtime` installed in your path:
+
+```bash
+npm install -g @adobe/aio-cli
+aio plugins install @adobe/aio-cli-plugin-runtime
+```
+
+[TODO] remove this section once the dependency to runtime plugin is embedded in cna-scripts.
 
 ## Run
 
