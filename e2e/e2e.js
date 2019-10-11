@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 const execa = require('execa')
 const fetch = require('node-fetch').default
 
-jest.setTimeout(120000)
+jest.setTimeout(300000)
 
 const deployNamespace = process.env.TEST_NAMESPACE_1
 const deployAuth = process.env.TEST_AUTH_1
@@ -29,7 +29,6 @@ const deployActions = async () => {
   // !! important the whitelist includes the testNamespace but not the deployNamespace which we will use to test that
   // !! the whitelisting works. Alternatively, we could redeploy w/ diff whitelists b/w test, but it takes too much time
   process.env.WHITELIST = `${testNamespace}, fakeNS1,fakeNS2,`
-  process.env.EXPIRATION_DURATION = 3600
 
   // test auth 1 is deploying
   process.env.AIO_RUNTIME_AUTH = deployAuth
@@ -92,6 +91,18 @@ const expectBadStatus = async (status, endpoint, namespace, headers, queryStr) =
   expect(err).toBeInstanceOf(Error)
 }
 
+const expectCorrectExpirationDate = (expirationDateStr) => {
+  const expirationDuration = process.env.EXPIRATION_DURATION
+
+  const estimatedExpirationUpper = new Date().getTime() + expirationDuration * 1000
+  const estimatedExpirationLower = estimatedExpirationUpper - 30000 // give max 1 min tolerance for request rtt, clock skews,..
+
+  const received = new Date(expirationDateStr).getTime()
+
+  expect(received).toBeGreaterThanOrEqual(estimatedExpirationLower)
+  expect(received).toBeLessThanOrEqual(estimatedExpirationUpper)
+}
+
 const expectedAwsS3Response = {
   params: { Bucket: expect.any(String) },
   accessKeyId: expect.any(String),
@@ -125,10 +136,13 @@ beforeAll(async () => {
 afterAll(async () => {
   await undeployActions()
 })
+
 describe('e2e workflows', () => {
+  // todo those tests are very similar to aio-lib-core-tvm e2e tests, try to modularize somehow
   test('aws s3 e2e test: get tvm credentials, list s3 blobs in namespace (success), list s3 blobs in other namespace (fail), list s3 buckets (fail)', async () => {
     const tvmResponse = await sendRequest(buildURL(endpoints.awsS3, testNamespace), { Authorization: testAuth })
     expect(tvmResponse).toEqual(expectedAwsS3Response)
+    expectCorrectExpirationDate(tvmResponse.expiration)
 
     const aws = require('aws-sdk')
     const s3 = new aws.S3(tvmResponse)
@@ -153,6 +167,7 @@ describe('e2e workflows', () => {
   test('azure blob e2e test: get tvm credentials, list azure blobs public and private container (success)', async () => {
     const tvmResponse = await sendRequest(buildURL(endpoints.azureBlob, testNamespace), { Authorization: testAuth })
     expect(tvmResponse).toEqual(expectedAzureBlobResponse)
+    expectCorrectExpirationDate(tvmResponse.expiration)
 
     const azure = require('@azure/storage-blob')
     const azureCreds = new azure.AnonymousCredential()
@@ -172,6 +187,7 @@ describe('e2e workflows', () => {
   test('azure cosmos e2e test: get tvm credentials, add item + delete (success), add item in other partitionKey (fail), add item in other container (fail), add item in other db (fail)', async () => {
     const tvmResponse = await sendRequest(buildURL(endpoints.azureCosmos, testNamespace), { Authorization: testAuth })
     expect(tvmResponse).toEqual(expectedAzureCosmosResponse)
+    expectCorrectExpirationDate(tvmResponse.expiration)
 
     const cosmos = require('@azure/cosmos')
     const client = new cosmos.CosmosClient({ endpoint: tvmResponse.endpoint, tokenProvider: async () => tvmResponse.resourceToken })
@@ -266,8 +282,4 @@ describe('e2e errors', () => {
       return expectBadStatus(400, e, testNamespace, { Authorization: testAuth }, 'someNotAllowedParam=IamMalicious')
     }))
   })
-  // unnecessary test + conflicts with retry policy
-  // test('test status=404 when using a bad enpoint', async () => {
-  //   return expectBadStatus(404, '/bad/endpoint', testNamespace, { Authorization: testAuth })
-  // })
 })
