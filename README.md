@@ -56,9 +56,9 @@ This might be useful for you if:
   ```bash
   AIO_RUNTIME_APIVERSION=v1
   AIO_RUNTIME_APIHOST=https://adobeioruntime.net
-  AIO_RUNTIME_NAMESPACE=deployment_ns
-  AIO_RUNTIME_AUTH=deployment_auth_ns
-
+  AIO_RUNTIME_NAMESPACE=<deployment_ns>
+  AIO_RUNTIME_AUTH=<deployment_auth_ns>
+  
   EXPIRATION_DURATION=<token expiration in seconds>
   WHITELIST=<comma separated list of namespaces>
 
