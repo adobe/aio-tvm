@@ -13,7 +13,8 @@ governing permissions and limitations under the License.
 module.exports = {
   testEnvironment: 'node',
   verbose: true,
-  setupFilesAfterEnv: ['./test/jest.setup.js'],
+  setupFilesAfterEnv: ['./test/unit/jest.setup.js'],
+  testRegex: 'unit/(.|/)*.test.js$',
   collectCoverage: true,
   collectCoverageFrom: [
     'lib/**/*.js',

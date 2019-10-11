@@ -1,12 +1,10 @@
-# Adobe I/O Token Vending Machine E2E Tests
+# Adobe I/O Token Vending Machine Functional Tests
+
+These tests are designed to be run before a release.
 
 ## Requirements
 
 ### Env
-
-To run the tests you will need to have: two OpenWhisk namespaces, an aws account with s3 access, an azure storage
-account, an azure cosmos account. Check the [README](../README.md#setup-azure-blob) for more indications on how to
-setup aws and azure accounts to work with the tvm.
 
 Following environment variables must be set:
 
@@ -20,20 +18,9 @@ AZURE_STORAGE_ACCOUNT, AZURE_STORAGE_ACCESS_KEY
 AZURE_COSMOS_ACCOUNT, AZURE_COSMOS_DATABASE_ID, AZURE_COSMOS_CONTAINER_ID, AZURE_COSMOS_MASTER_KEY
 ```
 
-### Dependencies
-
-As this test is deploying actions using `cna-scripts` you'll need to have `aio runtime` installed in your path:
-
-```bash
-npm install -g @adobe/aio-cli
-aio plugins install @adobe/aio-cli-plugin-runtime
-```
-
-[TODO] remove this section once the dependency to runtime plugin is embedded in cna-scripts.
-
 ## Run
 
-`npm run e2e`
+`npm run func`
 
 ## Test overview
 

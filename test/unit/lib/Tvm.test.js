@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Tvm } = require('../../lib/Tvm')
+const { Tvm } = require('../../../lib/Tvm')
 
 const fakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
 
