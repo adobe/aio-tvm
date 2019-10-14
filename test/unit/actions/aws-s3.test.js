@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const awsS3Action = require('../../actions/aws-s3')
+const awsS3Action = require('../../../actions/aws-s3')
 
-const { AwsS3Tvm } = require('../../lib/impl/AwsS3Tvm')
-jest.mock('../../lib/impl/AwsS3Tvm')
+const { AwsS3Tvm } = require('../../../lib/impl/AwsS3Tvm')
+jest.mock('../../../lib/impl/AwsS3Tvm')
 
 beforeEach(() => {
   AwsS3Tvm.prototype.processRequest.mockReset()

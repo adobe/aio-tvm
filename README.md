@@ -73,6 +73,13 @@ This might be useful for you if:
   AZURE_COSMOS_MASTER_KEY=<cosmosdb master key>
   AZURE_COSMOS_DATABASE_ID=<cosmosdb database name>
   AZURE_COSMOS_CONTAINER_ID=<cosmosdb database name>
+
+  # for functional tests only
+  TEST_NAMESPACE_1=<test ns 1>
+  TEST_AUTH_1=<test auth 1>
+  TEST_NAMESPACE_2=<test ns 2>
+  TEST_AUTH_2=<test auth ns 2>
+  
   ```
 
 - Use the `WHITELIST` variable to control which namespace can access the TVM and
@@ -140,6 +147,11 @@ This might be useful for you if:
 ### Undeploy
 
 - `npm run undeploy`
+
+### Release a new version
+
+- `npm run release` will run tests, bump up the version and deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`.
+- note: this command will run functional tests and will need you to have additional OpenWhisk test namespaces setup up in your `.env` (see [config](#deployment-config))
 
 ## Contributing
 

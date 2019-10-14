@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { AzureBlobTvm } = require('../../../lib/impl/AzureBlobTvm')
+const { AzureBlobTvm } = require('../../../../lib/impl/AzureBlobTvm')
 
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')

@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { AzureCosmosTvm } = require('../../../lib/impl/AzureCosmosTvm')
+const { AzureCosmosTvm } = require('../../../../lib/impl/AzureCosmosTvm')
 
 const cosmos = require('@azure/cosmos')
 jest.mock('@azure/cosmos')
