@@ -27,9 +27,9 @@ AZURE_COSMOS_ACCOUNT, AZURE_COSMOS_DATABASE_ID, AZURE_COSMOS_CONTAINER_ID, AZURE
 Before all tests, the tvm is deployed into ns1. Each tvm endpoint has only ns2 whitelisted. Requests are sent from ns2
 unless specified otherwise. At the end the tvm endpoints are undeployed.
 
-Here is an overview of what is tested in [e2e.js](./e2e.js):
+Here is an overview of what is tested in [api.test.js](./api.test.js):
 
-- aws s3 e2e test:
+- aws s3 functional test:
   - get aws tokens from tvm using valid OpenWhisk auth and namespace
   - initialize s3 sdk
   - list blobs in namespace subfolder
@@ -38,14 +38,14 @@ Here is an overview of what is tested in [e2e.js](./e2e.js):
   - `expect errorCode = AccessDenied`
   - list buckets
   - `expect errorCode = AccessDenied`
-- azure blob e2e test:
+- azure blob functional test:
   - get azure SAS urls from tvm using valid OpenWhisk auth and namespace
   - initialize azure-blob sdk
   - list blobs in private container using sasURLPrivate
   - `expect status=200`
   - list blobs in public container using sasURLPublic
   - `expect status=200`
-- azure cosmos e2e test:
+- azure cosmos functional test:
   - get cosmos tokens from tvm using valid OpenWhisk auth and namespace
   - initialize azure-cosmos sdk
   - put a key using allowed partitionKey, containerId and databaseId
