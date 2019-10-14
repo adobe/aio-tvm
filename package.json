@@ -15,7 +15,8 @@
     "undeploy": "dotenv cna-scripts undeploy.actions",
     "test": "npm run unit && npm run lint",
     "unit": "jest",
-    "func": "jest -c jest.func.config.js"
+    "func": "jest -c jest.func.config.js",
+    "release": "npm run test && dotenv npm run func && np --no-publish --no-tests --no-cleanup --no-yarn --no-release-draft && npm run deploy"
   },
   "jest.pathToConfig": "jest.config.js",
   "devDependencies": {
@@ -38,6 +39,7 @@
     "fs-extra": "^8.1.0",
     "jest": "^24.9.0",
     "node-fetch": "^2.6.0",
+    "np": "^5.1.1",
     "webpack": "^4.41.0",
     "webpack-cli": "^3.3.9"
   },
