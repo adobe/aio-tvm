@@ -21,7 +21,7 @@ curl -H "Authorization: ${AUTH}" "https://adobeio.adobeioruntime.net/apis/tvm/aw
 
 ## Explore
 
-`goto` [API](./docs/api.md)
+`goto` [API](./docs/api.html)
 
 ## Deprecated endpoints (not part of API)
 
@@ -53,7 +53,7 @@ This might be useful for you if:
   AIO_RUNTIME_APIHOST=https://adobeioruntime.net
   AIO_RUNTIME_NAMESPACE=<deployment_ns>
   AIO_RUNTIME_AUTH=<deployment_auth_ns>
-  
+
   EXPIRATION_DURATION=<token expiration in seconds>
   WHITELIST=<comma separated list of namespaces>
 
@@ -74,7 +74,7 @@ This might be useful for you if:
   TEST_AUTH_1=<test auth 1>
   TEST_NAMESPACE_2=<test ns 2>
   TEST_AUTH_2=<test auth ns 2>
-  
+
   ```
 
 - Use the `WHITELIST` variable to control which namespace can access the TVM and

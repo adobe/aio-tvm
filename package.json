@@ -17,7 +17,7 @@
     "unit": "jest",
     "func": "jest -c jest.func.config.js",
     "release": "npm run test && dotenv npm run func && np --no-publish --no-tests --no-cleanup --no-yarn --no-release-draft && npm run deploy",
-    "gen-swagger-doc": "aio runtime api get /tvm > docs/swagger.json && swagger-markdown -i docs/swagger.json -o docs/api.md"
+    "generate-doc": "redoc-cli bundle docs/swagger.json -o docs/api.html"
   },
   "jest.pathToConfig": "jest.config.js",
   "devDependencies": {
@@ -41,7 +41,7 @@
     "jest": "^24.9.0",
     "node-fetch": "^2.6.0",
     "np": "^5.1.1",
-    "swagger-markdown": "^1.2.0",
+    "redoc-cli": "^0.9.2",
     "webpack": "^4.41.0",
     "webpack-cli": "^3.3.9"
   },
