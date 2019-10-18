@@ -1,6 +1,6 @@
 {
   "swagger": "2.0",
-  "host": "https://adobeio.adobeioruntime.net/apis",
+  "host": "adobeio.adobeioruntime.net/apis",
   "basePath": "/tvm",
   "info": {
     "title": "Adobe I/O Token Vending Machine"
