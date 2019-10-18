@@ -21,7 +21,7 @@ curl -H "Authorization: ${AUTH}" "https://adobeio.adobeioruntime.net/apis/tvm/aw
 
 ## Explore
 
-`goto` [API](./docs/api.html)
+`goto` [API](https://opensource.adobe.com/aio-tvm/docs/api.html)
 
 ## Deprecated endpoints (not part of API)
 
