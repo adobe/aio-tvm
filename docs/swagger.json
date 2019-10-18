@@ -3,8 +3,7 @@
   "host": "https://adobeio.adobeioruntime.net/apis",
   "basePath": "/tvm",
   "info": {
-    "title": "Adobe I/O Token Vending Machine",
-    "version": "1.0.0"
+    "title": "Adobe I/O Token Vending Machine"
   },
   "definitions": {
     "Error": {
