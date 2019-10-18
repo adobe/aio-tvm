@@ -8,6 +8,8 @@ packages:
         inputs:
           bucketPrefix: $S3_BUCKET_PREFIX,
           region: $AWS_REGION,
+          s3TagKey: $S3_TAG_KEY,
+          s3TagValue: $S3_TAG_VALUE,
           awsSecretAccessKey: $AWS_SECRET_ACCESS_KEY
           awsAccessKeyId: $AWS_ACCESS_KEY_ID
           expirationDuration: $EXPIRATION_DURATION

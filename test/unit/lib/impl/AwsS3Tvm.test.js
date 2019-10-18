@@ -44,10 +44,12 @@ aws.S3 = function () {
 const fakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
 fakeParams.bucketPrefix = 'fakeBucketPrefix'
 fakeParams.region = 'fakeRegion'
+fakeParams.s3TagKey = 'fakeTagKey'
+fakeParams.s3TagValue = 'fakeTagValue'
 fakeParams.awsAccessKeyId = 'fakeAccessKeyId'
 fakeParams.awsSecretAccessKey = 'fakeSecretAccessKey'
 
-const fakeBucketSha = 'fakeBucketPrefix-603eba080192e4093183e5a3c919968f'
+const fakeBucketSha = 'fakeBucketPrefix-f3125a324ac7d2024dbbc867fb2e6013'
 
 describe('processRequest (AWS)', () => {
   // setup
