@@ -11,3 +11,8 @@ dist/
 .lib
 playground/
 coverage/
+
+# Directory Cache Files
+.DS_Store
+thumbs.db
+.vscode
