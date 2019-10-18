@@ -30,6 +30,7 @@ global.baseNoErrorParams = {
   owNamespace: 'fakeNS',
   __ow_headers: { authorization: 'fakeAuth' }
 }
+global.nsHash = 'b7bb8447341643f7366d4604cdf8117f'
 
 const openwhisk = require('openwhisk')
 jest.mock('openwhisk')

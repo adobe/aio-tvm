@@ -58,7 +58,7 @@ describe('processRequest (Azure Cosmos)', () => {
     azure.generateBlobSASQueryParameters.mockReset()
 
     // defaults that work
-    azure.generateBlobSASQueryParameters.mockResolvedValue({ toString: () => fakeSas })
+    azure.generateBlobSASQueryParameters.mockReturnValue({ toString: () => fakeSas })
   })
 
   describe('param validation', () => {
@@ -71,8 +71,7 @@ describe('processRequest (Azure Cosmos)', () => {
     const expectTokenGenerated = async () => {
       const response = await tvm.processRequest(fakeParams)
 
-      // sha256
-      const containerName = require('crypto').createHash('sha256').update(global.baseNoErrorParams.owNamespace, 'binary').digest('hex')
+      const containerName = global.nsHash
 
       expect(response.statusCode).toEqual(200)
       expect(response.body).toEqual({
