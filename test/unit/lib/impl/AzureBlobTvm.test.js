@@ -58,11 +58,10 @@ describe('processRequest (Azure Cosmos)', () => {
     azure.generateBlobSASQueryParameters.mockReset()
 
     // defaults that work
-    azure.generateBlobSASQueryParameters.mockResolvedValue({ toString: () => fakeSas })
+    azure.generateBlobSASQueryParameters.mockReturnValue({ toString: () => fakeSas })
   })
 
   describe('param validation', () => {
-    test('when owNamespace is smaller than 3 chars', async () => global.testParam(tvm, fakeParams, 'owNamespace', 'aa'))
     test('when owNamespace is missing', async () => global.testParam(tvm, fakeParams, 'owNamespace', undefined))
     test('when azureStorageAccount is missing', async () => global.testParam(tvm, fakeParams, 'azureStorageAccount', undefined))
     test('when azureStorageAccessKey is missing', async () => global.testParam(tvm, fakeParams, 'azureStorageAccessKey', undefined))
@@ -72,8 +71,7 @@ describe('processRequest (Azure Cosmos)', () => {
     const expectTokenGenerated = async () => {
       const response = await tvm.processRequest(fakeParams)
 
-      // todo remove duplicated implementation of partitionKey name creation
-      const containerName = Buffer.from(fakeParams.owNamespace, 'utf8').toString('hex')
+      const containerName = global.nsHash
 
       expect(response.statusCode).toEqual(200)
       expect(response.body).toEqual({
