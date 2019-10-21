@@ -49,6 +49,7 @@
     "@azure/storage-blob": "^10.5.0",
     "@hapi/joi": "^16.1.4",
     "aws-sdk": "^2.539.0",
+    "crypto": "^1.0.1",
     "openwhisk": "^3.20.0"
   }
 }
