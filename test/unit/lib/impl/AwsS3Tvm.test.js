@@ -32,11 +32,17 @@ const headBucketPromiseMock = jest.fn()
 const headBucketMock = jest.fn(() => ({
   promise: headBucketPromiseMock
 }))
+
+const putBucketTaggingPromiseMock = jest.fn()
+const putBucketTaggingMock = jest.fn(() => ({
+  promise: putBucketTaggingPromiseMock
+}))
 // const headBucketMock = () => {return new Promise(resolve => "fakeBucketName")}
 aws.S3 = function () {
   return {
     headBucket: headBucketMock,
-    createBucket: getFederationTokenMock
+    createBucket: createBucketMock,
+    putBucketTagging: putBucketTaggingMock
   }
 }
 
@@ -67,6 +73,8 @@ describe('processRequest (AWS)', () => {
     headBucketMock.mockClear()
     createBucketPromiseMock.mockReset()
     createBucketMock.mockClear()
+    putBucketTaggingMock.mockClear()
+    putBucketTaggingPromiseMock.mockReset()
 
     // defaults that work
     getFederationTokenPromiseMock.mockResolvedValue({
@@ -74,6 +82,7 @@ describe('processRequest (AWS)', () => {
     })
     headBucketPromiseMock.mockResolvedValue('fakeBucketName')
     createBucketPromiseMock.mockResolvedValue({})
+    putBucketTaggingPromiseMock.mockResolvedValue({})
   })
 
   describe('param validation', () => {
@@ -97,6 +106,7 @@ describe('processRequest (AWS)', () => {
         }
       })
 
+      // sts mock
       expect(getFederationTokenMock).toHaveBeenCalledTimes(1)
       expect(getFederationTokenMock).toHaveBeenCalledWith({
         DurationSeconds: fakeParams.expirationDuration,
@@ -114,6 +124,33 @@ describe('processRequest (AWS)', () => {
     })
     test('when aws sts.getFederationToken rejects', async () => {
       getFederationTokenPromiseMock.mockRejectedValue(new Error('an aws sts error'))
+      const response = await tvm.processRequest(fakeParams)
+      global.expectServerError(response, 'an aws sts error')
+    })
+    test('when aws s3.headBucket doesnot reject', async () => {
+      headBucketPromiseMock.mockResolvedValue({})
+      await expectTokenGenerated()
+      // expect no bucket creation
+      expect(createBucketMock).toHaveBeenCalledTimes(0)
+      expect(putBucketTaggingMock).toHaveBeenCalledTimes(0)
+    })
+    test('when aws s3.headBucket rejects with 404', async () => {
+      const awsError = new Error('fake')
+      awsError.statusCode = 404
+      headBucketPromiseMock.mockRejectedValue(awsError)
+      await expectTokenGenerated()
+      expect(createBucketMock).toHaveBeenCalledWith(expect.objectContaining({ Bucket: fakeBucketSha }))
+      expect(putBucketTaggingMock).toHaveBeenCalledWith(expect.objectContaining({
+        Bucket: fakeBucketSha,
+        Tagging: {
+          TagSet: [{ Key: 'ow-namespace', Value: fakeParams.owNamespace }]
+        }
+      }))
+    })
+    test('when aws s3.headBucket rejects with !=404', async () => {
+      const awsError = new Error('an aws sts error')
+      awsError.statusCode = 400
+      headBucketPromiseMock.mockRejectedValue(awsError)
       const response = await tvm.processRequest(fakeParams)
       global.expectServerError(response, 'an aws sts error')
     })
