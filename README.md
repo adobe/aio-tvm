@@ -60,6 +60,8 @@ This might be useful for you if:
   AWS_ACCESS_KEY_ID=<key id of IAM user created in AWS>
   AWS_SECRET_ACCESS_KEY=<secret of IAM user created in AWS>
   S3_BUCKET=<MY_BUCKET>
+  AWS_REGION=us-east-1
+  S3_BUCKET_PREFIX=<a string>
 
   AZURE_STORAGE_ACCOUNT=<storage account name>
   AZURE_STORAGE_ACCESS_KEY=<storage access key>
