@@ -44,7 +44,6 @@ aws.S3 = function () {
 const fakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
 fakeParams.bucketPrefix = 'fakeBucketPrefix'
 fakeParams.region = 'fakeRegion'
-fakeParams.s3TagKey = 'fakeTagKey'
 fakeParams.awsAccessKeyId = 'fakeAccessKeyId'
 fakeParams.awsSecretAccessKey = 'fakeSecretAccessKey'
 
