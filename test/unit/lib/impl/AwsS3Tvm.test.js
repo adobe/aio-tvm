@@ -53,7 +53,7 @@ fakeParams.region = 'fakeRegion'
 fakeParams.awsAccessKeyId = 'fakeAccessKeyId'
 fakeParams.awsSecretAccessKey = 'fakeSecretAccessKey'
 
-const fakeBucketSha = 'fakeBucketPrefix-f3125a324ac7d2024dbbc867fb2e6013'
+const fakeBucketSha = 'fakeBucketPrefix-' + global.nsHash
 
 describe('processRequest (AWS)', () => {
   // setup

@@ -20,6 +20,8 @@ const deployAuth = process.env.TEST_AUTH_1
 const testNamespace = process.env.TEST_NAMESPACE_2
 const testAuth = process.env.TEST_AUTH_2
 
+const testNamespaceHash = require('crypto').createHash('sha256').update(testNamespace, 'binary').digest('hex').slice(0, 32)
+
 if (process.env.AIO_RUNTIME_APIHOST.endsWith('/')) process.env.AIO_RUNTIME_APIHOST = process.env.AIO_RUNTIME_APIHOST.slice(0, -1)
 const host = 'https://' + deployNamespace + '.' + process.env.AIO_RUNTIME_APIHOST.split('https://')[1]
 
@@ -144,19 +146,23 @@ describe('e2e workflows', () => {
     expect(tvmResponse).toEqual(expectedAwsS3Response)
     expectCorrectExpirationDate(tvmResponse.expiration)
 
+    // check that bucket name contains sha256 of namespace
+    expect(tvmResponse.params.Bucket).toEqual(expect.stringContaining(testNamespaceHash))
+
     const aws = require('aws-sdk')
     const s3 = new aws.S3(tvmResponse)
 
-    const res = await s3.listObjectsV2({ Prefix: testNamespace + '/' }).promise()
+    // todo more checks on policy operations?
+
+    const res = await s3.listObjectsV2().promise()
     expect(res.$response.httpResponse.statusCode).toEqual(200)
 
     try {
-      await s3.listObjectsV2({ Prefix: deployNamespace + '/' }).promise()
+      await s3.listObjectsV2({ Bucket: 'otherBucket' }).promise()
     } catch (e) {
       // keep message for more info
       expect({ code: e.code, message: e.message }).toEqual({ code: 'AccessDenied', message: e.message })
     }
-
     try {
       await s3.listBuckets().promise()
     } catch (e) {
@@ -168,6 +174,10 @@ describe('e2e workflows', () => {
     const tvmResponse = await sendRequest(buildURL(endpoints.azureBlob, testNamespace), { Authorization: testAuth })
     expect(tvmResponse).toEqual(expectedAzureBlobResponse)
     expectCorrectExpirationDate(tvmResponse.expiration)
+
+    // check that container names in sasURLs contain sha256 of namespace (especially important for public container)
+    expect(tvmResponse.sasURLPrivate).toEqual(expect.stringContaining(testNamespaceHash))
+    expect(tvmResponse.sasURLPublic).toEqual(expect.stringContaining(testNamespaceHash))
 
     const azure = require('@azure/storage-blob')
     const azureCreds = new azure.AnonymousCredential()
