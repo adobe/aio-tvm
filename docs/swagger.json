@@ -1,0 +1,251 @@
+{
+  "swagger": "2.0",
+  "host": "adobeio.adobeioruntime.net/apis",
+  "basePath": "/tvm",
+  "info": {
+    "title": "Adobe I/O Token Vending Machine"
+  },
+  "definitions": {
+    "Error": {
+      "properties": {
+        "error": {
+          "description": "error message",
+          "type": "string"
+        }
+      },
+      "required": [ "error" ]
+    },
+    "AwsS3Token": {
+      "description": "token that gives access to a s3 bucket",
+      "properties": {
+        "expiration": {
+          "description": "expiration date in ISO/UTC format",
+          "type": "string"
+        },
+        "secretAccessKey": {
+          "description": "aws secret key",
+          "type": "string"
+        },
+        "accessKeyId": {
+          "description": "aws access key id",
+          "type": "string"
+        },
+        "sessionToken": {
+          "description": "aws session token",
+          "type": "string"
+        },
+        "params": {
+          "description": "aws js sdk params",
+          "type": "object",
+          "properties": {
+            "Bucket": {
+              "description": "name of accessible s3 bucket",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": [ "params", "expiration", "sessionToken", "accessKeyId", "secretAccessKey" ]
+    },
+    "AzureBlobToken": {
+      "description": "token allowing access to a two azure blob containers for storing public and private",
+      "properties": {
+        "expiration": {
+          "description": "expiration date in ISO/UTC format",
+          "type": "string"
+        },
+        "sasURLPrivate": {
+          "description": "sas url to access private azure blob container",
+          "type": "string"
+        },
+        "sasURLPublic": {
+          "description": "sas url to access public azure blob container",
+          "type": "string"
+        }
+      },
+      "required": [ "expiration", "sasURLPublic", "sasURLPrivate" ]
+    },
+    "AzureCosmosToken": {
+      "description": "token allowing access to a specific cosmos db partition key",
+      "properties": {
+        "expiration": {
+          "description": "expiration date in ISO/UTC format",
+          "type": "string"
+        },
+        "endpoint": {
+          "description": "allowed cosmosdb resource endpoint",
+          "type": "string"
+        },
+        "databaseId": {
+          "description": "id for allowed cosmosdb database",
+          "type": "string"
+        },
+        "container": {
+          "description": "id for allowed cosmosdb container",
+          "type": "string"
+        },
+        "partitionKey": {
+          "description": "allowed cosmosdb partition key",
+          "type": "string"
+        },
+        "resourceToken": {
+          "description": "cosmosdb resource token",
+          "type": "string"
+        }
+      },
+      "required": [ "resourceToken", "partitionKey", "container", "databaseId", "endpoint", "expiration" ]
+    }
+  },
+  "paths": {
+    "/aws/s3/{owNamespace}": {
+      "get": {
+        "produces": [ "application/json" ],
+        "operationId": "GetTokenForAwsS3",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "required": true,
+            "format": "owAuth",
+            "description": "OpenWhisk auth"
+          },
+          {
+            "in": "path",
+            "name": "owNamespace",
+            "type": "string",
+            "required": true,
+            "format": "owNamespace",
+            "description": "OpenWhisk namespace"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "unauthorized request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "forbidden request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "200": {
+            "description": "tokens to access aws s3",
+            "schema": {
+              "$ref": "#/definitions/AwsS3Token"
+            }
+          }
+        }
+      }
+    },
+    "/azure/blob/{owNamespace}": {
+      "get": {
+        "produces": [ "application/json" ],
+        "operationId": "GetTokenForAzureBlob",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "required": true,
+            "format": "owAuth",
+            "description": "OpenWhisk auth"
+          },
+          {
+            "in": "path",
+            "name": "owNamespace",
+            "type": "string",
+            "required": true,
+            "format": "owNamespace",
+            "description": "OpenWhisk namespace"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "unauthorized request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "forbidden request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "200": {
+            "description": "tokens to access azure blob",
+            "schema": {
+              "$ref": "#/definitions/AzureBlobToken"
+            }
+          }
+        }
+      }
+    },
+    "/azure/cosmos/{owNamespace}": {
+      "get": {
+        "produces": [ "application/json" ],
+        "operationId": "GetTokenForAzureCosmos",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "required": true,
+            "format": "owAuth",
+            "description": "OpenWhisk auth"
+          },
+          {
+            "in": "path",
+            "name": "owNamespace",
+            "type": "string",
+            "required": true,
+            "format": "owNamespace",
+            "description": "OpenWhisk namespace"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "unauthorized request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "forbidden request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "200": {
+            "description": "tokens to access azure cosmos",
+            "schema": {
+              "$ref": "#/definitions/AzureCosmosToken"
+            }
+          }
+        }
+      }
+    }
+  }
+}
