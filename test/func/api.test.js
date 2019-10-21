@@ -141,7 +141,7 @@ afterAll(async () => {
 
 describe('e2e workflows', () => {
   // todo those tests are very similar to aio-lib-core-tvm e2e tests, try to modularize somehow
-  test('aws s3 e2e test: get tvm credentials, list s3 blobs in namespace (success), list s3 blobs in other namespace (fail), list s3 buckets (fail)', async () => {
+  test('aws s3 e2e test: get tvm credentials, list s3 blobs in namespace (success), list s3 blobs in other bucket (fail), list s3 buckets (fail)', async () => {
     const tvmResponse = await sendRequest(buildURL(endpoints.awsS3, testNamespace), { Authorization: testAuth })
     expect(tvmResponse).toEqual(expectedAwsS3Response)
     expectCorrectExpirationDate(tvmResponse.expiration)
@@ -157,18 +157,32 @@ describe('e2e workflows', () => {
     const res = await s3.listObjectsV2().promise()
     expect(res.$response.httpResponse.statusCode).toEqual(200)
 
+    // create a fake bucket
+    const masterS3 = new aws.S3({ accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY })
+    const uniqueBucketName = 'cna-e2e-' + tvmResponse.params.Bucket + Math.random().toString(36).substring(7) // we assume it's unique
+    await masterS3.createBucket({ Bucket: uniqueBucketName }).promise()
+    let err
     try {
-      await s3.listObjectsV2({ Bucket: 'otherBucket' }).promise()
+      // try to access fake bucket
+      await s3.listObjectsV2({ Bucket: uniqueBucketName }).promise()
     } catch (e) {
+      err = e
       // keep message for more info
       expect({ code: e.code, message: e.message }).toEqual({ code: 'AccessDenied', message: e.message })
     }
+    expect(err).toBeInstanceOf(Error)
+    // cleanup fake bucket
+    await masterS3.deleteBucket({ Bucket: uniqueBucketName }).promise()
+
+    err = undefined
     try {
       await s3.listBuckets().promise()
     } catch (e) {
+      err = e
       // keep message for more info
       expect({ code: e.code, message: e.message }).toEqual({ code: 'AccessDenied', message: e.message })
     }
+    expect(err).toBeInstanceOf(Error)
   })
   test('azure blob e2e test: get tvm credentials, list azure blobs public and private container (success)', async () => {
     const tvmResponse = await sendRequest(buildURL(endpoints.azureBlob, testNamespace), { Authorization: testAuth })
@@ -216,26 +230,35 @@ describe('e2e workflows', () => {
     // 2. forbidden database
     const badDatabase = client.database('someotherId')
     const containerBadDB = badDatabase.container(tvmResponse.containerId)
+    let err
     try {
       await containerBadDB.items.upsert({ id: key, partitionKey: tvmResponse.partitionKey, value })
     } catch (e) {
+      err = e
       expect(e.code).toEqual(403)
     }
+    expect(err).toBeInstanceOf(Error)
 
     // 3. forbidden container
     const badContainer = database.container('someotherId')
+    err = undefined
     try {
       await badContainer.items.upsert({ id: key, partitionKey: tvmResponse.partitionKey, value })
     } catch (e) {
+      err = e
       expect(e.code).toEqual(403)
     }
+    expect(err).toBeInstanceOf(Error)
 
     // 4. forbidden partitionKey
+    err = undefined
     try {
       await badContainer.items.upsert({ id: key, partitionKey: 'someotherKey', value })
     } catch (e) {
+      err = e
       expect(e.code).toEqual(403)
     }
+    expect(err).toBeInstanceOf(Error)
   })
 })
 
