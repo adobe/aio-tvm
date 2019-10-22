@@ -59,7 +59,6 @@ This might be useful for you if:
 
   AWS_ACCESS_KEY_ID=<key id of IAM user created in AWS>
   AWS_SECRET_ACCESS_KEY=<secret of IAM user created in AWS>
-  S3_BUCKET=<MY_BUCKET>
   AWS_REGION=us-east-1
   S3_BUCKET_PREFIX=<a string>
 
@@ -104,8 +103,7 @@ This might be useful for you if:
 ### Setup AWS S3
 
 - Create a Bucket in S3 for your app
-- Create an IAM user with the following IAM policy in AWS (replace `MY_BUCKET` with
-  your app bucket name):
+- Create an IAM user with the following IAM policy in AWS:
 
   ```json
     {
@@ -124,11 +122,13 @@ This might be useful for you if:
               "s3:PutObject",
               "s3:DeleteObject",
               "s3:PutObjectAcl",
-              "s3:ListBucket"
+              "s3:ListBucket",
+              "s3:CreateBucket",
+              "s3:PutBucketTagging",
+              "s3:HeadBucket",
           ],
           "Resource": [
-            "arn:aws:s3:::MY_BUCKET/*",
-            "arn:aws:s3:::MY_BUCKET"
+            "arn:aws:s3:::MY_BUCKET_PREFIX*"
           ]
         }
       ]
