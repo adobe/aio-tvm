@@ -6,8 +6,7 @@ packages:
         web: yes
         runtime: 'nodejs:10'
         inputs:
-          bucketPrefix: $S3_BUCKET_PREFIX
-          region: $AWS_REGION
+          s3Bucket: $S3_BUCKET
           awsSecretAccessKey: $AWS_SECRET_ACCESS_KEY
           awsAccessKeyId: $AWS_ACCESS_KEY_ID
           expirationDuration: $EXPIRATION_DURATION
