@@ -1,6 +1,6 @@
 {
   "name": "aio-tvm",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "description": "The Adobe I/O token vending machine for used to integrate external cloud services with Adobe I/O Runtime",
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
@@ -16,7 +16,7 @@
     "test": "npm run unit && npm run lint",
     "unit": "jest",
     "func": "jest -c jest.func.config.js",
-    "release": "npm run test && dotenv npm run func && np --no-publish --no-tests --no-cleanup --no-yarn --no-release-draft && npm run deploy",
+    "release": "npm run test && dotenv npm run func && np --no-publish --no-tests --no-cleanup --no-yarn && npm run deploy",
     "generate-doc": "redoc-cli bundle docs/swagger.json -o docs/api.html"
   },
   "jest.pathToConfig": "jest.config.js",
