@@ -102,8 +102,8 @@ This might be useful for you if:
 
 ### Setup AWS S3
 
-- Create a Bucket in S3 for your app
-- Create an IAM user with the following IAM policy in AWS:
+- Create a Bucket in S3 that will host the app folders
+- Create an IAM user with the following IAM policy in AWS, replace `MY_BUCKET` with your bucket name:
 
   ```json
     {
@@ -123,12 +123,10 @@ This might be useful for you if:
               "s3:DeleteObject",
               "s3:PutObjectAcl",
               "s3:ListBucket",
-              "s3:CreateBucket",
-              "s3:PutBucketTagging",
-              "s3:HeadBucket",
           ],
           "Resource": [
-            "arn:aws:s3:::MY_BUCKET_PREFIX*"
+            "arn:aws:s3:::MY_BUCKET/*",
+            "arn:aws:s3:::MY_BUCKET"
           ]
         }
       ]
