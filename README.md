@@ -60,7 +60,7 @@ This might be useful for you if:
   AWS_ACCESS_KEY_ID=<key id of IAM user created in AWS>
   AWS_SECRET_ACCESS_KEY=<secret of IAM user created in AWS>
   AWS_REGION=us-east-1
-  S3_BUCKET_PREFIX=<a string>
+  S3_BUCKET=<MY_BUCKET>
 
   AZURE_STORAGE_ACCOUNT=<storage account name>
   AZURE_STORAGE_ACCESS_KEY=<storage access key>
@@ -102,8 +102,8 @@ This might be useful for you if:
 
 ### Setup AWS S3
 
-- Create a Bucket in S3 for your app
-- Create an IAM user with the following IAM policy in AWS:
+- Create a Bucket in S3 that will host the app folders
+- Create an IAM user with the following IAM policy in AWS, replace `MY_BUCKET` with your bucket name:
 
   ```json
     {
@@ -123,12 +123,10 @@ This might be useful for you if:
               "s3:DeleteObject",
               "s3:PutObjectAcl",
               "s3:ListBucket",
-              "s3:CreateBucket",
-              "s3:PutBucketTagging",
-              "s3:HeadBucket",
           ],
           "Resource": [
-            "arn:aws:s3:::MY_BUCKET_PREFIX*"
+            "arn:aws:s3:::MY_BUCKET/*",
+            "arn:aws:s3:::MY_BUCKET"
           ]
         }
       ]
