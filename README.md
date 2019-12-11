@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/adobe/aio-tvm.svg?branch=master)](https://travis-ci.com/adobe/aio-tvm)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/adobe/aio-tvm/master.svg?style=flat-square)](https://codecov.io/gh/adobe/aio-tvm/)
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/adobe/aio-tvm/master.svg?style=flat-square)](https://codecov.io/gh/adobe/aio-tvm/) [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/aio-tvm.svg)](https://greenkeeper.io/)
 
 # Adobe I/O Token Vending Machine (TVM)
 
