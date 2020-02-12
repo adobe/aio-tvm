@@ -38,7 +38,7 @@ const deployActions = async () => {
 
   // assumes that all other env vars are set
   console.error('deploying tvm..')
-  await execa('npm', ['run', 'deploy'], { stderr: 'inherit' })
+  await execa('aio', ['app', 'deploy'], { stderr: 'inherit' })
   console.error('done deploying tvm, waiting for 20s for OW API GW readiness...')
   // !! need to wait for ow api gw to refresh with the new api, alternatively if this is too long or failing randomly we
   // !! could test against web actions but making this test a little less e2e
@@ -51,7 +51,7 @@ const undeployActions = async () => {
 
   // assumes that all other env vars are set
   console.error('undeploying tvm..')
-  await execa('npm', ['run', 'undeploy'], { stderr: 'inherit' })
+  await execa('aio', ['app', 'undeploy', '--actions'], { stderr: 'inherit' })
   console.error('done undeploying tvm')
 }
 

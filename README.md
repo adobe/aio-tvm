@@ -42,6 +42,7 @@ This might be useful for you if:
 
 ### Setup
 
+- `npm install -g @adobe/aio-cli`
 - `npm install`
 
 ### Deployment Config
@@ -137,11 +138,13 @@ This might be useful for you if:
 
 ### Deploy the TVM endpoints
 
-- `npm run deploy` will deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`
+- **you likely need to undeploy first to refresh the I/O Runtime Api GW**
+
+- `aio app deploy` will deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`
 
 ### Undeploy
 
-- `npm run undeploy`
+- `aio app undeploy --actions` to undeploy
 
 ### Release a new version
 

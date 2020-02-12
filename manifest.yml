@@ -1,5 +1,5 @@
 packages:
-  __CNA_PACKAGE__:
+  __APP_PACKAGE__:
     actions:
       aws-s3:
         function: actions/aws-s3/index.js
