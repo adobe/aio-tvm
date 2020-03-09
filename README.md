@@ -144,7 +144,7 @@ This might be useful for you if:
 
 ### Undeploy
 
-- `aio app undeploy --actions` to undeploy
+- `aio app undeploy` to undeploy
 
 ### Release a new version
 
