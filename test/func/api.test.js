@@ -51,7 +51,7 @@ const undeployActions = async () => {
 
   // assumes that all other env vars are set
   console.error('undeploying tvm..')
-  await execa('aio', ['app', 'undeploy', '--actions'], { stderr: 'inherit' })
+  await execa('aio', ['app', 'undeploy'], { stderr: 'inherit' })
   console.error('done undeploying tvm')
 }
 
