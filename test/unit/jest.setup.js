@@ -53,11 +53,12 @@ global.testParam = async (tvm, fakeParams, key, value, status) => {
   else traverse[lastKey] = value
   const response = await tvm.processRequest(testParams)
 
-  if (status !== 200) {
+  expect(response.statusCode).toEqual(status || 400)
+  if (status >= 400) {
     expect(response.body.error).toBeDefined()
     expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining(lastKey))
   }
-  expect(response.statusCode).toEqual(status || 400)
+  // here no need to test for 500s responses (which should be wrapped in {error}) because missing param should always be a 40x
 }
 
 beforeEach(() => {
@@ -79,7 +80,7 @@ global.expectUnauthorized = (response, log) => {
 }
 
 global.expectServerError = (response, log) => {
-  expect(response.statusCode).toEqual(500)
-  expect(response.body.error).toEqual(expect.stringContaining('server error'))
+  expect(response.error.statusCode).toEqual(500)
+  expect(response.error.body.error).toEqual(expect.stringContaining('server error'))
   expect(global.mockLog.error).toHaveBeenCalledWith(expect.stringContaining(log))
 }
