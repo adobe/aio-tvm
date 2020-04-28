@@ -140,7 +140,7 @@ This might be useful for you if:
 
 - **you likely need to undeploy first to refresh the I/O Runtime Api GW**
 
-- `aio rt delete api tvm && aio app deploy` will deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`.
+- `aio rt api delete tvm && aio app deploy` will deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`.
 
 ### Undeploy
 
