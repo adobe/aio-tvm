@@ -90,7 +90,7 @@ describe('processRequest (abstract)', () => {
         testParams.approvedList = approvedList
         const response = await tvm.processRequest(testParams)
         if (expectedAuthorized) return expect(response.statusCode).toEqual(200)
-        return global.expectUnauthorized(response, 'not approvedListed')
+        return global.expectUnauthorized(response, 'is not approved')
       }
 
       test('when approvedList contains only another namespace', async () => testapprovedList('anotherNS', false))

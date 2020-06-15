@@ -89,7 +89,6 @@ describe('processRequest (Azure Cosmos)', () => {
     const expectTokenGenerated = async () => {
       const response = await tvm.processRequest(fakeParams)
 
-      // todo remove duplicated implementation of partitionKey name creation
       const partitionKey = Buffer.from(fakeParams.owNamespace, 'utf8').toString('hex')
 
       // check response
