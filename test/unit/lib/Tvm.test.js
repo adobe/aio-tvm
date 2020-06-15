@@ -85,7 +85,7 @@ describe('processRequest (abstract)', () => {
     })
 
     describe('namespace approvedList validation', () => {
-      const testapprovedList = async (approvedList, expectedAuthorized) => {
+      const testApprovedList = async (approvedList, expectedAuthorized) => {
         const testParams = { ...fakeParams }
         testParams.approvedList = approvedList
         const response = await tvm.processRequest(testParams)
@@ -93,17 +93,17 @@ describe('processRequest (abstract)', () => {
         return global.expectUnauthorized(response, 'is not approved')
       }
 
-      test('when approvedList contains only another namespace', async () => testapprovedList('anotherNS', false))
-      test('when approvedList contains a list of different namespaces', async () => testapprovedList(',anotherNS, anotherNS2,anotherNS3 ,anotherNS4 ,', false))
-      test('when approvedList contains a namespace which shares the same prefix', async () => testapprovedList(`${fakeParams.owNamespace}-`, false))
-      test('when approvedList contains a namespace which shares the same suffix', async () => testapprovedList(`-${fakeParams.owNamespace}`, false))
-      test('when approvedList contains a namespace which shares the same prefix and escape chars', async () => testapprovedList(`\\-${fakeParams.owNamespace}`, false))
-      test('when approvedList contains a namespace which shares the same suffix and escape chars', async () => testapprovedList(`${fakeParams.owNamespace}\\-`, false))
-      test('when approvedList contains a list of different namespaces with symbols (including stars!) and same suffix/prefix', async () => testapprovedList(`*,${fakeParams.owNamespace}*(#@),*,****()!_+$#|{">}, ${fakeParams.owNamespace}|, $${fakeParams.owNamespace}\\-`, false))
+      test('when approvedList contains only another namespace', async () => testApprovedList('anotherNS', false))
+      test('when approvedList contains a list of different namespaces', async () => testApprovedList(',anotherNS, anotherNS2,anotherNS3 ,anotherNS4 ,', false))
+      test('when approvedList contains a namespace which shares the same prefix', async () => testApprovedList(`${fakeParams.owNamespace}-`, false))
+      test('when approvedList contains a namespace which shares the same suffix', async () => testApprovedList(`-${fakeParams.owNamespace}`, false))
+      test('when approvedList contains a namespace which shares the same prefix and escape chars', async () => testApprovedList(`\\-${fakeParams.owNamespace}`, false))
+      test('when approvedList contains a namespace which shares the same suffix and escape chars', async () => testApprovedList(`${fakeParams.owNamespace}\\-`, false))
+      test('when approvedList contains a list of different namespaces with symbols (including stars!) and same suffix/prefix', async () => testApprovedList(`*,${fakeParams.owNamespace}*(#@),*,****()!_+$#|{">}, ${fakeParams.owNamespace}|, $${fakeParams.owNamespace}\\-`, false))
 
-      test('when approvedList is equal to a star', async () => testapprovedList('*', true))
-      test('when approvedList contains the input namespace(allowed)', async () => testapprovedList(`${fakeParams.owNamespace}`, true))
-      test('when approvedList contains the input namespace in a list of namespaces with symbols (allowed)', async () => testapprovedList(`,${fakeParams.owNamespace},*(#@), ()!_+$#|{">}, anotherNS2|, \\dsafksad`, true))
+      test('when approvedList is equal to a star', async () => testApprovedList('*', true))
+      test('when approvedList contains the input namespace(allowed)', async () => testApprovedList(`${fakeParams.owNamespace}`, true))
+      test('when approvedList contains the input namespace in a list of namespaces with symbols (allowed)', async () => testApprovedList(`,${fakeParams.owNamespace},*(#@), ()!_+$#|{">}, anotherNS2|, \\dsafksad`, true))
     })
 
     describe('response format', () => {
