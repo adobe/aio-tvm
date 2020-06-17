@@ -11,7 +11,7 @@ packages:
           awsAccessKeyId: $AWS_ACCESS_KEY_ID
           expirationDuration: $EXPIRATION_DURATION
           owApihost: $AIO_RUNTIME_APIHOST
-          approvedList: $APPROVED_LIST 
+          approvedList: $APPROVED_LIST
         annotations:
           # this is important security wise
           final: true
