@@ -44,8 +44,8 @@ describe('processRequest (abstract)', () => {
 
       test('when expirationDuration is missing', async () => global.testParam(tvm, fakeParams, 'expirationDuration', undefined))
       test('when expirationDuration is not parseInt string', async () => global.testParam(tvm, fakeParams, 'expirationDuration', 'hello'))
-      test('when whitelist is missing', async () => global.testParam(tvm, fakeParams, 'whitelist', undefined))
-      test('when whitelist is empty', async () => global.testParam(tvm, fakeParams, 'whitelist', ''))
+      test('when approvedList is missing', async () => global.testParam(tvm, fakeParams, 'approvedList', undefined))
+      test('when approvedList is empty', async () => global.testParam(tvm, fakeParams, 'approvedList', ''))
       test('when owApihost is missing', async () => global.testParam(tvm, fakeParams, 'owApihost', undefined))
       test('when owApihost is not a valid uri', async () => global.testParam(tvm, fakeParams, 'owApihost', 'hello'))
       test('when owNamespace is missing', async () => global.testParam(tvm, fakeParams, 'owNamespace', undefined))
@@ -84,26 +84,26 @@ describe('processRequest (abstract)', () => {
       })
     })
 
-    describe('namespace whitelist validation', () => {
-      const testWhitelist = async (whitelist, expectedAuthorized) => {
+    describe('namespace approvedList validation', () => {
+      const testApprovedList = async (approvedList, expectedAuthorized) => {
         const testParams = { ...fakeParams }
-        testParams.whitelist = whitelist
+        testParams.approvedList = approvedList
         const response = await tvm.processRequest(testParams)
         if (expectedAuthorized) return expect(response.statusCode).toEqual(200)
-        return global.expectUnauthorized(response, 'not whitelisted')
+        return global.expectUnauthorized(response, 'is not approved')
       }
 
-      test('when whitelist contains only another namespace', async () => testWhitelist('anotherNS', false))
-      test('when whitelist contains a list of different namespaces', async () => testWhitelist(',anotherNS, anotherNS2,anotherNS3 ,anotherNS4 ,', false))
-      test('when whitelist contains a namespace which shares the same prefix', async () => testWhitelist(`${fakeParams.owNamespace}-`, false))
-      test('when whitelist contains a namespace which shares the same suffix', async () => testWhitelist(`-${fakeParams.owNamespace}`, false))
-      test('when whitelist contains a namespace which shares the same prefix and escape chars', async () => testWhitelist(`\\-${fakeParams.owNamespace}`, false))
-      test('when whitelist contains a namespace which shares the same suffix and escape chars', async () => testWhitelist(`${fakeParams.owNamespace}\\-`, false))
-      test('when whitelist contains a list of different namespaces with symbols (including stars!) and same suffix/prefix', async () => testWhitelist(`*,${fakeParams.owNamespace}*(#@),*,****()!_+$#|{">}, ${fakeParams.owNamespace}|, $${fakeParams.owNamespace}\\-`, false))
+      test('when approvedList contains only another namespace', async () => testApprovedList('anotherNS', false))
+      test('when approvedList contains a list of different namespaces', async () => testApprovedList(',anotherNS, anotherNS2,anotherNS3 ,anotherNS4 ,', false))
+      test('when approvedList contains a namespace which shares the same prefix', async () => testApprovedList(`${fakeParams.owNamespace}-`, false))
+      test('when approvedList contains a namespace which shares the same suffix', async () => testApprovedList(`-${fakeParams.owNamespace}`, false))
+      test('when approvedList contains a namespace which shares the same prefix and escape chars', async () => testApprovedList(`\\-${fakeParams.owNamespace}`, false))
+      test('when approvedList contains a namespace which shares the same suffix and escape chars', async () => testApprovedList(`${fakeParams.owNamespace}\\-`, false))
+      test('when approvedList contains a list of different namespaces with symbols (including stars!) and same suffix/prefix', async () => testApprovedList(`*,${fakeParams.owNamespace}*(#@),*,****()!_+$#|{">}, ${fakeParams.owNamespace}|, $${fakeParams.owNamespace}\\-`, false))
 
-      test('when whitelist is equal to a star', async () => testWhitelist('*', true))
-      test('when whitelist contains the input namespace(allowed)', async () => testWhitelist(`${fakeParams.owNamespace}`, true))
-      test('when whitelist contains the input namespace in a list of namespaces with symbols (allowed)', async () => testWhitelist(`,${fakeParams.owNamespace},*(#@), ()!_+$#|{">}, anotherNS2|, \\dsafksad`, true))
+      test('when approvedList is equal to a star', async () => testApprovedList('*', true))
+      test('when approvedList contains the input namespace(allowed)', async () => testApprovedList(`${fakeParams.owNamespace}`, true))
+      test('when approvedList contains the input namespace in a list of namespaces with symbols (allowed)', async () => testApprovedList(`,${fakeParams.owNamespace},*(#@), ()!_+$#|{">}, anotherNS2|, \\dsafksad`, true))
     })
 
     describe('response format', () => {

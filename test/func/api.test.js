@@ -28,9 +28,9 @@ const host = 'https://' + deployNamespace + '.' + process.env.AIO_RUNTIME_APIHOS
 const waitFor = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 const deployActions = async () => {
-  // !! important the whitelist includes the testNamespace but not the deployNamespace which we will use to test that
-  // !! the whitelisting works. Alternatively, we could redeploy w/ diff whitelists b/w test, but it takes too much time
-  process.env.WHITELIST = `${testNamespace}, fakeNS1,fakeNS2,`
+  // !! important the approvedList includes the testNamespace but not the deployNamespace which we will use to test that
+  // !! the approvedListing works. Alternatively, we could redeploy w/ diff approvedLists b/w test, but it takes too much time
+  process.env.APPROVED_LIST = `${testNamespace}, fakeNS1,fakeNS2,`
 
   // test auth 1 is deploying
   process.env.AIO_RUNTIME_AUTH = deployAuth
@@ -278,16 +278,16 @@ describe('e2e errors', () => {
       }))
     })
   })
-  test('test non whitelisted namespace', async () => {
+  test('test non approvedListed namespace', async () => {
     await Promise.all(Object.values(endpoints).map(e => {
-      return expectBadStatus(403, e, deployNamespace, { Authorization: deployAuth }) // ns and auth are valid but ns is not whitelisted => 403
+      return expectBadStatus(403, e, deployNamespace, { Authorization: deployAuth }) // ns and auth are valid but ns is not approvedListed => 403
     }))
   })
   test('test status=400 when request attempts to override final parameters', async () => {
     // 1. final params common to all endpoints
     const commonFinalParamOverwrite = [
       'expirationDuration=100000',
-      'whitelist=*',
+      'approvedList=*',
       'owApiHost=https://mallorys-openwhisk-deployment.com',
       '__ow_headers=bad' // we must make sure that __ow* vars are safe as well (should be covert by OW)
     ]

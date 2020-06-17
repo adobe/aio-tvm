@@ -25,7 +25,7 @@ jest.doMock('@adobe/aio-lib-core-logging', () => () => global.mockLog)
 global.owNsListMock = jest.fn()
 global.baseNoErrorParams = {
   expirationDuration: '1500',
-  whitelist: '*',
+  approvedList: '*',
   owApihost: 'https://www.fake.com',
   owNamespace: 'fakeNS',
   __ow_headers: { authorization: 'fakeAuth' }
