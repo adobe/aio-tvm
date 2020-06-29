@@ -1,6 +1,6 @@
 {
   "name": "aio-tvm",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "The Adobe I/O token vending machine for used to integrate external cloud services with Adobe I/O Runtime",
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
