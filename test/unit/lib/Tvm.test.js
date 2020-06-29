@@ -44,12 +44,22 @@ describe('processRequest (abstract)', () => {
 
       test('when expirationDuration is missing', async () => global.testParam(tvm, fakeParams, 'expirationDuration', undefined))
       test('when expirationDuration is not parseInt string', async () => global.testParam(tvm, fakeParams, 'expirationDuration', 'hello'))
+
       test('when approvedList is missing', async () => global.testParam(tvm, fakeParams, 'approvedList', undefined))
       test('when approvedList is empty', async () => global.testParam(tvm, fakeParams, 'approvedList', ''))
+
       test('when owApihost is missing', async () => global.testParam(tvm, fakeParams, 'owApihost', undefined))
       test('when owApihost is not a valid uri', async () => global.testParam(tvm, fakeParams, 'owApihost', 'hello'))
+
       test('when owNamespace is missing', async () => global.testParam(tvm, fakeParams, 'owNamespace', undefined))
       test('when owNamespace is empty', async () => global.testParam(tvm, fakeParams, 'owNamespace', ''))
+      test('when owNamespace is bigger than 63 chars', async () => global.testParam(tvm, fakeParams, 'owNamespace', 'a'.repeat(64)))
+      test('when owNamespace is equal to 63 chars', async () => {
+        const ns63chars = 'a'.repeat(63)
+        global.owNsListMock.mockResolvedValue([ns63chars])
+        await global.testParam(tvm, fakeParams, 'owNamespace', ns63chars, 200)
+      })
+      test('when owNamespace is smaller than 3 chars', async () => global.testParam(tvm, fakeParams, 'owNamespace', 'aa'))
 
       test('when authorization header is missing', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', undefined, 401))
       test('when authorization header is empty', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', '', 401))
