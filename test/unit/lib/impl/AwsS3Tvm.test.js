@@ -28,6 +28,8 @@ fakeParams.s3Bucket = 'fakeBucket'
 fakeParams.awsAccessKeyId = 'fakeAccessKeyId'
 fakeParams.awsSecretAccessKey = 'fakeSecretAccessKey'
 
+const fakeNSHash = 'f3125a324ac7d2024dbbc867fb2e6013' // 32 bit hash of 'fakeNS'
+
 describe('processRequest (AWS)', () => {
   // setup
   /** @type {AwsS3Tvm} */
@@ -76,7 +78,7 @@ describe('processRequest (AWS)', () => {
         DurationSeconds: fakeParams.expirationDuration,
         // policy more checks?
         Policy: expect.stringContaining(fakeParams.owNamespace),
-        Name: fakeParams.owNamespace
+        Name: fakeNSHash
       })
     }
 

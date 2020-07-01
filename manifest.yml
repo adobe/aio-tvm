@@ -1,5 +1,5 @@
 packages:
-  __CNA_PACKAGE__:
+  __APP_PACKAGE__:
     actions:
       aws-s3:
         function: actions/aws-s3/index.js
@@ -11,7 +11,7 @@ packages:
           awsAccessKeyId: $AWS_ACCESS_KEY_ID
           expirationDuration: $EXPIRATION_DURATION
           owApihost: $AIO_RUNTIME_APIHOST
-          whitelist: $WHITELIST
+          approvedList: $APPROVED_LIST
         annotations:
           # this is important security wise
           final: true
@@ -24,7 +24,7 @@ packages:
           azureStorageAccessKey: $AZURE_STORAGE_ACCESS_KEY
           expirationDuration: $EXPIRATION_DURATION
           owApihost: $AIO_RUNTIME_APIHOST
-          whitelist: $WHITELIST
+          approvedList: $APPROVED_LIST
         annotations:
           # this is important security wise
           final: true
@@ -39,7 +39,7 @@ packages:
           azureCosmosContainerId: $AZURE_COSMOS_CONTAINER_ID
           expirationDuration: $EXPIRATION_DURATION
           owApihost: $AIO_RUNTIME_APIHOST
-          whitelist: $WHITELIST
+          approvedList: $APPROVED_LIST
         annotations:
           # this is important security wise
           final: true

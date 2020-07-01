@@ -42,6 +42,7 @@ This might be useful for you if:
 
 ### Setup
 
+- `npm install -g @adobe/aio-cli`
 - `npm install`
 
 ### Deployment Config
@@ -55,7 +56,7 @@ This might be useful for you if:
   AIO_RUNTIME_AUTH=<deployment_auth_ns>
 
   EXPIRATION_DURATION=<token expiration in seconds>
-  WHITELIST=<comma separated list of namespaces>
+  APPROVED_LIST=<comma separated list of namespaces>
 
   AWS_ACCESS_KEY_ID=<key id of IAM user created in AWS>
   AWS_SECRET_ACCESS_KEY=<secret of IAM user created in AWS>
@@ -75,12 +76,11 @@ This might be useful for you if:
   TEST_AUTH_1=<test auth 1>
   TEST_NAMESPACE_2=<test ns 2>
   TEST_AUTH_2=<test auth ns 2>
-
   ```
 
-- Use the `WHITELIST` variable to control which namespace can access the TVM and
+- Use the `APPROVED_LIST` variable to control which namespace can access the TVM and
   hence who can deploy files to your S3 Bucket.
-  - **[ ⚠️ NOT RECOMMENDED ⚠️]** Use `WHITELIST=*` to allow access to
+  - **[ ⚠️ NOT RECOMMENDED ⚠️]** Use `APPROVED_LIST=*` to allow access to
     **every** OpenWhisk namespace in the same domain.
 
 ### Setup Azure Blob
@@ -137,11 +137,13 @@ This might be useful for you if:
 
 ### Deploy the TVM endpoints
 
-- `npm run deploy` will deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`
+- **you likely need to undeploy first to refresh the I/O Runtime Api GW**
+
+- `aio rt api delete tvm && aio app deploy` will deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`.
 
 ### Undeploy
 
-- `npm run undeploy`
+- `aio app undeploy` to undeploy
 
 ### Release a new version
 

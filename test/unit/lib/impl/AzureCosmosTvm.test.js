@@ -76,9 +76,6 @@ describe('processRequest (Azure Cosmos)', () => {
   })
 
   describe('param validation', () => {
-    test('when owNamespace is bigger than 49 chars', async () => global.testParam(tvm, fakeParams, 'owNamespace', 'a'.repeat(50)))
-    test('when owNamespace is smaller than 3 chars', async () => global.testParam(tvm, fakeParams, 'owNamespace', 'aa'))
-    test('when owNamespace is missing', async () => global.testParam(tvm, fakeParams, 'owNamespace', undefined))
     test('when azureCosmosAccount is missing', async () => global.testParam(tvm, fakeParams, 'azureCosmosAccount', undefined))
     test('when azureCosmosMasterKey is missing', async () => global.testParam(tvm, fakeParams, 'azureCosmosMasterKey', undefined))
     test('when azureCosmosDatabaseId is missing', async () => global.testParam(tvm, fakeParams, 'azureCosmosDatabaseId', undefined))
@@ -89,7 +86,6 @@ describe('processRequest (Azure Cosmos)', () => {
     const expectTokenGenerated = async () => {
       const response = await tvm.processRequest(fakeParams)
 
-      // todo remove duplicated implementation of partitionKey name creation
       const partitionKey = Buffer.from(fakeParams.owNamespace, 'utf8').toString('hex')
 
       // check response

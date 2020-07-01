@@ -1,6 +1,6 @@
 {
   "name": "aio-tvm",
-  "version": "2.0.0",
+  "version": "3.1.0",
   "description": "The Adobe I/O token vending machine for used to integrate external cloud services with Adobe I/O Runtime",
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
@@ -11,17 +11,14 @@
   "scripts": {
     "lint": "eslint './actions/**/*.js' './lib/**/*.js' './test/**/*.js' './scripts/**/*.js'",
     "beautify": "npm run lint -- --fix",
-    "deploy": "webpack && dotenv cna-scripts deploy.actions",
-    "undeploy": "dotenv cna-scripts undeploy.actions",
     "test": "npm run unit && npm run lint",
     "unit": "jest",
     "func": "jest -c jest.func.config.js",
-    "release": "npm run test && dotenv npm run func && np --no-publish --no-tests --no-cleanup --no-yarn && npm run deploy",
+    "release": "npm run test && dotenv npm run func && np --no-publish --no-tests --no-cleanup --no-yarn",
     "generate-doc": "redoc-cli bundle docs/swagger.json -o docs/api.html"
   },
   "jest.pathToConfig": "jest.config.js",
   "devDependencies": {
-    "@adobe/io-cna-scripts": "^0.1.0",
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/runtime": "^7.6.2",
     "@types/jest": "^24.0.18",

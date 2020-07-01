@@ -24,7 +24,7 @@ AZURE_COSMOS_ACCOUNT, AZURE_COSMOS_DATABASE_ID, AZURE_COSMOS_CONTAINER_ID, AZURE
 
 ## Test overview
 
-Before all tests, the tvm is deployed into ns1. Each tvm endpoint has only ns2 whitelisted. Requests are sent from ns2
+Before all tests, the tvm is deployed into ns1. Each tvm endpoint has only ns2 approvedListed. Requests are sent from ns2
 unless specified otherwise. At the end the tvm endpoints are undeployed.
 
 Here is an overview of what is tested in [api.test.js](./api.test.js):
