@@ -97,7 +97,7 @@ This might be useful for you if:
   - specify a container name
   - specify a partitionKey: call it **`/partitionKey`** => the name is important
   - create the container
-- Configure the newly created container to have **ttl** set to **on**
+- Configure the newly created container to have **Time To live** set to **On** and with a default of **86400** seconds
 - Retrieve the account master key and set `AZURE_COSMOS_MASTER_KEY`
 
 ### Setup AWS S3
