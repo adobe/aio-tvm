@@ -30,6 +30,16 @@ global.baseNoErrorParams = {
   owNamespace: 'fakeNS',
   __ow_headers: { authorization: 'fakeAuth' }
 }
+global.presignReqNoErrorParams = {
+  presignReq: true,
+  blobName: 'fakeBlob',
+  expirationDuration: '1500',
+  expiryInSeconds: 60,
+  approvedList: '*',
+  owApihost: 'https://www.fake.com',
+  owNamespace: 'fakeNS',
+  __ow_headers: { authorization: 'fakeAuth' }
+}
 global.nsHash = 'f3125a324ac7d2024dbbc867fb2e6013'
 
 const openwhisk = require('openwhisk')

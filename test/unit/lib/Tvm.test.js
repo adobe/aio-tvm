@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const { Tvm } = require('../../../lib/Tvm')
 
 const fakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
+const presignFakeParams = JSON.parse(JSON.stringify(global.presignReqNoErrorParams))
 
 describe('processRequest (abstract)', () => {
   // setup
@@ -24,6 +25,11 @@ describe('processRequest (abstract)', () => {
 
   test('without implementation', async () => {
     const response = await tvm.processRequest(fakeParams)
+    global.expectServerError(response, 'not implemented')
+  })
+
+  test('without presign req implementation', async () => {
+    const response = await tvm.processRequest(presignFakeParams)
     global.expectServerError(response, 'not implemented')
   })
 
@@ -63,6 +69,9 @@ describe('processRequest (abstract)', () => {
 
       test('when authorization header is missing', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', undefined, 401))
       test('when authorization header is empty', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', '', 401))
+
+      // test for presign req
+      test('when presign param is passed as non boolean', async () => global.testParam(tvm, presignFakeParams, 'presignReq', 'abc'))
     })
 
     describe('openwhisk namespace/auth validation', () => {
