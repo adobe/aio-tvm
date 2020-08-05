@@ -25,8 +25,6 @@ azure.ContainerURL.fromServiceURL = jest.fn().mockReturnValue({
   create: azureContainerCreateMock
 })
 azure.ContainerURL.prototype.create = jest.fn()
-azure.generateBlobSASQueryParameters = jest.fn()
-azure.BlobSASPermissions.parse = jest.fn()
 azure.Aborter.none = {}
 
 class FakePermission {
@@ -48,25 +46,18 @@ const fakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
 fakeParams.azureStorageAccount = 'fakeAccount'
 fakeParams.azureStorageAccessKey = 'fakeKey'
 
-const presignReqFakeParams = JSON.parse(JSON.stringify(global.presignReqNoErrorParams))
-presignReqFakeParams.azureStorageAccount = 'fakeAccount'
-presignReqFakeParams.azureStorageAccessKey = 'fakeKey'
-
 describe('processRequest (Azure Cosmos)', () => {
   // setup
   /** @type {AzureBlobTvm} */
   let tvm
   const fakeSas = 'fakeSas'
-  const fakePermissionStr = 'fakeperm'
   beforeEach(() => {
     tvm = new AzureBlobTvm()
     azureContainerCreateMock.mockReset()
     azure.generateBlobSASQueryParameters.mockReset()
-    azure.BlobSASPermissions.parse.mockReset()
 
     // defaults that work
     azure.generateBlobSASQueryParameters.mockReturnValue({ toString: () => fakeSas })
-    azure.BlobSASPermissions.parse.mockReturnValue({ toString: () => fakePermissionStr })
   })
 
   describe('param validation', () => {
@@ -111,17 +102,5 @@ describe('processRequest (Azure Cosmos)', () => {
       const response = await tvm.processRequest(fakeParams)
       global.expectServerError(response, 'an azure blob error')
     })
-  })
-
-  describe('signature generation tests', () => {
-    const expectSignatureGenerated = async () => {
-      const response = await tvm.processRequest(presignReqFakeParams)
-      expect(response.statusCode).toEqual(200)
-      expect(response.body).toEqual({ signature: fakeSas })
-      expect(azure.generateBlobSASQueryParameters).toHaveBeenCalledTimes(1)
-      expect(azure.generateBlobSASQueryParameters).toHaveBeenCalledWith(expect.objectContaining({ permissions: fakePermissionStr }), expect.any(Object))
-      expect(azure.generateBlobSASQueryParameters).toHaveBeenCalledWith(expect.objectContaining({ blobName: 'fakeBlob' }), expect.any(Object))
-    }
-    test('generate signature with valid params', expectSignatureGenerated)
   })
 })
