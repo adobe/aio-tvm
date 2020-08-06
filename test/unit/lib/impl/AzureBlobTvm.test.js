@@ -25,6 +25,7 @@ azure.ContainerURL.fromServiceURL = jest.fn().mockReturnValue({
   create: azureContainerCreateMock
 })
 azure.ContainerURL.prototype.create = jest.fn()
+azure.generateBlobSASQueryParameters = jest.fn()
 azure.Aborter.none = {}
 
 class FakePermission {
