@@ -31,7 +31,6 @@ global.baseNoErrorParams = {
   __ow_headers: { authorization: 'fakeAuth' }
 }
 global.presignReqNoErrorParams = {
-  presignReq: true,
   blobName: 'fakeBlob',
   expirationDuration: '1500',
   expiryInSeconds: 60,
