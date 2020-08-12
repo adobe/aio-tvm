@@ -44,13 +44,14 @@
     "webpack-cli": "^3.3.9"
   },
   "dependencies": {
-    "@adobe/aio-lib-core-logging": "0.0.4",
-    "@adobe/aio-lib-ims": "^4.1.0",
+    "@adobe/aio-lib-core-logging": "^1.1.0",
+    "@adobe/aio-lib-ims": "4.0.1",
     "@azure/cosmos": "^3.3.1",
     "@azure/storage-blob": "^10.5.0",
     "@hapi/joi": "^16.1.4",
     "aws-sdk": "^2.539.0",
     "crypto": "^1.0.1",
+    "lru-cache": "^6.0.0",
     "openwhisk": "^3.20.0"
   }
 }
