@@ -9,17 +9,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
 const { Tvm } = require('../../../lib/Tvm')
-
-const fakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
-
 describe('processRequest (abstract)', () => {
   // setup
   /** @type {Tvm} */
   let tvm
+  let fakeParams
   beforeEach(() => {
     tvm = new Tvm()
+    fakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
   })
 
   test('without implementation', async () => {
@@ -63,6 +61,113 @@ describe('processRequest (abstract)', () => {
 
       test('when authorization header is missing', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', undefined, 401))
       test('when authorization header is empty', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', '', 401))
+    })
+
+    describe('api gw service token validation', () => {
+      test('when header is missing', async () => {
+        delete fakeParams.__ow_headers['x-gw-ims-authorization']
+        // additional embedded test making sure false doesn't count as true
+        fakeParams.disableAdobeIOApiGwTokenValidation = 'false'
+        const response = await tvm.processRequest(fakeParams)
+        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token is not valid: missing x-gw-ims-authorization header')
+      })
+      test('when header is not a bearer token', async () => {
+        fakeParams.__ow_headers['x-gw-ims-authorization'] = 'Basic fake'
+        const response = await tvm.processRequest(fakeParams)
+        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token is not valid: x-gw-ims-authorization header is not a valid Bearer token')
+      })
+
+      test('when token is not valid', async () => {
+        global.mockImsInstance.validateToken.mockResolvedValue({ valid: false, token: global.imsValidateTokenResponseNoError.token })
+        const response = await tvm.processRequest(fakeParams)
+        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token is not valid: is not valid')
+      })
+
+      test('when token has a bad clientId', async () => {
+        global.mockImsInstance.validateToken.mockResolvedValue({
+          valid: true,
+          token: {
+            client_id: 'bad',
+            scope: global.imsValidateTokenResponseNoError.token.scope
+          }
+        })
+        const response = await tvm.processRequest(fakeParams)
+        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token is not valid: token client_id \'bad\' is not allowed')
+      })
+
+      test('when token has missing scopes', async () => {
+        global.mockImsInstance.validateToken.mockResolvedValue({
+          valid: true,
+          token: {
+            client_id: global.imsValidateTokenResponseNoError.token.client_id,
+            scope: 'AdobeID,other,notofinterest'
+          }
+        })
+        const response = await tvm.processRequest(fakeParams)
+        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token is not valid: token is missing required scopes \'openid,system\'')
+      })
+
+      test('when gw auth check is disabled and token is missing', async () => {
+        delete fakeParams.__ow_headers['x-gw-ims-authorization']
+        fakeParams.disableAdobeIOApiGwTokenValidation = 'true'
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toBe(200)
+      })
+
+      test('when gw auth check is disabled and token is not valid', async () => {
+        fakeParams.disableAdobeIOApiGwTokenValidation = 'true'
+        global.mockImsInstance.validateToken.mockResolvedValue({ valid: false })
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toBe(200)
+      })
+
+      test('when gw token is valid and imsEnv is not set', async () => {
+        const cacheKey = 'prod' + global.fakeGWToken
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toBe(200)
+        // attempts to read from cache
+        expect(global.mockLRUInstance.get).toHaveBeenCalledWith(cacheKey)
+        expect(global.Ims).toHaveBeenCalledWith('prod')
+        expect(global.mockImsInstance.validateToken).toHaveBeenCalledWith(global.fakeGWToken)
+        // sets the cache
+        expect(global.mockLRUInstance.set).toHaveBeenCalledWith(cacheKey, true)
+      })
+
+      test('when gw token is valid and imsEnv is stage', async () => {
+        const cacheKey = 'stage' + global.fakeGWToken
+        fakeParams.imsEnv = 'stage'
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toBe(200)
+        // attempts to read from cache
+        expect(global.mockLRUInstance.get).toHaveBeenCalledWith(cacheKey)
+        expect(global.Ims).toHaveBeenCalledWith('stage')
+        expect(global.mockImsInstance.validateToken).toHaveBeenCalledWith(global.fakeGWToken)
+        // sets the cache
+        expect(global.mockLRUInstance.set).toHaveBeenCalledWith(cacheKey, true)
+      })
+
+      test('when gw token is valid and imsEnv is prod', async () => {
+        const cacheKey = 'prod' + global.fakeGWToken
+        fakeParams.imsEnv = 'prod'
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toBe(200)
+        // attempts to read from cache
+        expect(global.mockLRUInstance.get).toHaveBeenCalledWith(cacheKey)
+        expect(global.Ims).toHaveBeenCalledWith('prod')
+        expect(global.mockImsInstance.validateToken).toHaveBeenCalledWith(global.fakeGWToken)
+        // sets the cache
+        expect(global.mockLRUInstance.set).toHaveBeenCalledWith(cacheKey, true)
+      })
+
+      test('when gw token is valid and is set in cache', async () => {
+        const cacheKey = 'prod' + global.fakeGWToken
+        global.mockLRUInstance.get.mockImplementation(k => k === cacheKey)
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toBe(200)
+        expect(global.mockImsInstance.validateToken).not.toHaveBeenCalled()
+        expect(global.mockLRUInstance.set).not.toHaveBeenCalled()
+        expect(global.mockLRUInstance.get).toHaveBeenCalledWith(cacheKey)
+      })
     })
 
     describe('openwhisk namespace/auth validation', () => {

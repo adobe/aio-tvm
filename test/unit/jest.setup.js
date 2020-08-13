@@ -22,13 +22,36 @@ global.mockLog = {
 }
 jest.doMock('@adobe/aio-lib-core-logging', () => () => global.mockLog)
 
+jest.mock('@adobe/aio-lib-ims', () => ({
+  Ims: jest.fn()
+}))
+global.Ims = require('@adobe/aio-lib-ims').Ims
+global.mockImsInstance = { validateToken: jest.fn() }
+global.Ims.mockImplementation(() => global.mockImsInstance)
+global.imsValidateTokenResponseNoError = {
+  valid: true,
+  token: {
+    client_id: 'AnsApiPlatform1',
+    scope: 'AdobeID,openid,system'
+  }
+}
+
+jest.mock('lru-cache')
+global.LRU = require('lru-cache')
+global.mockLRUInstance = {
+  get: jest.fn(),
+  set: jest.fn()
+}
+global.LRU.mockImplementation(() => global.mockLRUInstance)
+
+global.fakeGWToken = 'fakeGWToken'
 global.owNsListMock = jest.fn()
 global.baseNoErrorParams = {
   expirationDuration: '1500',
   approvedList: '*',
   owApihost: 'https://www.fake.com',
   owNamespace: 'fakeNS',
-  __ow_headers: { authorization: 'fakeAuth' }
+  __ow_headers: { authorization: 'fakeAuth', 'x-gw-ims-authorization': 'Bearer ' + global.fakeGWToken }
 }
 global.nsHash = 'f3125a324ac7d2024dbbc867fb2e6013'
 
@@ -71,6 +94,14 @@ beforeEach(() => {
 
   // default: valid OW namespace
   global.owNsListMock.mockResolvedValue([global.baseNoErrorParams.owNamespace])
+  // default assume gw ims token ok
+  global.Ims.mockClear()
+  global.mockImsInstance.validateToken.mockReset()
+  global.mockImsInstance.validateToken.mockResolvedValue(global.imsValidateTokenResponseNoError)
+  global.mockImsInstance.validateToken.mockResolvedValue(global.imsValidateTokenResponseNoError)
+  global.LRU.mockClear()
+  global.mockLRUInstance.get.mockReset()
+  global.mockLRUInstance.set.mockReset()
 })
 
 global.expectUnauthorized = (response, log) => {
@@ -80,7 +111,10 @@ global.expectUnauthorized = (response, log) => {
 }
 
 global.expectServerError = (response, log) => {
+  if (!response.error) {
+    throw new Error(`expected 500 error got: ${JSON.stringify(response)}`)
+  }
   expect(response.error.statusCode).toEqual(500)
   expect(response.error.body.error).toEqual(expect.stringContaining('server error'))
-  expect(global.mockLog.error).toHaveBeenCalledWith(expect.stringContaining(log))
+  expect(global.mockLog.error).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining(log) }))
 }
