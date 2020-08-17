@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
-  "host": "adobeio.adobeioruntime.net/apis",
-  "basePath": "/tvm",
+  "host": "firefly-tvm-stage.adobe.io",
   "info": {
-    "title": "Adobe I/O Token Vending Machine"
+    "title": "Adobe I/O Token Vending Machine",
+    "version": "1"
   },
   "definitions": {
     "Error": {
@@ -65,6 +65,16 @@
       },
       "required": [ "expiration", "sasURLPublic", "sasURLPrivate" ]
     },
+    "AzureBlobSignature": {
+      "description": "Presigned-Url for accessing an Azure blob",
+      "properties": {
+        "signature": {
+          "description": "Access signature for the Blob",
+          "type": "string"
+        }
+      },
+      "required": [ "signature" ]
+    },
     "AzureCosmosToken": {
       "description": "token allowing access to a specific cosmos db partition key",
       "properties": {
@@ -108,7 +118,7 @@
             "type": "string",
             "required": true,
             "format": "owAuth",
-            "description": "OpenWhisk auth"
+            "description": "OpenWhisk Basic auth in base 64 format, e.g. `Basic ZmFrZWF1dGg=`"
           },
           {
             "in": "path",
@@ -126,14 +136,8 @@
               "$ref": "#/definitions/Error"
             }
           },
-          "401": {
-            "description": "unauthorized request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
           "403": {
-            "description": "forbidden request",
+            "description": "unauthorized request",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -158,7 +162,7 @@
             "type": "string",
             "required": true,
             "format": "owAuth",
-            "description": "OpenWhisk auth"
+            "description": "OpenWhisk Basic auth in base 64 format, e.g. `Basic ZmFrZWF1dGg=`"
           },
           {
             "in": "path",
@@ -172,12 +176,6 @@
         "responses": {
           "400": {
             "description": "bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "401": {
-            "description": "unauthorized request",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -197,6 +195,66 @@
         }
       }
     },
+    "/azure/presign/{owNamespace}": {
+      "get": {
+        "produces": [ "application/json" ],
+        "operationId": "GetPresignedUrlForAzureBlob",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "required": true,
+            "format": "owAuth",
+            "description": "OpenWhisk Basic auth in base 64 format, e.g. `Basic ZmFrZWF1dGg=`"
+          },
+          {
+            "in": "path",
+            "name": "owNamespace",
+            "type": "string",
+            "required": true,
+            "format": "owNamespace",
+            "description": "OpenWhisk namespace"
+          },
+          {
+            "in": "query",
+            "name": "expiryInSeconds",
+            "type": "integer",
+            "required": true,
+            "format": "expiryInSeconds",
+            "description": "Pre-signed URL expiration time in seconds"
+          },
+          {
+            "in": "query",
+            "name": "blobName",
+            "type": "string",
+            "required": true,
+            "format": "blobName",
+            "description": "Name of the blob to create the pre-signed URL for"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "forbidden request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "200": {
+            "description": "signature to access a single azure blob",
+            "schema": {
+              "$ref": "#/definitions/AzureBlobSignature"
+            }
+          }
+        }
+      }
+    },
     "/azure/cosmos/{owNamespace}": {
       "get": {
         "produces": [ "application/json" ],
@@ -208,7 +266,7 @@
             "type": "string",
             "required": true,
             "format": "owAuth",
-            "description": "OpenWhisk auth"
+            "description": "OpenWhisk Basic auth in base 64 format, e.g. `Basic ZmFrZWF1dGg=`"
           },
           {
             "in": "path",
@@ -222,12 +280,6 @@
         "responses": {
           "400": {
             "description": "bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "401": {
-            "description": "unauthorized request",
             "schema": {
               "$ref": "#/definitions/Error"
             }
