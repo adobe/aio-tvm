@@ -7,25 +7,25 @@
 This is an implementation of a TVM delivering **temporary and restricted tokens** to access various cloud services. Users authenticate
 to the TVM with their **Adobe I/O Runtime (a.k.a OpenWhisk) credentials** and are only authorized to access their own resources.
 
+A set of Adobe I/O TVM actions are deployed behind the Adobe I/O Gateway at `https://firefly-tvm.adobe.io`.
+
 ## Use
 
 - [JavaScript NPM Client: @adobe/aio-lib-core-tvm](https://github.com/adobe/aio-lib-core-tvm#use)
 
 - cURL
+  - requirements: valid Adobe I/O Runtime credentials, `namespace` and `auth`
+  - endpoints: `azure/blob/{namespace}`, `azure/cosmos/{namespace}`, `aws/s3/{namespace}`, `azure/presign/{namespace}`
 
 ```bash
-curl -H "Authorization: ${AUTH}" "https://adobeio.adobeioruntime.net/apis/tvm/azure/blob/${NAMESPACE}"
-curl -H "Authorization: ${AUTH}" "https://adobeio.adobeioruntime.net/apis/tvm/azure/cosmos/${NAMESPACE}"
-curl -H "Authorization: ${AUTH}" "https://adobeio.adobeioruntime.net/apis/tvm/aws/s3/${NAMESPACE}"
+curl "https://firefly-tvm.adobe.io/azure/blob/{namespace}" \
+  -H "Authorization: Basic {base 64 of auth}" \
+  -H "x-Api-Key: firefly-aio-tvm"
 ```
 
 ## Explore
 
 `goto` [API](https://opensource.adobe.com/aio-tvm/docs/api.html)
-
-## Deprecated endpoints (not part of API)
-
-- Get AWS S3 token `https://adobeioruntime.net/api/v1/web/adobeio/tvm/get-s3-upload-token` is still accessible (POST and GET) with params `{"owAuth": "<myauth>", "owNamespace": "<mynamespace>"}`
 
 ## Deploy your own TVM
 
@@ -50,28 +50,37 @@ This might be useful for you if:
 - `.env`:
 
   ```bash
+  # Adobe I/O Runtime deployment credentials
   AIO_RUNTIME_APIVERSION=v1
   AIO_RUNTIME_APIHOST=https://adobeioruntime.net
   AIO_RUNTIME_NAMESPACE=<deployment_ns>
   AIO_RUNTIME_AUTH=<deployment_auth_ns>
 
+  # TVM credentials options
   EXPIRATION_DURATION=<token expiration in seconds>
   APPROVED_LIST=<comma separated list of namespaces>
 
+  # AWS S3 credentials
   AWS_ACCESS_KEY_ID=<key id of IAM user created in AWS>
   AWS_SECRET_ACCESS_KEY=<secret of IAM user created in AWS>
   AWS_REGION=us-east-1
   S3_BUCKET=<MY_BUCKET>
 
+  # Azure Storage account credentials
   AZURE_STORAGE_ACCOUNT=<storage account name>
   AZURE_STORAGE_ACCESS_KEY=<storage access key>
 
+  # Azure Cosmos Credentials
   AZURE_COSMOS_ACCOUNT=<cosmosdb account name>
   AZURE_COSMOS_MASTER_KEY=<cosmosdb master key>
   AZURE_COSMOS_DATABASE_ID=<cosmosdb database name>
   AZURE_COSMOS_CONTAINER_ID=<cosmosdb database name>
 
-  # for functional tests only
+  # Adobe I/O API Gateway token validation specific
+  DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION=<optional, set to true if TVM is not deployed behind the Adobe I/O API Gateway>
+  IMS_ENV=<not relevant if DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION=true, IMS env for validating the Adobe I/O API Gateway token>
+
+  # Test Adobe I/O Runtime credentials for functional tests
   TEST_NAMESPACE_1=<test ns 1>
   TEST_AUTH_1=<test auth 1>
   TEST_NAMESPACE_2=<test ns 2>
