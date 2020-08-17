@@ -59,8 +59,9 @@ describe('processRequest (abstract)', () => {
       })
       test('when owNamespace is smaller than 3 chars', async () => global.testParam(tvm, fakeParams, 'owNamespace', 'aa'))
 
-      test('when authorization header is missing', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', undefined, 401))
-      test('when authorization header is empty', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', '', 401))
+      test('when authorization header is missing', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', undefined, 403))
+      test('when authorization header is empty', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', '', 403))
+      test('when authorization header is not a valid Basic auth header', async () => global.testParam(tvm, fakeParams, '__ow_headers.authorization', 'Basicfa', 403))
     })
 
     describe('api gw service token validation', () => {
