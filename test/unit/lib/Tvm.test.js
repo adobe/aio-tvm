@@ -70,18 +70,18 @@ describe('processRequest (abstract)', () => {
         // additional embedded test making sure false doesn't count as true
         fakeParams.disableAdobeIOApiGwTokenValidation = 'false'
         const response = await tvm.processRequest(fakeParams)
-        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token is not valid: missing x-gw-ims-authorization header')
+        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token validation failed: missing x-gw-ims-authorization header')
       })
       test('when header is not a bearer token', async () => {
         fakeParams.__ow_headers['x-gw-ims-authorization'] = 'Basic fake'
         const response = await tvm.processRequest(fakeParams)
-        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token is not valid: x-gw-ims-authorization header is not a valid Bearer token')
+        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token validation failed: x-gw-ims-authorization header is not a valid Bearer token')
       })
 
       test('when token is not valid', async () => {
         global.mockImsInstance.validateToken.mockResolvedValue({ valid: false, token: global.imsValidateTokenResponseNoError.token })
         const response = await tvm.processRequest(fakeParams)
-        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token is not valid: is not valid')
+        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token validation failed: invalid IMS token')
       })
 
       test('when token has a bad clientId', async () => {
@@ -93,7 +93,7 @@ describe('processRequest (abstract)', () => {
           }
         })
         const response = await tvm.processRequest(fakeParams)
-        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token is not valid: token client_id \'bad\' is not allowed')
+        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token validation failed: token client_id \'bad\' is not allowed')
       })
 
       test('when token has missing scopes', async () => {
@@ -105,7 +105,7 @@ describe('processRequest (abstract)', () => {
           }
         })
         const response = await tvm.processRequest(fakeParams)
-        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token is not valid: token is missing required scopes \'openid,system\'')
+        global.expectUnauthorized(response, 'Adobe I/O API Gateway service token validation failed: token is missing required scopes \'openid,system\'')
       })
 
       test('when gw auth check is disabled and token is missing', async () => {
