@@ -79,12 +79,6 @@ This might be useful for you if:
   # Adobe I/O API Gateway token validation specific
   DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION=<optional, set to true if TVM is not deployed behind the Adobe I/O API Gateway>
   IMS_ENV=<not relevant if DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION=true, IMS env for validating the Adobe I/O API Gateway token>
-
-  # Test Adobe I/O Runtime credentials for functional tests
-  TEST_NAMESPACE_1=<test ns 1>
-  TEST_AUTH_1=<test auth 1>
-  TEST_NAMESPACE_2=<test ns 2>
-  TEST_AUTH_2=<test auth ns 2>
   ```
 
 - Use the `APPROVED_LIST` variable to control which namespace can access the TVM and
@@ -156,8 +150,7 @@ This might be useful for you if:
 
 ### Release a new version
 
-- `npm run release` will run tests, bump up the version and deploy all TVM endpoints to the OpenWhisk namespace configured in `.env`.
-- note: this command will run functional tests and will need you to have additional OpenWhisk test namespaces setup up in your `.env` (see [config](#deployment-config))
+- `npm run release` will run tests, bump up the version and release tags to github.
 
 ## Contributing
 
