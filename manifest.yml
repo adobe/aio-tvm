@@ -28,6 +28,19 @@ packages:
         annotations:
           # this is important security wise
           final: true
+      azure-presign:
+        function: actions/azure-presign/index.js
+        web: yes
+        runtime: 'nodejs:10'
+        inputs:
+          azureStorageAccount: $AZURE_STORAGE_ACCOUNT
+          azureStorageAccessKey: $AZURE_STORAGE_ACCESS_KEY
+          expirationDuration: $EXPIRATION_DURATION
+          owApihost: $AIO_RUNTIME_APIHOST
+          approvedList: $APPROVED_LIST
+        annotations:
+          # this is important security wise
+          final: true
       azure-cosmos:
         function: actions/azure-cosmos/index.js
         web: yes
@@ -48,6 +61,12 @@ packages:
         tvm:
           azure/blob/{owNamespace}:
             azure-blob:
+              method: GET
+              response: http
+      tvm-azure-presign:
+        tvm:
+          azure/presign/{owNamespace}:
+            azure-presign:
               method: GET
               response: http
       tvm-azure-cosmos:
