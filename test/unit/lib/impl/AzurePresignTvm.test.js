@@ -63,6 +63,9 @@ describe('processRequest (Azure Presign)', () => {
     test('when owNamespace is missing', async () => global.testParam(tvm, presignReqFakeParams, 'owNamespace', undefined))
     test('when azureStorageAccount is missing', async () => global.testParam(tvm, presignReqFakeParams, 'azureStorageAccount', undefined))
     test('when azureStorageAccessKey is missing', async () => global.testParam(tvm, presignReqFakeParams, 'azureStorageAccessKey', undefined))
+    test('when blobName is missing', async () => global.testParam(tvm, presignReqFakeParams, 'blobName', undefined))
+    test('when expiryInSeconds is missing', async () => global.testParam(tvm, presignReqFakeParams, 'expiryInSeconds', undefined))
+    test('when permissions is missing', async () => global.testParam(tvm, presignReqFakeParams, 'permissions', undefined))
   })
 
   describe('signature generation tests', () => {

@@ -34,6 +34,7 @@ global.presignReqNoErrorParams = {
   blobName: 'fakeBlob',
   expirationDuration: '1500',
   expiryInSeconds: 60,
+  permissions: 'fake',
   approvedList: '*',
   owApihost: 'https://www.fake.com',
   owNamespace: 'fakeNS',
