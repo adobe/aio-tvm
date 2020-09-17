@@ -65,18 +65,30 @@ describe('processRequest (Azure Presign)', () => {
     test('when azureStorageAccessKey is missing', async () => global.testParam(tvm, presignReqFakeParams, 'azureStorageAccessKey', undefined))
     test('when blobName is missing', async () => global.testParam(tvm, presignReqFakeParams, 'blobName', undefined))
     test('when expiryInSeconds is missing', async () => global.testParam(tvm, presignReqFakeParams, 'expiryInSeconds', undefined))
-    test('when permissions is missing', async () => global.testParam(tvm, presignReqFakeParams, 'permissions', undefined))
+    test('when permissions is invalid chars', async () => global.testParam(tvm, presignReqFakeParams, 'permissions', 'abc'))
+    test('when permissions is wrong length', async () => global.testParam(tvm, presignReqFakeParams, 'permissions', 'rwdd'))
+    test('when permissions is empty string', async () => global.testParam(tvm, presignReqFakeParams, 'permissions', ''))
   })
 
   describe('signature generation tests', () => {
-    const expectSignatureGenerated = async () => {
-      const response = await tvm.processRequest(presignReqFakeParams)
+    const testPresignSignature = async (tvm, permissions) => {
+      const tempParams = JSON.parse(JSON.stringify(presignReqFakeParams))
+      tempParams.permissions = permissions
+      const response = await tvm.processRequest(tempParams)
       expect(response.statusCode).toEqual(200)
       expect(response.body).toEqual({ signature: fakeSas })
       expect(azure.generateBlobSASQueryParameters).toHaveBeenCalledTimes(1)
       expect(azure.generateBlobSASQueryParameters).toHaveBeenCalledWith(expect.objectContaining({ permissions: fakePermissionStr }), expect.any(Object))
       expect(azure.generateBlobSASQueryParameters).toHaveBeenCalledWith(expect.objectContaining({ blobName: 'fakeBlob' }), expect.any(Object))
     }
-    test('generate signature with valid params', expectSignatureGenerated)
+    test('generate signature with valid params', async () => testPresignSignature(tvm, presignReqFakeParams.permissions))
+
+    test('generate signature with default permissions', async () => testPresignSignature(tvm))
+
+    test('generate signature with rw permissions', async () => testPresignSignature(tvm, 'rw'))
+
+    test('generate signature with wd permissions', async () => testPresignSignature(tvm, 'wd'))
+
+    test('generate signature with dwr permissions', async () => testPresignSignature(tvm, 'dwr'))
   })
 })
