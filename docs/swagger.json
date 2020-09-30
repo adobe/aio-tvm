@@ -231,6 +231,14 @@
             "required": true,
             "format": "blobName",
             "description": "Name of the blob to create the pre-signed URL for"
+          },
+          {
+            "in": "query",
+            "name": "permissions",
+            "type": "string",
+            "required": true,
+            "format": "permissions",
+            "description": "Blob access permissions for the pre-signed URL, e.g permissions='rwd' for read, write, delete"
           }
         ],
         "responses": {
