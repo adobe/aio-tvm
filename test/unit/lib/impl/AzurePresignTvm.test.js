@@ -39,7 +39,12 @@ global.Date.prototype.setSeconds = jest.fn()
 global.Date.prototype.toISOString = () => fakeDate
 
 // params
-const presignReqFakeParams = JSON.parse(JSON.stringify(global.presignReqNoErrorParams))
+const presignReqFakeParams = JSON.parse(JSON.stringify({
+  ...global.baseNoErrorParams,
+  blobName: 'fakeBlob',
+  expiryInSeconds: 60,
+  permissions: 'rwd'
+}))
 presignReqFakeParams.azureStorageAccount = 'fakeAccount'
 presignReqFakeParams.azureStorageAccessKey = 'fakeKey'
 

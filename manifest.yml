@@ -1,5 +1,5 @@
 packages:
-  __APP_PACKAGE__:
+  tvm:
     actions:
       aws-s3:
         function: actions/aws-s3/index.js
@@ -12,6 +12,8 @@ packages:
           expirationDuration: $EXPIRATION_DURATION
           owApihost: $AIO_RUNTIME_APIHOST
           approvedList: $APPROVED_LIST
+          imsEnv: $IMS_ENV
+          disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
         annotations:
           # this is important security wise
           final: true
@@ -25,6 +27,8 @@ packages:
           expirationDuration: $EXPIRATION_DURATION
           owApihost: $AIO_RUNTIME_APIHOST
           approvedList: $APPROVED_LIST
+          imsEnv: $IMS_ENV
+          disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
         annotations:
           # this is important security wise
           final: true
@@ -38,6 +42,8 @@ packages:
           expirationDuration: $EXPIRATION_DURATION
           owApihost: $AIO_RUNTIME_APIHOST
           approvedList: $APPROVED_LIST
+          imsEnv: $IMS_ENV
+          disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
         annotations:
           # this is important security wise
           final: true
@@ -53,6 +59,8 @@ packages:
           expirationDuration: $EXPIRATION_DURATION
           owApihost: $AIO_RUNTIME_APIHOST
           approvedList: $APPROVED_LIST
+          imsEnv: $IMS_ENV
+          disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
         annotations:
           # this is important security wise
           final: true
