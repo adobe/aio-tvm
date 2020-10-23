@@ -49,6 +49,9 @@
     "aws-sdk": "^2.539.0",
     "crypto": "^1.0.1",
     "lru-cache": "^6.0.0",
-    "openwhisk": "^3.20.0"
+    "openwhisk": "^3.20.0",
+    "node-fetch": "^2.6.0",
+    "uuid": "^8.3.1",
+    "xml-js": "^1.6.11"
   }
 }

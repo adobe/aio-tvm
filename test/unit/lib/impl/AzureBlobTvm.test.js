@@ -12,6 +12,10 @@ governing permissions and limitations under the License.
 
 const { AzureBlobTvm } = require('../../../../lib/impl/AzureBlobTvm')
 
+const azureUtil = require('../../../../lib/impl/AzureUtil')
+jest.mock('../../../../lib/impl/AzureUtil')
+azureUtil.getAccessPolicy.mockResolvedValue('fakeIdentifier')
+
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')
 
@@ -21,12 +25,14 @@ const azureContainerCreateMock = jest.fn()
 azure.SharedKeyCredential = jest.fn()
 azure.StorageURL.newPipeline = jest.fn()
 azure.ServiceURL = jest.fn()
-azure.ContainerURL.fromServiceURL = jest.fn().mockReturnValue({
-  create: azureContainerCreateMock
-})
+
 azure.ContainerURL.prototype.create = jest.fn()
 azure.generateBlobSASQueryParameters = jest.fn()
 azure.Aborter.none = {}
+
+azure.ContainerURL.fromServiceURL.mockReturnValue({
+  create: azureContainerCreateMock
+})
 
 class FakePermission {
   toString () {

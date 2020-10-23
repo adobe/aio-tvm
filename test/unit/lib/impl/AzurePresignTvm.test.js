@@ -11,6 +11,9 @@ governing permissions and limitations under the License.
 */
 
 const { AzurePresignTvm } = require('../../../../lib/impl/AzurePresignTvm')
+const azureUtil = require('../../../../lib/impl/AzureUtil')
+jest.mock('../../../../lib/impl/AzureUtil')
+azureUtil.getAccessPolicy.mockResolvedValue('fakeIdentifier')
 
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')
@@ -19,7 +22,7 @@ jest.mock('@azure/storage-blob')
 azure.SharedKeyCredential = jest.fn()
 azure.StorageURL.newPipeline = jest.fn()
 azure.ServiceURL = jest.fn()
-azure.ContainerURL.prototype.create = jest.fn()
+
 azure.generateBlobSASQueryParameters = jest.fn()
 azure.BlobSASPermissions.parse = jest.fn()
 azure.Aborter.none = {}
