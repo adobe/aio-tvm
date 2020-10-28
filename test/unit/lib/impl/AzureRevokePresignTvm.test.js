@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 const { AzureRevokePresignTvm } = require('../../../../lib/impl/AzureRevokePresignTvm')
 const azureUtil = require('../../../../lib/impl/AzureUtil')
 jest.mock('../../../../lib/impl/AzureUtil')
-// azureUtil.getAccessPolicy.mockResolvedValue('fakeIdentifier')
+azureUtil.getContainerURL.mockReturnValue({ fake: '' })
 
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')
@@ -24,7 +24,6 @@ azure.StorageURL.newPipeline = jest.fn()
 azure.ServiceURL = jest.fn()
 azure.Aborter.none = {}
 
-azure.ContainerURL.fromServiceURL.mockReturnValue({ fake: '' })
 // params
 const presignReqFakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
 presignReqFakeParams.azureStorageAccount = 'fakeAccount'

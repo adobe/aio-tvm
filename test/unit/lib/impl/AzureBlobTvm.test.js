@@ -14,7 +14,7 @@ const { AzureBlobTvm } = require('../../../../lib/impl/AzureBlobTvm')
 
 const azureUtil = require('../../../../lib/impl/AzureUtil')
 jest.mock('../../../../lib/impl/AzureUtil')
-azureUtil.getAccessPolicy.mockResolvedValue('fakeIdentifier')
+azureUtil.addAccessPolicyIfNotExists = jest.fn()
 
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')
@@ -30,7 +30,7 @@ azure.ContainerURL.prototype.create = jest.fn()
 azure.generateBlobSASQueryParameters = jest.fn()
 azure.Aborter.none = {}
 
-azure.ContainerURL.fromServiceURL.mockReturnValue({
+azureUtil.getContainerURL.mockReturnValue({
   create: azureContainerCreateMock
 })
 
@@ -62,6 +62,7 @@ describe('processRequest (Azure Cosmos)', () => {
     tvm = new AzureBlobTvm()
     azureContainerCreateMock.mockReset()
     azure.generateBlobSASQueryParameters.mockReset()
+    azureUtil.addAccessPolicyIfNotExists.mockClear()
 
     // defaults that work
     azure.generateBlobSASQueryParameters.mockReturnValue({ toString: () => fakeSas })
@@ -80,6 +81,7 @@ describe('processRequest (Azure Cosmos)', () => {
       const containerName = global.nsHash
 
       expect(response.statusCode).toEqual(200)
+      expect(azureUtil.addAccessPolicyIfNotExists).toHaveBeenCalledTimes(1)
       expect(response.body).toEqual({
         sasURLPrivate: expect.stringContaining(containerName),
         sasURLPublic: expect.stringContaining('public'),

@@ -11,11 +11,17 @@ governing permissions and limitations under the License.
 */
 
 const azureUtil = require('../../../../lib/impl/AzureUtil')
+const azure = require('@azure/storage-blob')
+jest.mock('@azure/storage-blob')
 
 const fetch = require('node-fetch')
 jest.mock('node-fetch', () => jest.fn())
-const fakeResponse = jest.fn()
 
+const { v4: uuidv4 } = require('uuid')
+jest.mock('uuid')
+uuidv4.mockImplementation(() => 'fakeId')
+
+const fakeResponse = jest.fn()
 const fakeAccount = 'fakeAccount'
 const fakeKey = 'fakeKey'
 const fakeAccessPolicy = '<?xml version="1.0" encoding="utf-8"?><SignedIdentifiers><SignedIdentifier><Id>fakepolicy</Id><permissions></permissions></SignedIdentifier></SignedIdentifiers>'
@@ -23,10 +29,13 @@ const fakeEmptyAccessPolicy = '<?xml version="1.0" encoding="utf-8"?><SignedIden
 const fakeEmptyAccessPolicy1 = '<?xml version="1.0" encoding="utf-8"?>'
 
 const mockSetAccessPolicy = jest.fn()
+const mockFromServiceURL = jest.fn()
 const mockAzureContainerURL = {
   url: 'https://fakeAccount/fake',
   setAccessPolicy: mockSetAccessPolicy
 }
+
+azure.ContainerURL.fromServiceURL.mockReturnValue({})
 
 describe('AzureUtil tests', () => {
   fetch.mockResolvedValue({
@@ -60,6 +69,7 @@ describe('AzureUtil tests', () => {
     test('setAccessPolicy valid policy', async () => {
       await azureUtil.setAccessPolicy(mockAzureContainerURL)
       expect(mockSetAccessPolicy).toHaveBeenCalledTimes(1)
+      expect(mockSetAccessPolicy).toHaveBeenCalledWith(undefined, undefined, [{ accessPolicy: { permission: '' }, id: 'fakeId' }])
     })
   })
 
@@ -73,6 +83,17 @@ describe('AzureUtil tests', () => {
       fakeResponse.mockResolvedValue(fakeEmptyAccessPolicy)
       await azureUtil.addAccessPolicyIfNotExists(mockAzureContainerURL, fakeAccount, fakeKey)
       expect(mockSetAccessPolicy).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('getContainerURL', () => {
+    test('getContainerURL valid params', async () => {
+      mockFromServiceURL.mockReturnValue({ fake: '' })
+      const accountURL = `https://${fakeAccount}.blob.core.windows.net`
+      const sharedKeyCredential = new azure.SharedKeyCredential(fakeAccount, fakeKey)
+      const containerURL = await azureUtil.getContainerURL(accountURL, sharedKeyCredential, 'fakeContainer')
+      expect(containerURL).toStrictEqual({})
+      expect(azure.ContainerURL.fromServiceURL).toHaveBeenCalledTimes(1)
     })
   })
 })

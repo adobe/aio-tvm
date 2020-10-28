@@ -14,6 +14,7 @@ const { AzurePresignTvm } = require('../../../../lib/impl/AzurePresignTvm')
 const azureUtil = require('../../../../lib/impl/AzureUtil')
 jest.mock('../../../../lib/impl/AzureUtil')
 azureUtil.getAccessPolicy.mockResolvedValue('fakeIdentifier')
+azureUtil.getContainerURL.mockReturnValue({ fake: '' })
 
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')
@@ -61,6 +62,7 @@ describe('processRequest (Azure Presign)', () => {
     tvm = new AzurePresignTvm()
     azure.generateBlobSASQueryParameters.mockReset()
     azure.BlobSASPermissions.parse.mockReset()
+    azureUtil.getAccessPolicy.mockClear()
 
     // defaults that work
     azure.generateBlobSASQueryParameters.mockReturnValue({ toString: () => fakeSas })
@@ -86,9 +88,10 @@ describe('processRequest (Azure Presign)', () => {
       tempParams.permissions = permissions
       const response = await tvm.processRequest(tempParams)
       expect(response.statusCode).toEqual(200)
+      expect(azureUtil.getAccessPolicy).toHaveBeenCalledTimes(1)
       expect(response.body).toEqual({ signature: fakeSas })
       expect(azure.generateBlobSASQueryParameters).toHaveBeenCalledTimes(1)
-      expect(azure.generateBlobSASQueryParameters).toHaveBeenCalledWith(expect.objectContaining({ permissions: fakePermissionStr }), expect.any(Object))
+      expect(azure.generateBlobSASQueryParameters).toHaveBeenCalledWith(expect.objectContaining({ permissions: fakePermissionStr, identifier: 'fakeIdentifier' }), expect.any(Object))
       expect(azure.generateBlobSASQueryParameters).toHaveBeenCalledWith(expect.objectContaining({ blobName: 'fakeBlob' }), expect.any(Object))
     }
     test('generate signature with valid params', async () => testPresignSignature(tvm, presignReqFakeParams.permissions))
@@ -100,5 +103,13 @@ describe('processRequest (Azure Presign)', () => {
     test('generate signature with wd permissions', async () => testPresignSignature(tvm, 'wd'))
 
     test('generate signature with dwr permissions', async () => testPresignSignature(tvm, 'dwr'))
+
+    test('when no access policy defined', async () => {
+      azureUtil.getAccessPolicy.mockResolvedValue(undefined)
+      const tempParams = JSON.parse(JSON.stringify(presignReqFakeParams))
+      tempParams.permissions = 'r'
+      const response = await tvm.processRequest(tempParams)
+      global.expectServerError(response, 'No Access Policy set for container')
+    })
   })
 })
