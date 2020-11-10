@@ -47,6 +47,21 @@ packages:
         annotations:
           # this is important security wise
           final: true
+      azure-revoke:
+        function: actions/azure-revoke/index.js
+        web: yes
+        runtime: 'nodejs:10'
+        inputs:
+          azureStorageAccount: $AZURE_STORAGE_ACCOUNT
+          azureStorageAccessKey: $AZURE_STORAGE_ACCESS_KEY
+          expirationDuration: $EXPIRATION_DURATION
+          owApihost: $AIO_RUNTIME_APIHOST
+          approvedList: $APPROVED_LIST
+          imsEnv: $IMS_ENV
+          disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
+        annotations:
+          # this is important security wise
+          final: true
       azure-cosmos:
         function: actions/azure-cosmos/index.js
         web: yes
@@ -75,6 +90,12 @@ packages:
         tvm:
           azure/presign/{owNamespace}:
             azure-presign:
+              method: GET
+              response: http
+      tvm-azure-revoke:
+        tvm:
+          azure/revoke/{owNamespace}:
+            azure-revoke:
               method: GET
               response: http
       tvm-azure-cosmos:

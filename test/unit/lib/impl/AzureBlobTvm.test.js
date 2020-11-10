@@ -12,6 +12,10 @@ governing permissions and limitations under the License.
 
 const { AzureBlobTvm } = require('../../../../lib/impl/AzureBlobTvm')
 
+const azureUtil = require('../../../../lib/impl/AzureUtil')
+jest.mock('../../../../lib/impl/AzureUtil')
+azureUtil.addAccessPolicyIfNotExists = jest.fn()
+
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')
 
@@ -21,12 +25,14 @@ const azureContainerCreateMock = jest.fn()
 azure.SharedKeyCredential = jest.fn()
 azure.StorageURL.newPipeline = jest.fn()
 azure.ServiceURL = jest.fn()
-azure.ContainerURL.fromServiceURL = jest.fn().mockReturnValue({
-  create: azureContainerCreateMock
-})
+
 azure.ContainerURL.prototype.create = jest.fn()
 azure.generateBlobSASQueryParameters = jest.fn()
 azure.Aborter.none = {}
+
+azureUtil.getContainerURL.mockReturnValue({
+  create: azureContainerCreateMock
+})
 
 class FakePermission {
   toString () {
@@ -56,6 +62,7 @@ describe('processRequest (Azure Cosmos)', () => {
     tvm = new AzureBlobTvm()
     azureContainerCreateMock.mockReset()
     azure.generateBlobSASQueryParameters.mockReset()
+    azureUtil.addAccessPolicyIfNotExists.mockClear()
 
     // defaults that work
     azure.generateBlobSASQueryParameters.mockReturnValue({ toString: () => fakeSas })
@@ -74,6 +81,7 @@ describe('processRequest (Azure Cosmos)', () => {
       const containerName = global.nsHash
 
       expect(response.statusCode).toEqual(200)
+      expect(azureUtil.addAccessPolicyIfNotExists).toHaveBeenCalledTimes(1)
       expect(response.body).toEqual({
         sasURLPrivate: expect.stringContaining(containerName),
         sasURLPublic: expect.stringContaining('public'),
