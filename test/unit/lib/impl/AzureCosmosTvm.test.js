@@ -9,7 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
 const { AzureCosmosTvm } = require('../../../../lib/impl/AzureCosmosTvm')
 
 const cosmos = require('@azure/cosmos')
@@ -18,16 +17,18 @@ jest.mock('@azure/cosmos')
 // find more standard way to mock cosmos?
 const cosmosMocks = {
   container: jest.fn(),
-  userRead: jest.fn(),
   usersCreate: jest.fn(),
-  permissionDelete: jest.fn(),
-  permissionsCreate: jest.fn()
+  permissionsCreate: jest.fn(),
+  permissionRead: jest.fn()
 }
+const permissionInstanceMock = jest.fn(() => Object({
+  delete: cosmosMocks.permissionDelete,
+  read: cosmosMocks.permissionRead
+}))
+const userInstanceMock = jest.fn(() => cosmosUserMock)
 const cosmosUserMock = {
   read: cosmosMocks.userRead,
-  permission: () => Object({
-    delete: cosmosMocks.permissionDelete
-  }),
+  permission: permissionInstanceMock,
   permissions: {
     create: cosmosMocks.permissionsCreate
   }
@@ -35,7 +36,7 @@ const cosmosUserMock = {
 cosmos.CosmosClient.mockImplementation(() => Object({
   database: () => Object({
     container: cosmosMocks.container,
-    user: () => cosmosUserMock,
+    user: userInstanceMock,
     users: {
       create: cosmosMocks.usersCreate
     }
@@ -69,10 +70,14 @@ describe('processRequest (Azure Cosmos)', () => {
 
     Object.keys(cosmosMocks).forEach(k => cosmosMocks[k].mockReset())
     // defaults that work
-    cosmosMocks.container.mockReturnValue({ url: 'https://fakecontainerURL.com' })
-    cosmosMocks.userRead.mockResolvedValue({ user: cosmosUserMock })
+    cosmosMocks.container.mockReturnValue({ url: fakeContainerUrl })
     cosmosMocks.usersCreate.mockResolvedValue({ user: cosmosUserMock })
     cosmosMocks.permissionsCreate.mockResolvedValue({ resource: { _token: fakeToken } })
+    cosmosMocks.permissionRead.mockResolvedValue({ resource: { _token: fakeToken } })
+    permissionInstanceMock.mockClear()
+    userInstanceMock.mockClear()
+
+    setTimeoutMock.mockClear()
   })
 
   describe('param validation', () => {
@@ -82,11 +87,11 @@ describe('processRequest (Azure Cosmos)', () => {
     test('when azureCosmosContainerId is missing', async () => global.testParam(tvm, fakeParams, 'azureCosmosDatabaseId', undefined))
   })
 
+  const partitionKey = Buffer.from(fakeParams.owNamespace, 'utf8').toString('hex')
+
   describe('token generation', () => {
     const expectTokenGenerated = async () => {
       const response = await tvm.processRequest(fakeParams)
-
-      const partitionKey = Buffer.from(fakeParams.owNamespace, 'utf8').toString('hex')
 
       // check response
       expect(response.statusCode).toEqual(200)
@@ -100,28 +105,50 @@ describe('processRequest (Azure Cosmos)', () => {
       })
 
       // make sure we compute expiration correctly
-      expect(global.Date.prototype.setSeconds).toHaveBeenCalledWith(fakeCurrSeconds + fakeParams.expirationDuration)
+      expect(global.Date.prototype.setSeconds).toHaveBeenCalledWith(fakeCurrSeconds + fakeParams.expirationDuration - 300)
 
-      // make sure permission is refreshed
-      expect(cosmosMocks.permissionDelete).toHaveBeenCalledTimes(1)
-      // here we are really looking into implementation details instead of just testing the interface,
-      // this intentional as we want to make sure the token gives the right access level
-      expect(cosmosMocks.permissionsCreate).toHaveBeenCalledWith({ id: expect.any(String), permissionMode: cosmos.PermissionMode.All, resource: fakeContainerUrl, resourcePartitionKey: [partitionKey] }, { resourceTokenExpirySeconds: fakeParams.expirationDuration })
+      expect(userInstanceMock).toHaveBeenCalledWith('user-' + partitionKey)
+      expect(permissionInstanceMock).toHaveBeenCalledWith('permission-' + partitionKey)
     }
 
     test('when cosmosDB user & permission already exists', async () => {
       await expectTokenGenerated()
+      expect(cosmosMocks.permissionRead).toHaveBeenCalledWith({
+        resourceTokenExpirySeconds: fakeParams.expirationDuration
+      })
       expect(cosmosMocks.usersCreate).toHaveBeenCalledTimes(0)
+      expect(cosmosMocks.permissionsCreate).toHaveBeenCalledTimes(0)
     })
-    test('when cosmosDB user does not exist', async () => {
-      cosmosMocks.userRead.mockRejectedValue({ code: 404 })
+
+    test('when cosmosDB permission does not exist', async () => {
+      cosmosMocks.permissionRead.mockRejectedValue({ code: 404 })
       await expectTokenGenerated()
       expect(cosmosMocks.usersCreate).toHaveBeenCalledTimes(1)
+      expect(cosmosMocks.permissionsCreate).toHaveBeenCalledTimes(1)
     })
-    test('when cosmosDB permission does not exist', async () => {
-      cosmosMocks.permissionDelete.mockRejectedValue({ code: 404 })
+
+    test('when cosmosDB permission does not exist and there is a race condition on userCreate (409)', async () => {
+      let counter = 0
+      cosmosMocks.permissionRead.mockImplementation(() => {
+        counter += 1
+        if (counter === 3) {
+          return { resource: { _token: fakeToken } }
+        }
+        const err = new Error('fake')
+        err.code = 404
+        throw err
+      })
+      cosmosMocks.usersCreate.mockRejectedValue({ code: 409 })
       await expectTokenGenerated()
+
+      expect(cosmosMocks.usersCreate).toHaveBeenCalledTimes(1)
+      expect(cosmosMocks.permissionsCreate).toHaveBeenCalledTimes(1)
     })
+
+    // test('when cosmosDB permission does not exist', async () => {
+    //   cosmosMocks.permissionDelete.mockRejectedValue({ code: 404 })
+    //   await expectTokenGenerated()
+    // })
 
     test('when cosmosDB user read reject not 404', async () => {
       cosmosMocks.userRead.mockRejectedValue(new Error('a cosmos error'))
