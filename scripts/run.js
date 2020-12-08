@@ -26,6 +26,10 @@ async function _runRaw (args) {
     // support JSON
     try {
       prevObj[kv[0]] = JSON.parse(kv[1])
+      if (typeof prevObj[kv[0]] === 'boolean') {
+        // like in runtime (especially needed for disable gw check)
+        prevObj[kv[0]] = prevObj[kv[0]].toString()
+      }
     } catch (e) {
       prevObj[kv[0]] = kv[1]
     }
@@ -54,8 +58,8 @@ async function run (args) {
   // user can specify path to action
   const specifiedPath = args[1] && args[1].indexOf('=') < 0 && args[1]
 
-  const action = yaml.safeLoad(fs.readFileSync('manifest.yml', 'utf8')).packages.__CNA_PACKAGE__.actions[actionName]
-  if (!action) throw new Error(`Action ${actionName} does not exist`)
+  const action = yaml.safeLoad(fs.readFileSync('manifest.yml', 'utf8')).packages.tvm.actions[actionName]
+  if (!action) { throw new Error(`Action ${actionName} does not exist`) }
 
   const defaultParams = { ...action.inputs }
 
@@ -66,15 +70,20 @@ async function run (args) {
       value.replace('}', '')
       value.replace('\'', '')
       const envName = value.match(/\$(.*)/)[1]
-      value = process.env[envName]
+      value = process.env[envName] && process.env[envName].toString()
     }
-    if (typeof value === 'object') return `${k}=${JSON.stringify(value)}`
+    if (typeof value === 'object') {
+      return `${k}=${JSON.stringify(value)}`
+    }
     return `${k}=${value}`
   }))
 
   // prepare args for _runRaw
-  if (specifiedPath) args = args.slice(1)
-  else args[0] = action.function
+  if (specifiedPath) {
+    args = args.slice(1)
+  } else {
+    args[0] = action.function
+  }
 
   return _runRaw(args)
 }
