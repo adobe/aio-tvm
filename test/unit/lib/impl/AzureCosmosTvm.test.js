@@ -43,6 +43,11 @@ cosmos.CosmosClient.mockImplementation(() => Object({
   })
 }))
 
+// setTimeout mock
+const actualSetTimeout = setTimeout
+global.setTimeout = jest.fn().mockImplementation((fn) => fn())
+afterAll(() => { global.setTimeout = actualSetTimeout })
+
 // date mock
 const fakeDate = '1970-01-01T00:00:00.000Z'
 const fakeCurrSeconds = 1234567890
@@ -77,7 +82,7 @@ describe('processRequest (Azure Cosmos)', () => {
     permissionInstanceMock.mockClear()
     userInstanceMock.mockClear()
 
-    setTimeoutMock.mockClear()
+    global.setTimeout.mockClear()
   })
 
   describe('param validation', () => {
@@ -90,9 +95,7 @@ describe('processRequest (Azure Cosmos)', () => {
   const partitionKey = Buffer.from(fakeParams.owNamespace, 'utf8').toString('hex')
 
   describe('token generation', () => {
-    const expectTokenGenerated = async () => {
-      const response = await tvm.processRequest(fakeParams)
-
+    const expectTokenGenerated = (response) => {
       // check response
       expect(response.statusCode).toEqual(200)
       expect(response.body).toEqual({
@@ -111,8 +114,52 @@ describe('processRequest (Azure Cosmos)', () => {
       expect(permissionInstanceMock).toHaveBeenCalledWith('permission-' + partitionKey)
     }
 
+    const testRaceCondition = async ({ retries, code, failsOnUserCreate, failsOnPermissionCreate }) => {
+      const maxRetries = 5
+      const retryInterval = 50
+      const retryFactor = 1.5
+      if (!failsOnPermissionCreate && !failsOnUserCreate) {
+        throw new Error('invalid test')
+      }
+
+      let counter = 0
+      cosmosMocks.permissionRead.mockImplementation(() => {
+        counter += 1
+        if (counter === 1 + retries) {
+          return { resource: { _token: fakeToken } }
+        }
+        const err = new Error('permission read error')
+        err.code = 404
+        throw err
+      })
+      if (failsOnUserCreate) {
+        cosmosMocks.usersCreate.mockRejectedValue({ code })
+      }
+      if (failsOnPermissionCreate && !failsOnUserCreate) {
+        cosmosMocks.permissionsCreate.mockRejectedValue({ code })
+      }
+
+      const response = await tvm.processRequest(fakeParams)
+
+      expect(setTimeout).toHaveBeenCalledTimes(Math.min(retries - 1, maxRetries - 1))
+      for (let i = 0; i < Math.min(retries - 1, maxRetries - 1); ++i) {
+        expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), Math.pow(retryFactor, i) * retryInterval)
+      }
+
+      if (failsOnUserCreate) {
+        expect(cosmosMocks.usersCreate).toHaveBeenCalledTimes(1)
+        expect(cosmosMocks.permissionsCreate).toHaveBeenCalledTimes(0)
+      }
+      if (failsOnPermissionCreate && !failsOnUserCreate) {
+        expect(cosmosMocks.usersCreate).toHaveBeenCalledTimes(1)
+        expect(cosmosMocks.permissionsCreate).toHaveBeenCalledTimes(1)
+      }
+      return response
+    }
+
     test('when cosmosDB user & permission already exists', async () => {
-      await expectTokenGenerated()
+      const response = await tvm.processRequest(fakeParams)
+      expectTokenGenerated(response)
       expect(cosmosMocks.permissionRead).toHaveBeenCalledWith({
         resourceTokenExpirySeconds: fakeParams.expirationDuration
       })
@@ -122,55 +169,76 @@ describe('processRequest (Azure Cosmos)', () => {
 
     test('when cosmosDB permission does not exist', async () => {
       cosmosMocks.permissionRead.mockRejectedValue({ code: 404 })
-      await expectTokenGenerated()
+      const response = await tvm.processRequest(fakeParams)
+      expectTokenGenerated(response)
       expect(cosmosMocks.usersCreate).toHaveBeenCalledTimes(1)
       expect(cosmosMocks.permissionsCreate).toHaveBeenCalledTimes(1)
     })
 
-    test('when cosmosDB permission does not exist and there is a race condition on userCreate (409)', async () => {
-      let counter = 0
-      cosmosMocks.permissionRead.mockImplementation(() => {
-        counter += 1
-        if (counter === 3) {
-          return { resource: { _token: fakeToken } }
-        }
-        const err = new Error('fake')
-        err.code = 404
-        throw err
-      })
-      cosmosMocks.usersCreate.mockRejectedValue({ code: 409 })
-      await expectTokenGenerated()
-
-      expect(cosmosMocks.usersCreate).toHaveBeenCalledTimes(1)
-      expect(cosmosMocks.permissionsCreate).toHaveBeenCalledTimes(1)
+    test('when cosmosDB permission does not exist and there is a race condition on user creation (409)', async () => {
+      const response = await testRaceCondition({ retries: 4, failsOnUserCreate: true, code: 409 })
+      expectTokenGenerated(response)
     })
 
-    // test('when cosmosDB permission does not exist', async () => {
-    //   cosmosMocks.permissionDelete.mockRejectedValue({ code: 404 })
-    //   await expectTokenGenerated()
-    // })
-
-    test('when cosmosDB user read reject not 404', async () => {
-      cosmosMocks.userRead.mockRejectedValue(new Error('a cosmos error'))
-      const response = await tvm.processRequest(fakeParams)
-      global.expectServerError(response, 'a cosmos error')
-    })
-    test('when cosmosDB user does not exist and users.create rejects', async () => {
-      cosmosMocks.userRead.mockRejectedValue({ code: 404 })
-      cosmosMocks.usersCreate.mockRejectedValue(new Error('a cosmos error'))
-      const response = await tvm.processRequest(fakeParams)
-      global.expectServerError(response, 'a cosmos error')
+    test('when cosmosDB permission does not exist and there is a race condition on user creation (429)', async () => {
+      const response = await testRaceCondition({ retries: 4, failsOnUserCreate: true, code: 429 })
+      expectTokenGenerated(response)
     })
 
-    test('when cosmosDB permission.delete rejects not 404', async () => {
-      cosmosMocks.permissionDelete.mockRejectedValue(new Error('a cosmos error'))
-      const response = await tvm.processRequest(fakeParams)
-      global.expectServerError(response, 'a cosmos error')
+    test('when cosmosDB permission does not exist and there is a race condition on user creation (449)', async () => {
+      const response = await testRaceCondition({ retries: 4, failsOnUserCreate: true, code: 449 })
+      expectTokenGenerated(response)
     })
-    test('when cosmosDB permissions.create rejects', async () => {
-      cosmosMocks.permissionsCreate.mockRejectedValue(new Error('a cosmos error'))
+
+    test('when cosmosDB permission does not exist and there is a race condition on permission creation (409)', async () => {
+      const response = await testRaceCondition({ retries: 4, failsOnPermissionCreate: true, code: 409 })
+      expectTokenGenerated(response)
+    })
+
+    test('when cosmosDB permission does not exist and there is a race condition on permission creation (429)', async () => {
+      const response = await testRaceCondition({ retries: 4, failsOnPermissionCreate: true, code: 429 })
+      expectTokenGenerated(response)
+    })
+
+    test('when cosmosDB permission does not exist and there is a race condition on permission creation (449)', async () => {
+      const response = await testRaceCondition({ retries: 4, failsOnPermissionCreate: true, code: 449 })
+      expectTokenGenerated(response)
+    })
+
+    test('when cosmosDB permission does not exist and there is a race condition with no additional retries', async () => {
+      const response = await testRaceCondition({ retries: 1, failsOnPermissionCreate: true, code: 409 })
+      expectTokenGenerated(response)
+    })
+
+    test('when cosmosDB permission does not exist and there is a race condition that does not resolve after maxRetries', async () => {
+      const response = await testRaceCondition({ retries: 6, failsOnPermissionCreate: true, code: 409 })
+      global.expectServerError(response, 'permission read error')
+    })
+
+    test('when permission read throws and is not a 404', async () => {
+      const err = new Error('permission read error')
+      err.code = 409
+      cosmosMocks.permissionRead.mockRejectedValue(err)
       const response = await tvm.processRequest(fakeParams)
-      global.expectServerError(response, 'a cosmos error')
+      global.expectServerError(response, 'permission read error')
+    })
+
+    test('when there permission must be created and create user throws with !(409|429|449)', async () => {
+      const err = new Error('user create error')
+      err.code = 444
+      cosmosMocks.permissionRead.mockRejectedValue({ code: 404 })
+      cosmosMocks.usersCreate.mockRejectedValue(err)
+      const response = await tvm.processRequest(fakeParams)
+      global.expectServerError(response, 'user create error')
+    })
+
+    test('when there permission must be created and create permission throws with !(409|429|449)', async () => {
+      const err = new Error('permission create error')
+      err.code = 444
+      cosmosMocks.permissionRead.mockRejectedValue({ code: 404 })
+      cosmosMocks.permissionsCreate.mockRejectedValue(err)
+      const response = await tvm.processRequest(fakeParams)
+      global.expectServerError(response, 'permission create error')
     })
   })
 })
