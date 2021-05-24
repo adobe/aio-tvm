@@ -172,12 +172,24 @@ describe('processRequest (abstract)', () => {
     })
 
     describe('openwhisk namespace/auth validation', () => {
-      test('when openwhisk.namespaces.list throws an error', async () => {
+      test('when openwhisk.namespaces.list throws a 4xx error', async () => {
         const errorMsg = 'abfjdsjfhbv'
-        global.owNsListMock.mockRejectedValue(new Error(errorMsg))
+        const errorObj = new Error(errorMsg)
+        errorObj.statusCode = 400
+        global.owNsListMock.mockRejectedValue(errorObj)
         const response = await tvm.processRequest(fakeParams)
         global.expectUnauthorized(response, errorMsg)
       })
+
+      test('when openwhisk.namespaces.list throws a non 4xx', async () => {
+        const errorMsg = 'abfjdsjfhbv'
+        const errorObj = new Error(errorMsg)
+        errorObj.statusCode = 503
+        global.owNsListMock.mockRejectedValue(errorObj)
+        const response = await tvm.processRequest(fakeParams)
+        global.expect500Error(response, errorMsg)
+      })
+
       test('when openwhisk.namespaces.list returns with an empty list', async () => {
         global.owNsListMock.mockResolvedValue([])
         const response = await tvm.processRequest(fakeParams)
