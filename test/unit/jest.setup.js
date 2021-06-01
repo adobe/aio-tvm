@@ -114,6 +114,12 @@ global.expectUnauthorized = (response, log) => {
   expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining(log))
 }
 
+global.expect500Error = (response, log) => {
+  expect(response.statusCode).toEqual(500)
+  expect(response.body.error).toEqual(expect.stringContaining('server error'))
+  expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining(log))
+}
+
 global.expectServerError = (response, log) => {
   if (!response.error) {
     throw new Error(`expected 500 error got: ${JSON.stringify(response)}`)
