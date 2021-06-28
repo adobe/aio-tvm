@@ -4,7 +4,7 @@ packages:
       aws-s3:
         function: actions/aws-s3/index.js
         web: yes
-        runtime: 'nodejs:10'
+        runtime: 'nodejs:14'
         inputs:
           s3Bucket: $S3_BUCKET
           awsSecretAccessKey: $AWS_SECRET_ACCESS_KEY
@@ -20,7 +20,7 @@ packages:
       azure-blob:
         function: actions/azure-blob/index.js
         web: yes
-        runtime: 'nodejs:10'
+        runtime: 'nodejs:14'
         inputs:
           azureStorageAccount: $AZURE_STORAGE_ACCOUNT
           azureStorageAccessKey: $AZURE_STORAGE_ACCESS_KEY
@@ -35,7 +35,7 @@ packages:
       azure-presign:
         function: actions/azure-presign/index.js
         web: yes
-        runtime: 'nodejs:10'
+        runtime: 'nodejs:14'
         inputs:
           azureStorageAccount: $AZURE_STORAGE_ACCOUNT
           azureStorageAccessKey: $AZURE_STORAGE_ACCESS_KEY
@@ -50,7 +50,7 @@ packages:
       azure-revoke:
         function: actions/azure-revoke/index.js
         web: yes
-        runtime: 'nodejs:10'
+        runtime: 'nodejs:14'
         inputs:
           azureStorageAccount: $AZURE_STORAGE_ACCOUNT
           azureStorageAccessKey: $AZURE_STORAGE_ACCESS_KEY
@@ -65,7 +65,7 @@ packages:
       azure-cosmos:
         function: actions/azure-cosmos/index.js
         web: yes
-        runtime: 'nodejs:10'
+        runtime: 'nodejs:14'
         inputs:
           azureCosmosMasterKey: $AZURE_COSMOS_MASTER_KEY
           azureCosmosAccount: $AZURE_COSMOS_ACCOUNT
