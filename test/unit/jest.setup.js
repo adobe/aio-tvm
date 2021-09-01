@@ -54,7 +54,8 @@ global.baseNoErrorParams = {
   owNamespace: 'fakeNS',
   __ow_headers: {
     authorization: 'Basic ZmFrZWF1dGg=', // 'fakeauth' in base64
-    'x-gw-ims-authorization': 'Bearer ' + global.fakeGWToken
+    'x-gw-ims-authorization': 'Bearer ' + global.fakeGWToken,
+    'x-request-id': 'fake request id'
   }
 }
 global.nsHash = 'f3125a324ac7d2024dbbc867fb2e6013'
