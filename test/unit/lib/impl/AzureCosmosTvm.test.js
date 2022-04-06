@@ -64,6 +64,7 @@ fakeParams.azureCosmosAccount = 'fakeAccount'
 fakeParams.azureCosmosMasterKey = 'fakeKey'
 fakeParams.azureCosmosDatabaseId = 'fakeDBId'
 fakeParams.azureCosmosContainerId = 'fakeContainerId'
+fakeParams.disableMetrics = true
 
 describe('processRequest (Azure Cosmos)', () => {
   // setup
