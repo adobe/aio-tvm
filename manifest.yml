@@ -79,6 +79,27 @@ packages:
         annotations:
           # this is important security wise
           final: true
+      admin-all:
+        function: actions/admin-all/index.js
+        web: yes
+        runtime: 'nodejs:14'
+        inputs:
+          s3Bucket: $S3_BUCKET
+          awsSecretAccessKey: $AWS_SECRET_ACCESS_KEY
+          awsAccessKeyId: $AWS_ACCESS_KEY_ID          
+          azureStorageAccount: $AZURE_STORAGE_ACCOUNT
+          azureStorageAccessKey: $AZURE_STORAGE_ACCESS_KEY
+          azureCosmosMasterKey: $AZURE_COSMOS_MASTER_KEY
+          azureCosmosAccount: $AZURE_COSMOS_ACCOUNT
+          azureCosmosDatabaseId: $AZURE_COSMOS_DATABASE_ID
+          azureCosmosContainerId: $AZURE_COSMOS_CONTAINER_ID
+          expirationDuration: $EXPIRATION_DURATION
+          owApihost: $AIO_RUNTIME_APIHOST
+          approvedList: $ADMIN_LIST
+          imsEnv: $IMS_ENV
+          disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
+        annotations:
+          final: true
     apis:
       tvm-azure-blob:
         tvm:
@@ -108,5 +129,11 @@ packages:
         tvm:
           aws/s3/{owNamespace}:
             aws-s3:
+              method: GET
+              response: http
+      tvm-admin-all:
+        tvm:
+          admin/{owNamespace}/all/{requestedOwNamespace}:
+            admin-all:
               method: GET
               response: http
