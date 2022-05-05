@@ -15,7 +15,7 @@ A set of Adobe I/O TVM actions are deployed behind the Adobe I/O Gateway at `htt
 
 - cURL
   - requirements: valid Adobe I/O Runtime credentials, `namespace` and `auth`
-  - endpoints: `azure/blob/{namespace}`, `azure/cosmos/{namespace}`, `aws/s3/{namespace}`, `azure/presign/{namespace}`
+  - endpoints: `azure/blob/{namespace}`, `azure/cosmos/{namespace}`, `aws/s3/{namespace}`, `azure/presign/{namespace}`, `admin/{namespace}/all/{requestedNamespace}`
 
 ```bash
 curl "https://firefly-tvm.adobe.io/azure/blob/{namespace}" \
