@@ -10,6 +10,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const { Tvm } = require('../../../lib/Tvm')
+jest.mock('aio-lib-metrics-beta')
+const metrics = require('aio-lib-metrics-beta')
+
 describe('processRequest (abstract)', () => {
   // setup
   /** @type {Tvm} */
@@ -18,6 +21,8 @@ describe('processRequest (abstract)', () => {
   beforeEach(() => {
     tvm = new Tvm()
     fakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
+    metrics.incBatchCounter.mockReset()
+    metrics.setMetricsURL.mockReset()
   })
 
   test('without implementation', async () => {
@@ -261,6 +266,50 @@ describe('processRequest (abstract)', () => {
         expect(response.body).toEqual(mockResponse)
         expect(global.mockLog.info).toHaveBeenCalledWith(expect.stringContaining(requestIdStartLog))
         expect(global.mockLog.info).toHaveBeenCalledWith(expect.stringContaining(requestIdEndLog))
+      })
+    })
+    describe('metrics enabled', () => {
+      test('when metrics url is an empty string', async () => {
+        fakeParams.metricsUrl = ''
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+      })
+      test('when metrics url is not a valid uri', async () => {
+        fakeParams.metricsUrl = 'aio/metrics'
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(400)
+        expect(response.body.error).toEqual('"metricsUrl" must be a valid uri')
+      })
+      test('when metrics url is valid', async () => {
+        fakeParams.metricsUrl = 'https://example.com/aio/metrics'
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+        expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics')
+        expect(metrics.incBatchCounter).toHaveBeenCalledWith('request_count', fakeParams.owNamespace)
+      })
+      test('when metrics url is valid & apigw validation failure', async () => {
+        fakeParams.__ow_headers['x-gw-ims-authorization'] = 'bad format'
+        fakeParams.metricsUrl = 'https://example.com/aio/metrics'
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(403)
+        expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics')
+        expect(metrics.incBatchCounter).toHaveBeenCalledWith('warning_count', fakeParams.owNamespace, '403-apigw')
+      })
+      test('when metrics url is valid & ow validation failure', async () => {
+        fakeParams.owNamespace = 'bad namespace'
+        fakeParams.metricsUrl = 'https://example.com/aio/metrics'
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(403)
+        expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics')
+        expect(metrics.incBatchCounter).toHaveBeenCalledWith('warning_count', fakeParams.owNamespace, '403-auth')
+      })
+      test('when metrics url is valid & server error', async () => {
+        tvm._generateCredentials.mockRejectedValue(new Error('fake error'))
+        fakeParams.metricsUrl = 'https://example.com/aio/metrics'
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.error.statusCode).toEqual(500)
+        expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics')
+        expect(metrics.incBatchCounter).toHaveBeenCalledWith('error_count', 'fake error', '500')
       })
     })
   })
