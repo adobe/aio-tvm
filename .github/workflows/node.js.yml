@@ -25,8 +25,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    # node 16 - need to limit memory usage
-    - run: node --max_old_space_size=4096 `which npm` i --package-lock --package-lock-only
+    - run: npm i --package-lock --package-lock-only
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
