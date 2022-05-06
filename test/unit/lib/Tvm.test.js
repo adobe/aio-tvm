@@ -285,7 +285,7 @@ describe('processRequest (abstract)', () => {
         const response = await tvm.processRequest(fakeParams)
         expect(response.statusCode).toEqual(200)
         expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics')
-        expect(metrics.incBatchCounter).toHaveBeenCalledWith('request_count', fakeParams.owNamespace)
+        expect(metrics.incBatchCounter).toHaveBeenCalledWith('request_count', fakeParams.owNamespace, undefined)
       })
       test('when metrics url is valid & apigw validation failure', async () => {
         fakeParams.__ow_headers['x-gw-ims-authorization'] = 'bad format'
@@ -293,7 +293,7 @@ describe('processRequest (abstract)', () => {
         const response = await tvm.processRequest(fakeParams)
         expect(response.statusCode).toEqual(403)
         expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics')
-        expect(metrics.incBatchCounter).toHaveBeenCalledWith('warning_count', fakeParams.owNamespace, '403-apigw')
+        expect(metrics.incBatchCounter).toHaveBeenCalledWith('user_error_count', fakeParams.owNamespace, '403')
       })
       test('when metrics url is valid & ow validation failure', async () => {
         fakeParams.owNamespace = 'bad namespace'
@@ -301,7 +301,7 @@ describe('processRequest (abstract)', () => {
         const response = await tvm.processRequest(fakeParams)
         expect(response.statusCode).toEqual(403)
         expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics')
-        expect(metrics.incBatchCounter).toHaveBeenCalledWith('warning_count', fakeParams.owNamespace, '403-auth')
+        expect(metrics.incBatchCounter).toHaveBeenCalledWith('user_error_count', fakeParams.owNamespace, '403')
       })
       test('when metrics url is valid & server error', async () => {
         tvm._generateCredentials.mockRejectedValue(new Error('fake error'))
@@ -309,7 +309,7 @@ describe('processRequest (abstract)', () => {
         const response = await tvm.processRequest(fakeParams)
         expect(response.error.statusCode).toEqual(500)
         expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics')
-        expect(metrics.incBatchCounter).toHaveBeenCalledWith('error_count', 'fake error', '500')
+        expect(metrics.incBatchCounter).toHaveBeenCalledWith('error_count', fakeParams.owNamespace, '500')
       })
     })
   })
