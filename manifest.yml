@@ -14,7 +14,7 @@ packages:
           approvedList: $APPROVED_LIST
           imsEnv: $IMS_ENV
           disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
-          metricsUrl: $METRICS_URL
+          metricsUrl: $AIO_METRICS_URL
         annotations:
           # this is important security wise
           final: true
@@ -30,7 +30,7 @@ packages:
           approvedList: $APPROVED_LIST
           imsEnv: $IMS_ENV
           disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
-          metricsUrl: $METRICS_URL
+          metricsUrl: $AIO_METRICS_URL
         annotations:
           # this is important security wise
           final: true
@@ -46,7 +46,7 @@ packages:
           approvedList: $APPROVED_LIST
           imsEnv: $IMS_ENV
           disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
-          metricsUrl: $METRICS_URL
+          metricsUrl: $AIO_METRICS_URL
         annotations:
           # this is important security wise
           final: true
@@ -62,7 +62,7 @@ packages:
           approvedList: $APPROVED_LIST
           imsEnv: $IMS_ENV
           disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
-          metricsUrl: $METRICS_URL
+          metricsUrl: $AIO_METRICS_URL
         annotations:
           # this is important security wise
           final: true
@@ -80,7 +80,7 @@ packages:
           approvedList: $APPROVED_LIST
           imsEnv: $IMS_ENV
           disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
-          metricsUrl: $METRICS_URL
+          metricsUrl: $AIO_METRICS_URL
         annotations:
           # this is important security wise
           final: true
