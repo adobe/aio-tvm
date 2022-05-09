@@ -10,8 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const { Tvm } = require('../../../lib/Tvm')
-jest.mock('aio-lib-metrics-beta')
-const metrics = require('aio-lib-metrics-beta')
+jest.mock('@adobe/aio-metrics-client')
+const metrics = require('@adobe/aio-metrics-client')
 
 describe('processRequest (abstract)', () => {
   // setup

@@ -43,9 +43,9 @@
   "dependencies": {
     "@adobe/aio-lib-core-logging": "^1.1.0",
     "@adobe/aio-lib-ims": "4.0.1",
+    "@adobe/aio-metrics-client": "^0.1.0",
     "@azure/cosmos": "^3.9.3",
     "@azure/storage-blob": "^10.5.0",
-    "aio-lib-metrics-beta": "0.0.2",
     "aws-sdk": "^2.539.0",
     "joi": "^17.4.2",
     "lru-cache": "^6.0.0",
