@@ -9,7 +9,7 @@
   },
   "repository": "adobe/aio-tvm",
   "scripts": {
-    "lint": "eslint './actions/**/*.js' './lib/**/*.js' './test/**/*.js' './scripts/**/*.js'",
+    "lint": "eslint actions lib test scripts",
     "beautify": "npm run lint -- --fix",
     "test": "npm run unit && npm run lint",
     "unit": "jest",
@@ -47,7 +47,6 @@
     "@azure/storage-blob": "^10.5.0",
     "aio-lib-metrics-beta": "0.0.2",
     "aws-sdk": "^2.539.0",
-    "crypto": "^1.0.1",
     "joi": "^17.4.2",
     "lru-cache": "^6.0.0",
     "node-fetch": "^2.6.0",
