@@ -58,8 +58,7 @@ This might be useful for you if:
 
   # TVM credentials options
   EXPIRATION_DURATION=<token expiration in seconds>
-  APPROVED_LIST=<comma separated list of namespaces>
-  ADMIN_LIST=<comma separated list of namespaces>
+  APPROVED_LIST=<comma separated list of namespaces, NOTE: does not apply for admin/* endpoints>
 
   # AWS S3 credentials
   AWS_ACCESS_KEY_ID=<key id of IAM user created in AWS>
@@ -86,9 +85,9 @@ This might be useful for you if:
   hence who can deploy files to your S3 Bucket.
   - **[ ⚠️ NOT RECOMMENDED ⚠️]** Use `APPROVED_LIST=*` to allow access to
     **every** OpenWhisk namespace in the same domain.
+  - **[Note]** Does not apply for admin/* endpoints
 
-- Use the `ADMIN_LIST` variable to control which namespaces can access the TVM admin
-  endpoints and hence who can retrieve credentials for any namespace in the same domain.
+- Only Adobe I/O Runtime Actions deployed in the same namespace as TVM are authorized to call admin/** endpoints
 
 ### Setup Azure Blob
 
