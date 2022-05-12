@@ -13,6 +13,8 @@ const { AzureCosmosTvm } = require('../../../../lib/impl/AzureCosmosTvm')
 
 const cosmos = require('@azure/cosmos')
 jest.mock('@azure/cosmos')
+// because metrics-client uses setTimeout, and some of these tests mock setTimeout
+jest.mock('@adobe/aio-metrics-client')
 
 // find more standard way to mock cosmos?
 const cosmosMocks = {
