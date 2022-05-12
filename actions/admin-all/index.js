@@ -17,7 +17,7 @@ const adminTvm = new AdminTvm()
  * @returns {Promise<object>} tvm response
  */
 async function main (params) {
-  params.approvedList = process.env.__OW_NAMESPACE // override approvedList for this endpoint to only TVM namespace
+  params.approvedList = params.owNamespace // override approvedList for this endpoint to only TVM namespace
   return adminTvm.processRequest(params)
 }
 
