@@ -104,6 +104,20 @@
         }
       },
       "required": [ "resourceToken", "partitionKey", "container", "databaseId", "endpoint", "expiration" ]
+    },
+    "AdminAllToken": {
+      "description": "object of tokens allowing access to an OpenWhisk namespace's cloud resources",
+      "properties": {
+        "awsS3": {
+          "$ref": "#/definitions/AwsS3Token"
+        },
+        "azureBlob": {
+          "$ref": "#/definitions/AzureBlobToken"
+        },
+        "azureCosmos": {
+          "$ref": "#/definitions/AzureCosmosToken"
+        }
+      }
     }
   },
   "paths": {
@@ -302,6 +316,61 @@
             "description": "tokens to access azure cosmos",
             "schema": {
               "$ref": "#/definitions/AzureCosmosToken"
+            }
+          }
+        }
+      }
+    },
+    "/admin/{owNamespace}/all/{requestedOwNamespace}": {
+      "get": {
+        "description": "Allows a requester running from the same OpenWhisk namespace as the deployed TVM to request all cloud credentials for an OpenWhisk namespace.\n**NOTE:** This endpoint does not honor `APPROVED_LIST`",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetTokenForAdminAll",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "required": true,
+            "format": "owAuth",
+            "description": "OpenWhisk Basic auth in base 64 format, e.g. `Basic ZmFrZWF1dGg=`"
+          },
+          {
+            "in": "path",
+            "name": "owNamespace",
+            "type": "string",
+            "required": true,
+            "format": "owNamespace",
+            "description": "OpenWhisk namespace"
+          },
+          {
+            "in": "path",
+            "name": "requestedOwNamespace",
+            "type": "string",
+            "required": true,
+            "format": "requestedOwNamespace",
+            "description": "Requested OpenWhisk namespace"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "tokens to access azure cosmos",
+            "schema": {
+              "$ref": "#/definitions/AdminAllToken"
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "forbidden request",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           }
         }
