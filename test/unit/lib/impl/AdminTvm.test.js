@@ -12,13 +12,13 @@ governing permissions and limitations under the License.
 
 const { AdminTvm } = require('../../../../lib/impl/AdminTvm')
 
-let { AwsS3Tvm } = require('../../../../lib/impl/AwsS3Tvm')
+const { AwsS3Tvm } = require('../../../../lib/impl/AwsS3Tvm')
 jest.mock('../../../../lib/impl/AwsS3Tvm')
 
-let { AzureBlobTvm } = require('../../../../lib/impl/AzureBlobTvm')
+const { AzureBlobTvm } = require('../../../../lib/impl/AzureBlobTvm')
 jest.mock('../../../../lib/impl/AzureBlobTvm')
 
-let { AzureCosmosTvm } = require('../../../../lib/impl/AzureCosmosTvm')
+const { AzureCosmosTvm } = require('../../../../lib/impl/AzureCosmosTvm')
 jest.mock('../../../../lib/impl/AzureCosmosTvm')
 
 // params
@@ -34,9 +34,6 @@ fakeParams.azureCosmosMasterKey = 'fakeKey'
 fakeParams.azureCosmosDatabaseId = 'fakeDBId'
 fakeParams.azureCosmosContainerId = 'fakeContainerId'
 
-const fakeNSHash = 'f3125a324ac7d2024dbbc867fb2e6013' // 32 bit hash of 'fakeNS'
-const fakeRequestedNSHash = 'ff1ce88e3a51073d7d6d9a889d54112c' // 32 bit hash of 'fakeRequestedNS'
-
 describe('processRequest (Admin)', () => {
   // setup
   /** @type {AdminTvm} */
@@ -44,34 +41,34 @@ describe('processRequest (Admin)', () => {
 
   const fakeCredentials = {
     awsS3: {
-        accessKeyId: 'fakeAccessKeyId',
-        secretAccessKey: 'fakeSecretAccessKey',
-        sessionToken: 'fakeSessionToken',
-        expiration: 'fakeAwsS3Expiration',
-        params: {
-            Bucket: 'fakeBucket'
-        }
-    }, 
-    azureBlob: { 
-        sasURLPrivate: 'fakeSasURLPrivate',
-        sasURLPublic: 'fakeSasURLPublic',
-        expiration: 'fakeSasExpiration'
+      accessKeyId: 'fakeAccessKeyId',
+      secretAccessKey: 'fakeSecretAccessKey',
+      sessionToken: 'fakeSessionToken',
+      expiration: 'fakeAwsS3Expiration',
+      params: {
+        Bucket: 'fakeBucket'
+      }
     },
-    azureCosmos: { 
-        containerId: 'fakeContainerId',
-        databaseId: 'fakeDatabaseId',
-        endpoint: 'fakeEndpoint',
-        expiration: 'fakeExpiration',
-        partitionKey: 'fakePartitionKey',
-        resourceToken: 'fakeResourceToken'
+    azureBlob: {
+      sasURLPrivate: 'fakeSasURLPrivate',
+      sasURLPublic: 'fakeSasURLPublic',
+      expiration: 'fakeSasExpiration'
+    },
+    azureCosmos: {
+      containerId: 'fakeContainerId',
+      databaseId: 'fakeDatabaseId',
+      endpoint: 'fakeEndpoint',
+      expiration: 'fakeExpiration',
+      partitionKey: 'fakePartitionKey',
+      resourceToken: 'fakeResourceToken'
     }
   }
 
   beforeEach(() => {
     adminTvm = new AdminTvm()
-    jest.spyOn(AwsS3Tvm.prototype, '_generateCredentials').mockImplementation(async () => { return { ...fakeCredentials.awsS3 }})
-    jest.spyOn(AzureBlobTvm.prototype, '_generateCredentials').mockImplementation(async () => { return { ...fakeCredentials.azureBlob }})
-    jest.spyOn(AzureCosmosTvm.prototype, '_generateCredentials').mockImplementation(async () => { return { ...fakeCredentials.azureCosmos }})
+    jest.spyOn(AwsS3Tvm.prototype, '_generateCredentials').mockImplementation(async () => { return { ...fakeCredentials.awsS3 } })
+    jest.spyOn(AzureBlobTvm.prototype, '_generateCredentials').mockImplementation(async () => { return { ...fakeCredentials.azureBlob } })
+    jest.spyOn(AzureCosmosTvm.prototype, '_generateCredentials').mockImplementation(async () => { return { ...fakeCredentials.azureCosmos } })
   })
 
   describe('param validation', () => {
@@ -89,24 +86,24 @@ describe('processRequest (Admin)', () => {
 
   describe('credential generation', () => {
     test('tvms return valid cloud credentials', async () => {
-      let response = await adminTvm.processRequest(fakeParams)
+      const response = await adminTvm.processRequest(fakeParams)
       expect(response.statusCode).toEqual(200)
       expect(response.body).toEqual(fakeCredentials)
 
-      const mockAwsS3Tvm = AwsS3Tvm.mock.instances[0];
-      const mockAwsS3GenerateCredentials = mockAwsS3Tvm._generateCredentials;
-      expect(mockAwsS3GenerateCredentials).toHaveBeenCalledWith(fakeParams);
-      expect(mockAwsS3GenerateCredentials).toHaveBeenCalledTimes(1);
+      const mockAwsS3Tvm = AwsS3Tvm.mock.instances[0]
+      const mockAwsS3GenerateCredentials = mockAwsS3Tvm._generateCredentials
+      expect(mockAwsS3GenerateCredentials).toHaveBeenCalledWith(fakeParams)
+      expect(mockAwsS3GenerateCredentials).toHaveBeenCalledTimes(1)
 
-      const mockAzureBlobTvm = AzureBlobTvm.mock.instances[0];
-      const mockAzureBlobGenerateCredentials = mockAzureBlobTvm._generateCredentials;
-      expect(mockAzureBlobGenerateCredentials).toHaveBeenCalledWith(fakeParams);
-      expect(mockAzureBlobGenerateCredentials).toHaveBeenCalledTimes(1);
+      const mockAzureBlobTvm = AzureBlobTvm.mock.instances[0]
+      const mockAzureBlobGenerateCredentials = mockAzureBlobTvm._generateCredentials
+      expect(mockAzureBlobGenerateCredentials).toHaveBeenCalledWith(fakeParams)
+      expect(mockAzureBlobGenerateCredentials).toHaveBeenCalledTimes(1)
 
-      const mockAzureCosmosTvm = AzureCosmosTvm.mock.instances[0];
-      const mockAzureCosmosGenerateCredentials = mockAzureCosmosTvm._generateCredentials;
-      expect(mockAzureCosmosGenerateCredentials).toHaveBeenCalledWith(fakeParams);
-      expect(mockAzureCosmosGenerateCredentials).toHaveBeenCalledTimes(1);
+      const mockAzureCosmosTvm = AzureCosmosTvm.mock.instances[0]
+      const mockAzureCosmosGenerateCredentials = mockAzureCosmosTvm._generateCredentials
+      expect(mockAzureCosmosGenerateCredentials).toHaveBeenCalledWith(fakeParams)
+      expect(mockAzureCosmosGenerateCredentials).toHaveBeenCalledTimes(1)
     })
   })
 })

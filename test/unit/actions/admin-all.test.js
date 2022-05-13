@@ -24,10 +24,10 @@ test('admin-all action has a main function and calls AdminTvm.processRequest', a
 })
 
 test('admin-all action overwrites approvedList with its own namespace', async () => {
-    process.env.__OW_NAMESPACE = 'test-env-namespace'
-    const fakeParams = { approvedList: '' }
-    const modifiedFakeParams = { approvedList: process.env.__OW_NAMESPACE}
+  process.env.__OW_NAMESPACE = 'test-env-namespace'
+  const fakeParams = { approvedList: '' }
+  const modifiedFakeParams = { approvedList: process.env.__OW_NAMESPACE }
 
-    await adminAllAction.main(fakeParams)
-    expect(AdminTvm.prototype.processRequest).toHaveBeenCalledWith(modifiedFakeParams)   
+  await adminAllAction.main(fakeParams)
+  expect(AdminTvm.prototype.processRequest).toHaveBeenCalledWith(modifiedFakeParams)
 })
