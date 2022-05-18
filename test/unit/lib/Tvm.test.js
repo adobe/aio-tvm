@@ -273,12 +273,13 @@ describe('processRequest (abstract)', () => {
         fakeParams.metricsUrl = ''
         const response = await tvm.processRequest(fakeParams)
         expect(response.statusCode).toEqual(200)
+        expect(metrics.setMetricsURL).not.toHaveBeenCalled()
       })
       test('when metrics url is not a valid uri', async () => {
         fakeParams.metricsUrl = 'aio/metrics'
         const response = await tvm.processRequest(fakeParams)
-        expect(response.statusCode).toEqual(400)
-        expect(response.body.error).toEqual('"metricsUrl" must be a valid uri')
+        expect(response.statusCode).toEqual(200)
+        expect(metrics.setMetricsURL).not.toHaveBeenCalled()
       })
       test('when metrics url is valid', async () => {
         fakeParams.metricsUrl = 'https://example.com/aio/metrics/'
