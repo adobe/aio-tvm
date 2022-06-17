@@ -1,5 +1,5 @@
 packages:
-  tvm:
+  aio-tvm-3.2.1:
     actions:
       aws-s3:
         function: actions/aws-s3/index.js
