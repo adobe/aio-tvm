@@ -4,6 +4,7 @@
   "description": "The Adobe I/O token vending machine for used to integrate external cloud services with Adobe I/O Runtime",
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
+  "private": true,
   "engines": {
     "node": ">=14.0.0"
   },
