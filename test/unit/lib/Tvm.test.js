@@ -13,11 +13,24 @@ const { Tvm } = require('../../../lib/Tvm')
 const metrics = require('@adobe/aio-metrics-client')
 jest.mock('@adobe/aio-metrics-client')
 
+const fetch = require('node-fetch')
+jest.mock('node-fetch', () => jest.fn())
+
+const fakeResponse = jest.fn()
+fakeResponse.mockResolvedValue('{}')
+
 describe('processRequest (abstract)', () => {
   // setup
   /** @type {Tvm} */
   let tvm
   let fakeParams
+
+  // fetch.text = jest.fn()
+  // fetch.text.mockResolvedValue(fakeResponse)
+  fetch.mockResolvedValue({
+    text: fakeResponse,
+    ok: true
+  })
   beforeEach(() => {
     tvm = new Tvm()
     fakeParams = JSON.parse(JSON.stringify(global.baseNoErrorParams))
@@ -311,6 +324,75 @@ describe('processRequest (abstract)', () => {
         expect(response.error.statusCode).toEqual(500)
         expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics/recordtvmmetrics')
         expect(metrics.incBatchCounter).toHaveBeenCalledWith('error_count', fakeParams.owNamespace, '500')
+      })
+    })
+
+    describe('deny list enabled', () => {
+      test('when deny list url is an empty string', async () => {
+        fakeParams.denyListUrl = ''
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+      })
+      test('when deny list url response not a valid', async () => {
+        fakeParams.denyListUrl = 'someURL'
+        fetch.mockResolvedValueOnce({
+          text: fakeResponse
+        })
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+        expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining('Error while fetching deny list'))
+      })
+      test('when deny list url response is empty list', async () => {
+        fakeParams.denyListUrl = 'someURL'
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+        expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
+        // expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics/recordtvmmetrics')
+        // expect(metrics.incBatchCounter).toHaveBeenCalledWith('request_count', fakeParams.owNamespace, undefined)
+      })
+
+      test('when deny list url response is valid list', async () => {
+        fakeParams.denyListUrl = 'someURL'
+        fakeResponse.mockResolvedValueOnce(JSON.stringify({
+          statestore: {
+            updated: Date.now(),
+            users: {
+              someNS1: 500,
+              someNS2: 300
+            }
+          }
+        }))
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+        expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
+        // expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics/recordtvmmetrics')
+        // expect(metrics.incBatchCounter).toHaveBeenCalledWith('request_count', fakeParams.owNamespace, undefined)
+      })
+
+      test('when deny list url response is valid list with requested namespace', async () => {
+        fakeParams.denyListUrl = 'someURL'
+        fakeResponse.mockResolvedValueOnce(JSON.stringify({
+          statestore: {
+            updated: Date.now(),
+            users: {
+              fakeNS: 500,
+              someNS: 300
+            }
+          }
+        }))
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+        expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
+        // expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics/recordtvmmetrics')
+        // expect(metrics.incBatchCounter).toHaveBeenCalledWith('request_count', fakeParams.owNamespace, undefined)
+      })
+
+      test('when deny list url fetch errors out', async () => {
+        fakeParams.denyListUrl = 'someURL'
+        fakeResponse.mockRejectedValueOnce(new Error('network error'))
+        const response = await tvm.processRequest(fakeParams)
+        expect(response.statusCode).toEqual(200)
+        expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
       })
     })
   })

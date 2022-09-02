@@ -16,6 +16,15 @@ jest.mock('@azure/cosmos')
 // because metrics-client uses setTimeout, and some of these tests mock setTimeout
 jest.mock('@adobe/aio-metrics-client')
 
+const fetch = require('node-fetch')
+const { Tvm } = require('../../../../lib/Tvm')
+jest.mock('node-fetch', () => jest.fn())
+
+const fakeResponse = jest.fn()
+const fetchDenyListSpy = jest.spyOn(Tvm.prototype, '_fetchDenyList')
+const processDenyListSpy = jest.spyOn(Tvm.prototype, '_processDenyList')
+// fakeResponse.mockResolvedValue('{}')
+
 // find more standard way to mock cosmos?
 const cosmosMocks = {
   container: jest.fn(),
@@ -85,6 +94,16 @@ describe('processRequest (Azure Cosmos)', () => {
     userInstanceMock.mockClear()
 
     global.setTimeout.mockClear()
+
+    fetch.mockResolvedValue({
+      text: fakeResponse,
+      ok: true
+    })
+    fakeResponse.mockResolvedValue('{}')
+    fetchDenyListSpy.mockClear()
+    processDenyListSpy.mockClear()
+    Tvm.inMemoryCache = {}
+    global.mockLog.warn.mockClear()
   })
 
   describe('param validation', () => {
@@ -241,6 +260,112 @@ describe('processRequest (Azure Cosmos)', () => {
       cosmosMocks.permissionsCreate.mockRejectedValue(err)
       const response = await tvm.processRequest(fakeParams)
       global.expectServerError(response, 'permission create error')
+    })
+
+    test('when deny list url response is valid list with requested namespace', async () => {
+      fakeParams.denyListUrl = 'someURL'
+      fakeResponse.mockResolvedValueOnce(JSON.stringify({
+        statestore: {
+          updated: Date.now(),
+          users: {
+            fakeNS: 500,
+            someNS: 300
+          }
+        }
+      }))
+      const response = await tvm.processRequest(fakeParams)
+      expect(response.statusCode).toEqual(500)
+      expect(global.mockLog.warn).toHaveBeenCalledTimes(1)
+      expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining('server error: Usage - 500RUs is above threshold. Wait for sometime and retry.'))
+    })
+
+    test('when deny list url response is valid list without requested namespace', async () => {
+      fakeParams.denyListUrl = 'someURL'
+      fakeResponse.mockResolvedValueOnce(JSON.stringify({
+        statestore: {
+          updated: Date.now(),
+          users: {
+            someNS1: 200,
+            someNS2: 200
+          }
+        }
+      }))
+      const response = await tvm.processRequest(fakeParams)
+      expect(response.statusCode).toEqual(200)
+      expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
+    })
+
+    test('when deny list url response is valid but list is expired', async () => {
+      const expiredDate = new Date(Date.now() - fakeParams.expirationDuration * 1000).valueOf()
+      fakeParams.denyListUrl = 'someURL'
+      // fakeResponse.mockClear()
+      fakeResponse.mockResolvedValueOnce(JSON.stringify({
+        statestore: {
+          updated: expiredDate,
+          users: {
+            fakeNS: 400,
+            someNS: 600
+          }
+        }
+      }))
+      const response = await tvm.processRequest(fakeParams)
+      expect(response.statusCode).toEqual(200)
+      expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining('Deny list is expired - ' + expiredDate))
+    })
+
+    test('when deny list url response is empty list', async () => {
+      fakeParams.denyListUrl = 'someURL'
+      fakeResponse.mockReset()
+      fakeResponse.mockResolvedValueOnce('{}')
+      const response = await tvm.processRequest(fakeParams)
+      expect(response.statusCode).toEqual(200)
+      expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
+    })
+
+    test('when deny list url fetch errors out', async () => {
+      fakeParams.denyListUrl = 'someURL'
+      fakeResponse.mockReset()
+      fakeResponse.mockRejectedValueOnce(new Error('network error'))
+      const response = await tvm.processRequest(fakeParams)
+      expect(response.statusCode).toEqual(200)
+      expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining('Error while fetching deny list'))
+      expect(processDenyListSpy).toHaveBeenCalledTimes(0)
+    })
+
+    test('when deny list is fetched from inMemoryCache', async () => {
+      fakeParams.denyListUrl = 'someURL'
+      fakeResponse.mockResolvedValueOnce(JSON.stringify({
+        statestore: {
+          updated: Date.now(),
+          users: {
+            someNS1: 200,
+            someNS2: 200
+          }
+        }
+      }))
+
+      // This call will fetch a new list and add to inMemoryCache
+      let response = await tvm.processRequest(fakeParams)
+      expect(response.statusCode).toEqual(200)
+      expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
+      expect(fetchDenyListSpy).toHaveBeenCalledTimes(1)
+      expect(Tvm.inMemoryCache.expiry).toBeDefined()
+      expect(Tvm.inMemoryCache.expiry).toBeGreaterThan(Date.now())
+
+      // This next call to tvm should use the inMemoryCache and not fetch Deny List from URL
+      fetchDenyListSpy.mockClear()
+      response = await tvm.processRequest(fakeParams)
+      expect(response.statusCode).toEqual(200)
+      expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
+      expect(fetchDenyListSpy).toHaveBeenCalledTimes(0)
+
+      // Here we mock an expired inMemoryCache
+      fetchDenyListSpy.mockClear()
+      Tvm.inMemoryCache.expiry = Date.now() // cache expired
+      response = await tvm.processRequest(fakeParams)
+      expect(response.statusCode).toEqual(200)
+      expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
+      expect(fetchDenyListSpy).toHaveBeenCalledTimes(1)
     })
   })
 })
