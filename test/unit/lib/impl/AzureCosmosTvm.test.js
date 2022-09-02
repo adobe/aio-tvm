@@ -274,9 +274,9 @@ describe('processRequest (Azure Cosmos)', () => {
         }
       }))
       const response = await tvm.processRequest(fakeParams)
-      expect(response.statusCode).toEqual(500)
+      expect(response.statusCode).toEqual(429)
       expect(global.mockLog.warn).toHaveBeenCalledTimes(1)
-      expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining('server error: Usage - 500RUs is above threshold. Wait for sometime and retry.'))
+      expect(global.mockLog.warn).toHaveBeenCalledWith(expect.stringContaining('throttled request: Usage - 500RUs is above threshold. Wait for sometime and retry.'))
     })
 
     test('when deny list url response is valid list without requested namespace', async () => {

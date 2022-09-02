@@ -226,6 +226,14 @@ describe('processRequest (abstract)', () => {
         global.expect500Error(response, errorMsg)
       })
 
+      test('when openwhisk.namespaces.list throws an error without code', async () => {
+        const errorMsg = 'abfjdsjfhbv'
+        const errorObj = new Error(errorMsg)
+        global.owNsListMock.mockRejectedValue(errorObj)
+        const response = await tvm.processRequest(fakeParams)
+        global.expect500Error(response, errorMsg)
+      })
+
       test('when openwhisk.namespaces.list returns with an empty list', async () => {
         global.owNsListMock.mockResolvedValue([])
         const response = await tvm.processRequest(fakeParams)
