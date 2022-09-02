@@ -23,7 +23,6 @@ jest.mock('node-fetch', () => jest.fn())
 const fakeResponse = jest.fn()
 const fetchDenyListSpy = jest.spyOn(Tvm.prototype, '_fetchDenyList')
 const processDenyListSpy = jest.spyOn(Tvm.prototype, '_processDenyList')
-// fakeResponse.mockResolvedValue('{}')
 
 // find more standard way to mock cosmos?
 const cosmosMocks = {
@@ -298,7 +297,6 @@ describe('processRequest (Azure Cosmos)', () => {
     test('when deny list url response is valid but list is expired', async () => {
       const expiredDate = new Date(Date.now() - fakeParams.expirationDuration * 1000).valueOf()
       fakeParams.denyListUrl = 'someURL'
-      // fakeResponse.mockClear()
       fakeResponse.mockResolvedValueOnce(JSON.stringify({
         statestore: {
           updated: expiredDate,

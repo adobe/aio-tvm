@@ -25,8 +25,6 @@ describe('processRequest (abstract)', () => {
   let tvm
   let fakeParams
 
-  // fetch.text = jest.fn()
-  // fetch.text.mockResolvedValue(fakeResponse)
   fetch.mockResolvedValue({
     text: fakeResponse,
     ok: true
@@ -355,8 +353,6 @@ describe('processRequest (abstract)', () => {
         const response = await tvm.processRequest(fakeParams)
         expect(response.statusCode).toEqual(200)
         expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
-        // expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics/recordtvmmetrics')
-        // expect(metrics.incBatchCounter).toHaveBeenCalledWith('request_count', fakeParams.owNamespace, undefined)
       })
 
       test('when deny list url response is valid list', async () => {
@@ -373,8 +369,6 @@ describe('processRequest (abstract)', () => {
         const response = await tvm.processRequest(fakeParams)
         expect(response.statusCode).toEqual(200)
         expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
-        // expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics/recordtvmmetrics')
-        // expect(metrics.incBatchCounter).toHaveBeenCalledWith('request_count', fakeParams.owNamespace, undefined)
       })
 
       test('when deny list url response is valid list with requested namespace', async () => {
@@ -391,8 +385,6 @@ describe('processRequest (abstract)', () => {
         const response = await tvm.processRequest(fakeParams)
         expect(response.statusCode).toEqual(200)
         expect(global.mockLog.warn).toHaveBeenCalledTimes(0)
-        // expect(metrics.setMetricsURL).toHaveBeenCalledWith('https://example.com/aio/metrics/recordtvmmetrics')
-        // expect(metrics.incBatchCounter).toHaveBeenCalledWith('request_count', fakeParams.owNamespace, undefined)
       })
 
       test('when deny list url fetch errors out', async () => {
