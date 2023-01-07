@@ -16,7 +16,7 @@
     "unit": "jest",
     "func": "echo 'functional tests were outdated and have been removed'",
     "release": "np --no-publish --no-cleanup --no-yarn",
-    "generate-doc": "redoc-cli bundle docs/swagger.json -o docs/api.html"
+    "generate-doc": "redoc-cli build docs/swagger.json -o docs/api.html"
   },
   "jest.pathToConfig": "jest.config.js",
   "devDependencies": {
