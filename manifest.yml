@@ -75,12 +75,13 @@ packages:
           azureCosmosAccount: $AZURE_COSMOS_ACCOUNT
           azureCosmosDatabaseId: $AZURE_COSMOS_DATABASE_ID
           azureCosmosContainerId: $AZURE_COSMOS_CONTAINER_ID
-          expirationDuration: $EXPIRATION_DURATION
+          expirationDuration: $EXPIRATION_DURATION_STATE_LIB
           owApihost: $AIO_RUNTIME_APIHOST
           approvedList: $APPROVED_LIST
           imsEnv: $IMS_ENV
           disableAdobeIOApiGwTokenValidation: $DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION
           metricsUrl: $AIO_METRICS_URL
+          denyListUrl: $AIO_DENY_LIST_URL
         annotations:
           # this is important security wise
           final: true

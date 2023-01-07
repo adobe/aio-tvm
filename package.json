@@ -1,6 +1,6 @@
 {
   "name": "aio-tvm",
-  "version": "5.2.0",
+  "version": "5.3.0",
   "description": "The Adobe I/O token vending machine for used to integrate external cloud services with Adobe I/O Runtime",
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
@@ -38,7 +38,7 @@
     "jest": "^24.9.0",
     "node-fetch": "^2.6.0",
     "np": "^7.5.0",
-    "redoc-cli": "^0.9.2"
+    "redoc-cli": "^0.13.20"
   },
   "dependencies": {
     "@adobe/aio-lib-core-logging": "^2.0.0",
