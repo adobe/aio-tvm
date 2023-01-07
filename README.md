@@ -58,6 +58,7 @@ This might be useful for you if:
 
   # TVM credentials options
   EXPIRATION_DURATION=<token expiration in seconds>
+  EXPIRATION_DURATION_STATE_LIB=<State lib expiration token>
   APPROVED_LIST=<comma separated list of namespaces>
 
   # AWS S3 credentials
@@ -79,6 +80,10 @@ This might be useful for you if:
   # Adobe I/O API Gateway token validation specific
   DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION=<optional, set to true if TVM is not deployed behind the Adobe I/O API Gateway>
   IMS_ENV=<not relevant if DISABLE_ADOBE_IO_API_GW_TOKEN_VALIDATION=true, IMS env for validating the Adobe I/O API Gateway token>
+
+  # Optional Params for Monitoring and access control
+  AIO_METRICS_URL=<URL where TVM usage metrics will be sent>
+  AIO_DENY_LIST_URL=<URL from where to fetch service based deny list>
   ```
 
 - Use the `APPROVED_LIST` variable to control which namespace can access the TVM and
