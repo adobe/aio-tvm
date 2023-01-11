@@ -18,6 +18,7 @@ azureUtil.getContainerURL.mockReturnValue({ fake: '' })
 
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')
+jest.mock('@adobe/aio-metrics-client')
 
 // mock azure blob
 azure.SharedKeyCredential = jest.fn()

@@ -18,6 +18,7 @@ azureUtil.addAccessPolicyIfNotExists = jest.fn()
 
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')
+jest.mock('@adobe/aio-metrics-client')
 
 // mock azure blob
 const azureContainerCreateMock = jest.fn()
