@@ -14,6 +14,7 @@ const { AwsS3Tvm } = require('../../../../lib/impl/AwsS3Tvm')
 
 const aws = require('aws-sdk')
 jest.mock('aws-sdk')
+jest.mock('@adobe/aio-metrics-client')
 
 // mock aws sts
 const getFederationTokenPromiseMock = jest.fn()
