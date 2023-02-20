@@ -47,7 +47,7 @@
     "@adobe/aio-metrics-client": "^0.2.0",
     "@azure/cosmos": "^3.9.3",
     "@azure/storage-blob": "^10.5.0",
-    "aws-sdk": "^2.539.0",
+    "aws-sdk": "^2.1318.0",
     "joi": "^17.4.2",
     "js-yaml": "^4.1.0",
     "lru-cache": "^6.0.0",
