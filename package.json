@@ -15,7 +15,7 @@
     "test": "npm run unit && npm run lint",
     "unit": "jest",
     "release": "np --no-publish --no-cleanup --no-yarn",
-    "generate-doc": "redoc-cli build docs/swagger.json -o docs/api.html"
+    "generate-doc": "redoc-cli build docs/swagger.json -o docs/api.html --options.theme.colors.primary.main=#FF0000"
   },
   "jest.pathToConfig": "jest.config.js",
   "devDependencies": {
@@ -35,7 +35,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "execa": "^2.0.5",
     "fs-extra": "^8.1.0",
-    "jest": "^24.9.0",
+    "jest": "^29.3.1",
     "node-fetch": "^2.6.0",
     "np": "^7.5.0",
     "redoc-cli": "^0.13.20"
