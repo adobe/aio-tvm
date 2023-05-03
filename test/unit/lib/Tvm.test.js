@@ -278,8 +278,8 @@ describe('processRequest (abstract)', () => {
 
     describe('response format', () => {
       test('when there is no error, body equals generated credentials', async () => {
-        const requestIdStartLog = 'start of request Id - fake request id'
-        const requestIdEndLog = 'end of request Id - fake request id'
+        const requestIdStartLog = `start, namespace - ${fakeParams.owNamespace} - request Id - fake request id`
+        const requestIdEndLog = `end, namespace - ${fakeParams.owNamespace} - request Id - fake request id`
         const response = await tvm.processRequest(fakeParams)
         expect(response.statusCode).toEqual(200)
         expect(response.body).toEqual(mockResponse)
