@@ -18,6 +18,7 @@ const azurePresignTvm = new AzurePresignTvm()
  * @returns {Promise<object>} tvm response
  */
 async function main (params) {
+  console.log('presigning azure blob')
   return azurePresignTvm.processRequest(params)
 }
 
