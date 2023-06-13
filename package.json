@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "private": true,
   "engines": {
-    "node": ">=14.0.0"
+    "node": "^14.18 || ^16.13 || >=18"
   },
   "repository": "adobe/aio-tvm",
   "scripts": {
@@ -14,8 +14,7 @@
     "beautify": "npm run lint -- --fix",
     "test": "npm run unit && npm run lint",
     "unit": "jest",
-    "func": "echo 'functional tests were outdated and have been removed'",
-    "release": "np --no-publish --no-cleanup --no-yarn",
+    "release": "npx np --no-publish --no-cleanup --no-yarn --preview",
     "generate-doc": "redoc-cli build docs/swagger.json -o docs/api.html --options.theme.colors.primary.main=#FF0000"
   },
   "jest.pathToConfig": "jest.config.js",
@@ -35,13 +34,12 @@
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^29",
     "node-fetch": "^2.6.0",
-    "np": "^7.5.0",
     "redoc-cli": "^0.13.20"
   },
   "dependencies": {
-    "@adobe/aio-lib-core-logging": "^1.1.0",
+    "@adobe/aio-lib-core-logging": "^2.0.0",
     "@adobe/aio-lib-ims": "6.2.0",
-    "@adobe/aio-metrics-client": "^0.2.0",
+    "@adobe/aio-metrics-client": "^0.3.0",
     "@azure/cosmos": "^3.9.3",
     "@azure/storage-blob": "^10.5.0",
     "aws-sdk": "^2.1356.0",
