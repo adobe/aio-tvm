@@ -3,5 +3,14 @@
     "NodeJS": true
   },
   "plugins": ["jest"],
-  "extends": ["standard", "plugin:jsdoc/recommended", "plugin:jest/recommended"]
+  "extends": ["standard", "plugin:jsdoc/recommended", "plugin:jest/recommended"],
+  "rules": {
+    "jsdoc/tag-lines": [
+      "error",
+      "never",
+      {
+        "startLines": null
+      }
+    ]
+  }
 }
