@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "private": true,
   "engines": {
-    "node": "^14.18 || ^16.13 || >=18"
+    "node": ">=18"
   },
   "repository": "adobe/aio-tvm",
   "scripts": {
@@ -24,14 +24,13 @@
     "@types/jest": "^29.5.3",
     "babel-eslint": "^10.0.3",
     "dotenv": "^16.3.1",
-    "eslint": "^6.5.1",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jest": "^22.17.0",
-    "eslint-plugin-jsdoc": "^15.9.5",
-    "eslint-plugin-node": "^10.0.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^5.0.0",
+    "eslint": "^8",
+    "eslint-config-standard": "^17",
+    "eslint-plugin-import": "^2",
+    "eslint-plugin-jest": "^27.6.3",
+    "eslint-plugin-jsdoc": "^48",
+    "eslint-plugin-node": "^11",
+    "eslint-plugin-promise": "^6.1.1",
     "jest": "^29",
     "node-fetch": "^2.6.0",
     "redoc-cli": "^0.13.20"
@@ -42,7 +41,7 @@
     "@adobe/aio-metrics-client": "^0.3.0",
     "@azure/cosmos": "^3.9.3",
     "@azure/storage-blob": "^10.5.0",
-    "aws-sdk": "^2.1356.0",
+    "aws-sdk": "^2.1495.0",
     "joi": "^17.9.1",
     "js-yaml": "^4.1.0",
     "lru-cache": "^10.0.2",
