@@ -10,6 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": [
+    "expect",
+    "global.testParam",
+    "global.expectServerError",
+    "global.expectUnauthorized",
+    "global.expect500Error",
+    "expectTokenGenerated"
+] }] */
+
 const { AwsS3Tvm } = require('../../../../lib/impl/AwsS3Tvm')
 
 const aws = require('aws-sdk')
@@ -83,7 +92,7 @@ describe('processRequest (AWS)', () => {
       })
     }
 
-    test('when aws sts.getFederationToken returns a valid token', expectTokenGenerated)
+    test('when aws sts.getFederationToken returns a valid token', () => expectTokenGenerated())
     test('when aws sts.getFederationToken does not return a Credentials object', async () => {
       getFederationTokenPromiseMock.mockResolvedValue({})
       const response = await tvm.processRequest(fakeParams)

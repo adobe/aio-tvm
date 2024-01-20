@@ -10,6 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": [
+    "expect",
+    "global.testParam",
+    "global.expectServerError",
+    "global.expectUnauthorized",
+    "global.expect500Error",
+    "testRevokeSignature"
+] }] */
+
 const { AzureRevokePresignTvm } = require('../../../../lib/impl/AzureRevokePresignTvm')
 const azureUtil = require('../../../../lib/impl/AzureUtil')
 jest.mock('../../../../lib/impl/AzureUtil')
