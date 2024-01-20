@@ -70,7 +70,7 @@ openwhisk.mockReturnValue({
 })
 
 /* helper for param validation */
-global.testParam = async (tvm, fakeParams, key, value, status) => {
+global.testParam = async (tvm, fakeParams, key, value, status) => { /* eslint-disable jest/no-standalone-expect */
   const testParams = JSON.parse(JSON.stringify(fakeParams))
 
   const keys = key.split('.')
@@ -90,7 +90,6 @@ global.testParam = async (tvm, fakeParams, key, value, status) => {
 }
 
 beforeEach(() => {
-  expect.hasAssertions()
   global.mockLog.info.mockReset()
   global.mockLog.warn.mockReset()
   global.mockLog.error.mockReset()

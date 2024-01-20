@@ -10,6 +10,15 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": [
+    "expect",
+    "global.testParam",
+    "global.expectServerError",
+    "global.expectUnauthorized",
+    "global.expect500Error",
+    "expectTokenGenerated"
+] }] */
+
 const { AzureBlobTvm } = require('../../../../lib/impl/AzureBlobTvm')
 
 const azureUtil = require('../../../../lib/impl/AzureUtil')
@@ -97,7 +106,7 @@ describe('processRequest (Azure Cosmos)', () => {
       expect(azureContainerCreateMock).toHaveBeenCalledWith(expect.any(Object), { access: 'blob', metadata: { namespace: fakeParams.owNamespace } }) // public
     }
 
-    test('when azure blob containers do not exist', expectTokenGenerated)
+    test('when azure blob containers do not exist', () => expectTokenGenerated())
     test('when azure blob containers already exist', async () => {
       azureContainerCreateMock.mockRejectedValue({ body: { Code: 'ContainerAlreadyExists' } })
       await expectTokenGenerated()
