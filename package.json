@@ -46,7 +46,7 @@
     "js-yaml": "^4.1.0",
     "lru-cache": "^6.0.0",
     "node-fetch": "^2.6.0",
-    "openwhisk": "^3.21.7",
+    "openwhisk": "^3.21.8",
     "uuid": "^8.3.1",
     "xml-js": "^1.6.11"
   }
