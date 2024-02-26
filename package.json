@@ -23,7 +23,7 @@
     "@babel/runtime": "^7.6.2",
     "@types/jest": "^29.5.3",
     "babel-eslint": "^10.0.3",
-    "dotenv": "^16.4.0",
+    "dotenv": "^16.4.5",
     "eslint": "^8",
     "eslint-config-standard": "^17",
     "eslint-plugin-import": "^2",
