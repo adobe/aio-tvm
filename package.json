@@ -34,7 +34,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.6.0",
     "jest": "^29",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.7.0",
     "redoc-cli": "^0.13.20"
   },
   "dependencies": {
@@ -47,7 +47,7 @@
     "joi": "^17.9.1",
     "js-yaml": "^4.1.0",
     "lru-cache": "^6.0.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.7.0",
     "openwhisk": "^3.21.8",
     "uuid": "^9.0.1",
     "xml-js": "^1.6.11"
