@@ -24,7 +24,7 @@
     "@babel/runtime": "^7.6.2",
     "@types/jest": "^29.5.3",
     "babel-eslint": "^10.0.3",
-    "dotenv": "^16.4.0",
+    "dotenv": "^16.4.7",
     "eslint": "^8.57.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.31.0",
