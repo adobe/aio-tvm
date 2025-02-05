@@ -20,7 +20,7 @@
   "jest.pathToConfig": "jest.config.js",
   "devDependencies": {
     "@adobe/eslint-config-aio-lib-config": "^4.0.0",
-    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/plugin-transform-runtime": "^7.25.9",
     "@babel/runtime": "^7.6.2",
     "@types/jest": "^29.5.3",
     "babel-eslint": "^10.0.3",
