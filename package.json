@@ -41,7 +41,7 @@
     "@adobe/aio-lib-core-logging": "^2.0.0",
     "@adobe/aio-lib-ims": "6.2.0",
     "@adobe/aio-metrics-client": "^0.3.0",
-    "@azure/cosmos": "^4.0.0",
+    "@azure/cosmos": "^4.2.0",
     "@azure/storage-blob": "^10.5.0",
     "aws-sdk": "^2.1495.0",
     "joi": "^17.9.1",
