@@ -18,6 +18,8 @@ packages:
         annotations:
           # this is important security wise
           final: true
+       limits:
+          memory: $MEMORY_AWS_S3
       azure-blob:
         function: actions/azure-blob/index.js
         web: yes
@@ -34,6 +36,8 @@ packages:
         annotations:
           # this is important security wise
           final: true
+        limits:
+          memory: $MEMORY_AZURE_BLOB
       azure-presign:
         function: actions/azure-presign/index.js
         web: yes
@@ -50,6 +54,8 @@ packages:
         annotations:
           # this is important security wise
           final: true
+        limits:
+          memory: $MEMORY_AZURE_PRESIGN
       azure-revoke:
         function: actions/azure-revoke/index.js
         web: yes
@@ -66,6 +72,8 @@ packages:
         annotations:
           # this is important security wise
           final: true
+        limits:
+          memory: $MEMORY_AZURE_REVOKE
       azure-cosmos:
         function: actions/azure-cosmos/index.js
         web: yes
@@ -85,6 +93,8 @@ packages:
         annotations:
           # this is important security wise
           final: true
+        limits:
+          memory: $MEMORY_AZURE_COSMOS
     apis:
       tvm-azure-blob:
         tvm:

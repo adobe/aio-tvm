@@ -84,6 +84,14 @@ This might be useful for you if:
   # Optional Params for Monitoring and access control
   AIO_METRICS_URL=<URL where TVM usage metrics will be sent>
   AIO_DENY_LIST_URL=<URL from where to fetch service based deny list>
+
+  # Memory Settings For An Action (use 256, 512, or 1024 for pre-warms)
+  # see https://developer.adobe.com/app-builder/docs/guides/configuration/
+  MEMORY_AZURE_BLOB=<memory in megabytes>
+  MEMORY_AZURE_PRESIGN=<memory in megabytes>
+  MEMORY_AZURE_REVOKE=<memory in megabytes>
+  MEMORY_AZURE_COSMOS=<memory in megabytes>
+  MEMORY_AWS_S3=<memory in megabytes>
   ```
 
 - Use the `APPROVED_LIST` variable to control which namespace can access the TVM and
