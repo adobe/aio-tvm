@@ -19,7 +19,7 @@ packages:
           # this is important security wise
           final: true
        limits:
-          memory: $MEMORY_AWS_S3
+          memory: $MEMORY_TVM_ACTION
       azure-blob:
         function: actions/azure-blob/index.js
         web: yes
@@ -37,7 +37,7 @@ packages:
           # this is important security wise
           final: true
         limits:
-          memory: $MEMORY_AZURE_BLOB
+          memory: $MEMORY_TVM_ACTION
       azure-presign:
         function: actions/azure-presign/index.js
         web: yes
@@ -55,7 +55,7 @@ packages:
           # this is important security wise
           final: true
         limits:
-          memory: $MEMORY_AZURE_PRESIGN
+          memory: $MEMORY_TVM_ACTION
       azure-revoke:
         function: actions/azure-revoke/index.js
         web: yes
@@ -73,7 +73,7 @@ packages:
           # this is important security wise
           final: true
         limits:
-          memory: $MEMORY_AZURE_REVOKE
+          memory: $MEMORY_TVM_ACTION
       azure-cosmos:
         function: actions/azure-cosmos/index.js
         web: yes
@@ -94,7 +94,7 @@ packages:
           # this is important security wise
           final: true
         limits:
-          memory: $MEMORY_AZURE_COSMOS
+          memory: $MEMORY_TVM_ACTION
     apis:
       tvm-azure-blob:
         tvm:

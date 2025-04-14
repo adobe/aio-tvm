@@ -87,11 +87,7 @@ This might be useful for you if:
 
   # Memory Settings For An Action (use 256, 512, or 1024 for pre-warms)
   # see https://developer.adobe.com/app-builder/docs/guides/configuration/
-  MEMORY_AZURE_BLOB=<memory in megabytes>
-  MEMORY_AZURE_PRESIGN=<memory in megabytes>
-  MEMORY_AZURE_REVOKE=<memory in megabytes>
-  MEMORY_AZURE_COSMOS=<memory in megabytes>
-  MEMORY_AWS_S3=<memory in megabytes>
+  MEMORY_TVM_ACTION=<memory in megabytes>
   ```
 
 - Use the `APPROVED_LIST` variable to control which namespace can access the TVM and
