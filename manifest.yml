@@ -18,7 +18,7 @@ packages:
         annotations:
           # this is important security wise
           final: true
-       limits:
+        limits:
           memory: 512
       azure-blob:
         function: actions/azure-blob/index.js
