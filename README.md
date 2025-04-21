@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/adobe/aio-tvm.svg?branch=master)](https://travis-ci.com/adobe/aio-tvm)
+![Node.js CI](https://github.com/adobe/aio-tvm/workflows/Node.js%20CI/badge.svg)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Codecov Coverage](https://img.shields.io/codecov/c/github/adobe/aio-tvm/master.svg?style=flat-square)](https://codecov.io/gh/adobe/aio-tvm/)
 
