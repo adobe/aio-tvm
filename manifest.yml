@@ -19,7 +19,7 @@ packages:
           # this is important security wise
           final: true
        limits:
-          memory: 256
+          memory: 512
       azure-blob:
         function: actions/azure-blob/index.js
         web: yes
@@ -55,7 +55,7 @@ packages:
           # this is important security wise
           final: true
         limits:
-          memory: 256
+          memory: 512
       azure-revoke:
         function: actions/azure-revoke/index.js
         web: yes
@@ -73,7 +73,7 @@ packages:
           # this is important security wise
           final: true
         limits:
-          memory: 256
+          memory: 512
       azure-cosmos:
         function: actions/azure-cosmos/index.js
         web: yes
@@ -94,7 +94,7 @@ packages:
           # this is important security wise
           final: true
         limits:
-          memory: 256
+          memory: 512
     apis:
       tvm-azure-blob:
         tvm:
