@@ -22,7 +22,6 @@ governing permissions and limitations under the License.
 const { AzureRevokePresignTvm } = require('../../../../lib/impl/AzureRevokePresignTvm')
 const azureUtil = require('../../../../lib/impl/AzureUtil')
 jest.mock('../../../../lib/impl/AzureUtil')
-azureUtil.getContainerURL.mockReturnValue({ fake: '' })
 
 const azure = require('@azure/storage-blob')
 jest.mock('@azure/storage-blob')
@@ -45,6 +44,8 @@ describe('processRequest (Azure Revoke Presign)', () => {
   let tvm
   beforeEach(() => {
     tvm = new AzureRevokePresignTvm()
+
+    azureUtil.getContainerURL.mockImplementation((_, __, containerName) => ({ fake: (containerName.includes('-public') ? 'public' : 'private') }))
   })
 
   describe('signature revoke tests', () => {
@@ -53,8 +54,9 @@ describe('processRequest (Azure Revoke Presign)', () => {
       const response = await tvm.processRequest(tempParams)
       expect(response.statusCode).toEqual(200)
       expect(response.body).toEqual({})
-      expect(azureUtil.setAccessPolicy).toHaveBeenCalledTimes(1)
-      expect(azureUtil.setAccessPolicy).toHaveBeenCalledWith({ fake: '' }, 'fakeAccount')
+      expect(azureUtil.setAccessPolicy).toHaveBeenCalledTimes(2)
+      expect(azureUtil.setAccessPolicy).toHaveBeenCalledWith({ fake: 'private' }, 'fakeAccount')
+      expect(azureUtil.setAccessPolicy).toHaveBeenCalledWith({ fake: 'public' }, 'fakeAccount')
     }
 
     test('revoke signature', async () => testRevokeSignature(tvm))
