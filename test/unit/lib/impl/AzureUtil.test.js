@@ -71,6 +71,11 @@ describe('AzureUtil tests', () => {
       expect(mockSetAccessPolicy).toHaveBeenCalledTimes(1)
       expect(mockSetAccessPolicy).toHaveBeenCalledWith(undefined, undefined, [{ accessPolicy: { permission: '' }, id: 'fakeId' }])
     })
+    test('setAccessPolicy valid policy - public', async () => {
+      await azureUtil.setAccessPolicy(mockAzureContainerURL, true)
+      expect(mockSetAccessPolicy).toHaveBeenCalledTimes(1)
+      expect(mockSetAccessPolicy).toHaveBeenCalledWith(undefined, 'blob', [{ accessPolicy: { permission: '' }, id: 'fakeId' }])
+    })
   })
 
   describe('addAccessPolicyIfNotExists', () => {
@@ -83,6 +88,13 @@ describe('AzureUtil tests', () => {
       fakeResponse.mockResolvedValue(fakeEmptyAccessPolicy)
       await azureUtil.addAccessPolicyIfNotExists(mockAzureContainerURL, fakeAccount, fakeKey)
       expect(mockSetAccessPolicy).toHaveBeenCalledTimes(1)
+      expect(mockSetAccessPolicy).toHaveBeenCalledWith(undefined, undefined, [{ accessPolicy: { permission: '' }, id: 'fakeId' }])
+    })
+    test('addAccessPolicyIfNotExists policy does not exists - public', async () => {
+      fakeResponse.mockResolvedValue(fakeEmptyAccessPolicy)
+      await azureUtil.addAccessPolicyIfNotExists(mockAzureContainerURL, fakeAccount, fakeKey, true)
+      expect(mockSetAccessPolicy).toHaveBeenCalledTimes(1)
+      expect(mockSetAccessPolicy).toHaveBeenCalledWith(undefined, 'blob', [{ accessPolicy: { permission: '' }, id: 'fakeId' }])
     })
   })
 

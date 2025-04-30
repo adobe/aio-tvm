@@ -40,9 +40,10 @@ azure.ContainerURL.prototype.create = jest.fn()
 azure.generateBlobSASQueryParameters = jest.fn()
 azure.Aborter.none = {}
 
-azureUtil.getContainerURL.mockReturnValue({
-  create: azureContainerCreateMock
-})
+azureUtil.getContainerURL.mockImplementation((_, __, containerName) => ({
+  create: azureContainerCreateMock,
+  public: containerName.includes('-public')
+}))
 
 class FakePermission {
   toString () {
@@ -71,6 +72,7 @@ describe('processRequest (Azure Cosmos)', () => {
   beforeEach(() => {
     tvm = new AzureBlobTvm()
     azureContainerCreateMock.mockReset()
+
     azure.generateBlobSASQueryParameters.mockReset()
     azureUtil.addAccessPolicyIfNotExists.mockClear()
 
@@ -91,7 +93,9 @@ describe('processRequest (Azure Cosmos)', () => {
       const containerName = global.nsHash
 
       expect(response.statusCode).toEqual(200)
-      expect(azureUtil.addAccessPolicyIfNotExists).toHaveBeenCalledTimes(1)
+      expect(azureUtil.addAccessPolicyIfNotExists).toHaveBeenCalledTimes(2)
+      expect(azureUtil.addAccessPolicyIfNotExists).toHaveBeenCalledWith(expect.objectContaining({ public: false }), fakeParams.azureStorageAccount, fakeParams.azureStorageAccessKey)
+      expect(azureUtil.addAccessPolicyIfNotExists).toHaveBeenCalledWith(expect.objectContaining({ public: true }), fakeParams.azureStorageAccount, fakeParams.azureStorageAccessKey, true)
       expect(response.body).toEqual({
         sasURLPrivate: expect.stringContaining(containerName),
         sasURLPublic: expect.stringContaining('public'),
