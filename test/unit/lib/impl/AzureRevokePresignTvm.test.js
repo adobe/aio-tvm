@@ -55,8 +55,8 @@ describe('processRequest (Azure Revoke Presign)', () => {
       expect(response.statusCode).toEqual(200)
       expect(response.body).toEqual({})
       expect(azureUtil.setAccessPolicy).toHaveBeenCalledTimes(2)
-      expect(azureUtil.setAccessPolicy).toHaveBeenCalledWith({ fake: 'private' }, 'fakeAccount')
-      expect(azureUtil.setAccessPolicy).toHaveBeenCalledWith({ fake: 'public' }, 'fakeAccount', true)
+      expect(azureUtil.setAccessPolicy).toHaveBeenCalledWith({ fake: 'private' }, false)
+      expect(azureUtil.setAccessPolicy).toHaveBeenCalledWith({ fake: 'public' }, true)
     }
 
     test('revoke signature', async () => testRevokeSignature(tvm))
